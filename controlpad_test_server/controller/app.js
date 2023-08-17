@@ -6,7 +6,12 @@ var messages = [];
 var text_drawables = [];
 var image_drawables = [];
 var needs_draw = false;
-var logo_image = new Image();
+
+//Assets
+var buttonImage = new Image();
+
+//Initialize controlpad_state as joining
+var controlpadState = "joining";
 
 // ---- onFlip ----
 
@@ -21,16 +26,23 @@ function onFlip(width, height) {
 // handle a single message from the console
 function handleMessage(message) {
     console.log('got ' + message);
-    text_drawables = [];
-    const drbl = {
-        type: 'text',
-        text: message,
-        font: '48px serif',
-        x: 30,
-        y: 100,
-    };
-    text_drawables.push(drbl);
-    needs_draw = true;
+
+    //TODO. Handle state request. Split the message into sections seperated by ":"
+    sections = message.split(":");
+    //If special state handler, change the state of the game
+    if (sections[0] == "state"){
+        setState(sections); 
+    }
+
+
+    //TODO. If joining - draw joining screen
+
+    //TODO. If playing - draw playing screen (need playername, if it's the player's turn, money, cards)
+
+    //TODO. If game finished - draw finished screen (need playername, money)
+
+
+    
 }
 
 // Specify the list of messages to be sent to the console
@@ -48,21 +60,21 @@ function getDrawables() {
     return [];
 }
 
+
+// ---- Button Handler ----
+
+//TODO: Function for when button is pressed, send a message
+    //Should accomodate check, call, raise, raise incrememnt, raise decrement, menu, hands, long press on cards, 
+
 // ---- Touch Handlers ----
 
+//TODO: Fold Gesture
 
 // Handle a single touch as it starts
 function handleTouchStart(id, x, y) {
     let msg = "TouchStart(" + x.toString() + "," + y.toString() + ")";
     messages.push(msg);
-    //
-    image_drawables.push({
-        type: 'image',
-        image: logo_image,
-        x: x,
-        y: y,
-        rotation: 0,
-    });
+    
     needs_draw = true;
 }
 
@@ -91,17 +103,118 @@ function handleTouchCancel(id, x, y) {
 function controlpadStart(width, height) {
     SCREEN_WIDTH = width;
     SCREEN_HEIGHT = height;
-    logo_image.src = "resources/logo.png";
-    logo_image.onload = function () {
-        console.log('loaded ' + this.width + ', ' + this.height);
-        console.log('natural: ' + this.naturalWidth + ', ' + this.naturalHeight);
-    };
+
+    //TODO. Load Resources
+
+    loadImages();
+    drawScreenJoining();
+
+    //TODO. State Request
+
 }
+
+// ---- State Screens ----
+
+// setState -Sets the active state from the user
+
+//In: -state: The message from the game that 
+//            should be carrying an option that describes the current 
+//            state of the game
+
+//Out: Will return a message of the recognized state and 
+//      execute a drawing function for that specific screen 
+//      along with potentially assigning some variables
+
+//Thru: The state will identify what screen to draw
+
+//As: There is a provided state string along with variables if appropriate
+
+//SE: Player name and money will be set using this function. If they are none, 
+// the player will have no money or name
+
+function setState(state) {
+    if (state[1])
+    {
+        controlpadState = state[1];
+        console.log("state:" + controlpadState);
+    }
+    else {
+        console.log("State not recognized");
+    }
+
+    switch(controlpadState) {
+        case "joining":
+            drawScreenJoining();
+            break;
+        case "playing":
+            drawScreenPlaying();
+            break;
+        case "finished":
+            drawScreenFinished();
+            break;
+
+    }
+
+    
+}
+
+//TODO: Draw Joining Screen
+function drawScreenJoining() {
+    image_drawables.push({
+        type: 'image',
+        image: buttonImage,
+        x: SCREEN_WIDTH/2,
+        y: SCREEN_HEIGHT/2,
+        centeredX: false,
+        centeredY: false,
+        message: 'join'
+    });
+    text_drawables.push({
+        type: 'text',
+            text: 'Join',
+            font: '36px serif',
+        x: SCREEN_WIDTH/2,
+        y: SCREEN_HEIGHT/2,
+        centeredX: true,
+        centeredY: true,
+    });
+    needs_draw = true;
+
+
+}
+
+
+//TODO: Draw Playing Screen
+
+function drawScreenPlaying() {
+    
+}
+    //TODO: Function for Determining which buttons should be active
+
+
+
+
+//TODO: Finished Screen
+
+function drawScreenFinished() {
+    
+}
+
+//Extra Screens
+
+//TODO: Show card ranks
+
+//TODO: Show menu
+
 
 // Called 30 times per second
 function controlpadUpdate() {
-    if (image_drawables.length > 0) {
-        image_drawables[image_drawables.length-1].rotation += 2 * Math.PI / 60;
-        needs_draw = true;
-    }
+
+}
+
+
+//Utilities
+
+function loadImages() {
+    buttonImage.src = "resources/button.png"
 }

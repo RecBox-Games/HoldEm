@@ -224,6 +224,6 @@ ws.onopen = (event) => {
         }
     }
 
-    controlpadStart();
+    controlpadStart(canvas.width, canvas.height);
     setInterval(tick, 33);
 }
