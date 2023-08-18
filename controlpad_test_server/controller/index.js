@@ -1,46 +1,28 @@
-/*let myArray = []; // Define an empty global array
+// determine if this is a touch device like a phone or tablet or DevTools emulation
+const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
 
-function createObject() {
-  const myObject = { // Define a new object inside the function
-    id: 1,
-    name: "John Doe",
-    age: 30
-  };
-  
-  myArray.push(myObject); // Append the new object to the global array
-}
-
-createObject(); // Call the function to create and append the object
-console.log(myArray); // Output: [{id: 1, name: "John Doe", age: 30}]
-
-// Access the object from the global array later
-const myObjectFromArray = myArray[0];
-console.log(myObjectFromArray); // Output: {id: 1, name: "John Doe", age: 30}
-console.log('aight');
-*/
-
-
-
-
+// parse the url for sub ID
 const url_arg_str = window.location.search;
 const url_params = new URLSearchParams(url_arg_str);
 const subid = url_params.get('subid');
 const box_ip = window.location.href.split('/')[2].split(':')[0];
-console.log(subid);
+console.log("Sub ID: " + subid);
 
 // canvas
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
 
-canvas.width = window.innerWidth-1;
-canvas.height = window.innerHeight-1;
+canvas.width = window.innerWidth-4;
+canvas.height = window.innerHeight-4;
 
 ctx.fillStyle = "#808080";
 ctx.fillRect(0, 0, canvas.width, canvas.height);
 ctx.fillStyle = "#000000";
-ctx.font = "48px serif";
+/*ctx.font = "48px serif";
 ctx.fillText("Touch", 100, 100);
+*/
 
+var touch_recognized = false
 
 function screenChange() {
     canvas.width = window.innerWidth-1;
@@ -93,8 +75,9 @@ ws.onopen = (event) => {
         handleMessage(msg);
     });
 
-
-    //if isMobile {
+    let lastTimeMove = new Date().getTime();
+    
+    if (isTouchDevice) {
 	window.addEventListener("touchstart", (event) => {
             for (touch of event.changedTouches) {
 		handleTouchStart(touch.identifier, touch.pageX, touch.pageY);
@@ -102,6 +85,10 @@ ws.onopen = (event) => {
 	});
 	
 	window.addEventListener("touchmove", (event) => {
+	    let thisTime = new Date().getTime();
+	    if (thisTime - lastTimeMove < 50)
+		return;
+	    lastTimeMove=thisTime;
             for (touch of event.changedTouches) {
 		handleTouchMove(touch.identifier, touch.pageX, touch.pageY);
             }
@@ -118,14 +105,18 @@ ws.onopen = (event) => {
 		handleTouchCancel(touch.identifier, touch.pageX, touch.pageY);
             }
 	});
-    //} else {
-    let isDragging = false;
+    } else {
+	let isDragging = false;
 	window.addEventListener("mousedown", (event) => {
 	    handleTouchStart(1, event.pageX, event.pageY);
 	    isDragging = true;
 	});
 	
 	window.addEventListener("mousemove", (event) => {
+	    let thisTime = new Date().getTime();
+	    if (thisTime - lastTimeMove < 50)
+		return;
+	    lastTimeMove=thisTime;
 	    if (isDragging) {
 		handleTouchMove(1, event.pageX, event.pageY);
 	    }
@@ -135,12 +126,19 @@ ws.onopen = (event) => {
 	    handleTouchEnd(1, event.pageX, event.pageY);
 	    isDragging = false;
 	});
-    //}    
+    }    
 
     function draw_image(image, x, y, scalex, scaley, cx, cy, rotation) {
+	if (cx) {
+
+	    x = x - image.width/2;
+	}
+	if (cy) {
+	    y = y - image.height/2;
+	}
         ctx.setTransform(scalex, 0, 0, scaley, x, y); // sets scale and origin
         ctx.rotate(rotation);
-        ctx.drawImage(image, cx, cy);
+        ctx.drawImage(image, 0, 0);
         ctx.setTransform(1,0,0,1,0,0);
     }
 
@@ -189,8 +187,8 @@ ws.onopen = (event) => {
             if (! drbl.y) { drbl.y = 0; }
             if (! drbl.scaleX) { drbl.scaleX = 1; }            
             if (! drbl.scaleY) { drbl.scaleY = 1; }
-            if (! drbl.centeredX) { drbl.centeredX = -drbl.image.width / 2; }
-            if (! drbl.centeredY) { drbl.centeredY = -drbl.image.height / 2; }
+            if (! drbl.centeredX) { drbl.centeredX = false; }
+            if (! drbl.centeredY) { drbl.centeredY = false; }
             if (! drbl.rotation) { drbl.rotation = 0; }
             draw_image(drbl.image, drbl.x, drbl.y, drbl.scaleX, drbl.scaleY,
                        drbl.centeredX, drbl.centeredY, drbl.rotation);
