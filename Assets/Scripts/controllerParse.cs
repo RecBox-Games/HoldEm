@@ -11,4 +11,9 @@ public class controllerParse : MonoBehaviour
 
         var messages = msg.Split(':');
     }
+
+    private void newPlayer(string playerName)
+    {
+
+    }
 }
