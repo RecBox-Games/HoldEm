@@ -7,7 +7,7 @@ public class playerController : MonoBehaviour
     // Player specific variables
     private string ip;
     private string username;
-    private int money;
+    [SerializeField] private int money;
     private int playerNumber;
 
     // Game Specific Variables
