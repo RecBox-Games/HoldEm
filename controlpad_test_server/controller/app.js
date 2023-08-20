@@ -117,9 +117,10 @@ function controlpadStart(width, height) {
     //TODO. Load Resources
 
     loadImages();
-    drawScreenJoining();
 
     //TODO. State Request
+    stateRequest();
+    
 
 }
 
@@ -142,24 +143,27 @@ function controlpadStart(width, height) {
 //SE: Player name and money will be set using this function. If they are none, 
 // the player will have no money or name
 
-function setState(state) {
-    if (state[1])
+function setState(sections) {
+    if (sections[1])
     {
-        controlpadState = state[1];
+        controlpadState = sections[1];
         console.log("state:" + controlpadState);
-        drawScreen();
+        drawScreen(sections);
     }
     else {
         console.log("State not recognized");
     }
 }
 
-function drawScreen() {
+function drawScreen(sections) {
     wipeScreen();
     switch(controlpadState) {
-        case "joining":
-            drawScreenJoining();
+        case "ReadyToJoin":
+            drawScreenReadyToJoin();
             break;
+        case "JoinedWaitingToStart":
+            playerName = sections[2];
+            drawJoinedWaitingToStart();
         case "playing":
             drawScreenPlaying();
             break;
@@ -181,14 +185,19 @@ function wipeScreen()
 }
 
 //TODO: Draw Joining Screen
-function drawScreenJoining() {
+function drawScreenReadyToJoin() {
    
     //Check if a spot is open
     while(playerName==null){
         playerName = prompt("Enter Username", generateName());
     }
-    console.log(playerName);
- 
+    stateRequest();
+
+
+}
+
+function drawJoinedWaitingToStart() {
+
     text_drawables.push({
         type: 'text',
             text: 'Welcome ' + playerName + '!',
@@ -208,11 +217,7 @@ function drawScreenJoining() {
         centeredY: true,
     });
 
-    needs_draw=true;
-
-    //Check if that spot is still open
-    
-    //Set gamestate
+    needs_draw = true;
 
 }
 
@@ -287,3 +292,8 @@ function loadImages() {
 function generateName() {
     return adjList[Math.floor( Math.random() * adjList.length )] + " " + nameList[Math.floor( Math.random() * nameList.length )];
  };
+
+function stateRequest() {
+    let msg = "RequestState";
+    messages.push(msg);
+}
