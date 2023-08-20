@@ -6,6 +6,18 @@ var messages = [];
 var text_drawables = [];
 var image_drawables = [];
 var needs_draw = false;
+var playerName = null;
+
+// Name Generator
+
+var adjList = [
+    'Zany', 'Whimsical', 'Bubbly', 'Playful', 'Lively', 'Quirky', 'Cheeky', 'Vibrant', 'Jovial', 'Energetic', 'Spirited', 'Carefree', 'Groovy', 'Eclectic', 'Spontaneous', 'Lighthearted', 'Hilarious', 'Dynamic', 'Frolicsome', 'Witty', 'Radiant', 'Wacky', 'Festive', 'Silly', 'Mischievous', 'Animated', 'Exuberant', 'Sprightly', 'Unpredictable', 'Merry', 'Buoyant', 'Fanciful', 'Unconventional', 'Chucklesome', 'Bouncy', 'Joyful', 'Effervescent', 'Amusing', 'Breezy', 'Giggly', 'Frisky', 'Spunky', 'Jaunty', 'Droll', 'Zesty', 'Dynamic', 'Peculiar', 'Euphoric', 'Zippy', 'Hysterical'
+    ];
+var nameList = [
+    'Dog', 'Cat', 'Elephant', 'Lion', 'Tiger', 'Giraffe', 'Zebra', 'Bear', 'Monkey', 'Kangaroo', 'Dolphin', 'Penguin', 'Owl', 'Koala', 'Cheetah', 'Rhino', 'Hippo', 'Fox', 'Wolf', 'Horse', 'Rabbit', 'Squirrel', 'Gorilla', 'Orangutan', 'Octopus', 'Crocodile', 'Alligator', 'Camel', 'Peacock', 'Parrot', 'Eagle', 'Hummingbird', 'Sloth', 'Panda', 'Otter', 'Seal', 'Lemur', 'Raccoon', 'Jellyfish', 'Seahorse', 'Butterfly', 'Meerkat', 'Chimpanzee', 'Platypus', 'Hedgehog', 'Llama', 'Armadillo', 'Ostrich', 'Tortoise', 'Gazelle'
+]
+
+
 
 //Assets
 var buttonImage = new Image();
@@ -74,9 +86,7 @@ function getDrawables() {
 function handleTouchStart(id, x, y) {
     let msg = "TouchStart(" + x.toString() + "," + y.toString() + ")";
     messages.push(msg);
-    
-    needs_draw = true;
-}
+    }
 
 
 // Handle a single touch that has moved
@@ -137,11 +147,15 @@ function setState(state) {
     {
         controlpadState = state[1];
         console.log("state:" + controlpadState);
+        drawScreen();
     }
     else {
         console.log("State not recognized");
     }
+}
 
+function drawScreen() {
+    wipeScreen();
     switch(controlpadState) {
         case "joining":
             drawScreenJoining();
@@ -154,32 +168,51 @@ function setState(state) {
             break;
 
     }
+}
 
-    
+function wipeScreen()
+{
+    image_drawables = [];
+    text_drawables = [];
+    trackedDrbls = [];
+    ctx.clearRect(0,0, canvas.width, canvas.height);
+    hitCtx.clearRect(0,0, canvas.width, canvas.height);
+
 }
 
 //TODO: Draw Joining Screen
 function drawScreenJoining() {
-    image_drawables.push({
-        type: 'image',
-        image: buttonImage,
+   
+    //Check if a spot is open
+    while(playerName==null){
+        playerName = prompt("Enter Username", generateName());
+    }
+    console.log(playerName);
+ 
+    text_drawables.push({
+        type: 'text',
+            text: 'Welcome ' + playerName + '!',
+            font: '36px serif',
         x: SCREEN_WIDTH/2,
-        y: SCREEN_HEIGHT/2,
-        centeredX: false,
-        centeredY: false,
-        message: 'join'
+        y: SCREEN_HEIGHT/8,
+        centeredX: true,
+        centeredY: true,
     });
     text_drawables.push({
         type: 'text',
-            text: 'Join',
+            text: 'Waiting on Host to Start',
             font: '36px serif',
         x: SCREEN_WIDTH/2,
         y: SCREEN_HEIGHT/2,
         centeredX: true,
         centeredY: true,
     });
-    needs_draw = true;
 
+    needs_draw=true;
+
+    //Check if that spot is still open
+    
+    //Set gamestate
 
 }
 
@@ -187,6 +220,38 @@ function drawScreenJoining() {
 //TODO: Draw Playing Screen
 
 function drawScreenPlaying() {
+     // image_drawables.push({
+    //     type: 'image',
+    //     image: buttonImage,
+    //     x: SCREEN_WIDTH/2,
+    //     y: SCREEN_HEIGHT/2,
+    //     centeredX: true,
+    //     centeredY: true,
+    //     message: 'join',
+    //     scaleY: '1',
+    //     scaleX: '1',
+    //     track: true,
+    //     msg: "It worked!"
+    // });
+    // text_drawables.push({
+    //     type: 'text',
+    //         text: 'Join',
+    //         font: '36px serif',
+    //     x: SCREEN_WIDTH/2,
+    //     y: SCREEN_HEIGHT/2,
+    //     centeredX: true,
+    //     centeredY: true,
+    // });
+    // text_drawables.push({
+    //     type: 'text',
+    //         text: 'Enter Your Name:',
+    //         font: '36px serif',
+    //     x: SCREEN_WIDTH/2,
+    //     y: SCREEN_HEIGHT/8,
+    //     centeredX: true,
+    //     centeredY: true,
+    // });
+    // needs_draw = true;
     
 }
     //TODO: Function for Determining which buttons should be active
@@ -218,3 +283,7 @@ function controlpadUpdate() {
 function loadImages() {
     buttonImage.src = "resources/button.png"
 }
+
+function generateName() {
+    return adjList[Math.floor( Math.random() * adjList.length )] + " " + nameList[Math.floor( Math.random() * nameList.length )];
+ };

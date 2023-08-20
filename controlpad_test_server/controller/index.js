@@ -11,9 +11,17 @@ console.log("Sub ID: " + subid);
 // canvas
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
+const offset = 4;
 
-canvas.width = window.innerWidth-4;
-canvas.height = window.innerHeight-4;
+canvas.width = window.innerWidth-offset;
+canvas.height = window.innerHeight-offset;
+
+
+const hitCanvas = document.createElement('canvas');
+const hitCtx = hitCanvas.getContext('2d');
+
+hitCanvas.width = window.innerWidth-offset;
+hitCanvas.height = window.innerHeight-offset;
 
 ctx.fillStyle = "#808080";
 ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -25,13 +33,21 @@ ctx.fillText("Touch", 100, 100);
 var touch_recognized = false
 
 function screenChange() {
-    canvas.width = window.innerWidth-1;
-    canvas.height = window.innerHeight-1;
+    canvas.width = window.innerWidth-offset;
+    canvas.height = window.innerHeight-offset;
+
+    hitCanvas.width = window.innerWidth-offset;
+    hitCanvas.height = window.innerHeight-offset;
+    SCREEN_HEIGHT = canvas.height;
+    SCREEN_WIDTH = canvas.width;
+
 
     ctx.fillStyle = "#808080";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     console.log('resize fill');
     onFlip(window.innerWidth, window.innerHeight);
+    drawScreen();
+
 }    
 
 window.onresize = screenChange;
@@ -48,6 +64,7 @@ function isMobile() {
 // globals
 let drag_start_x = 0;
 let drag_start_y = 0;
+var trackedDrbls = [];
 
 // websocket and main
 ws = new WebSocket("ws://" + box_ip + ":50079");
@@ -79,8 +96,10 @@ ws.onopen = (event) => {
     
     if (isTouchDevice) {
 	window.addEventListener("touchstart", (event) => {
+
             for (touch of event.changedTouches) {
-		handleTouchStart(touch.identifier, touch.pageX, touch.pageY);
+                checkTrackedDrbls(touch.pageX, touch.pageY);
+		        handleTouchStart(touch.identifier, touch.pageX, touch.pageY);
             }
 	});
 	
@@ -128,40 +147,50 @@ ws.onopen = (event) => {
 	});
     }    
 
-    function draw_image(image, x, y, scalex, scaley, cx, cy, rotation) {
-	if (cx) {
+    function draw_image(drbl) {
 
-	    x = x - image.width/2;
+        var x = drbl.x;
+        var y = drbl.y;
+
+	if (drbl.centeredX) {
+	    x = drbl.x - drbl.scaleX*drbl.image.width/2;
 	}
-	if (cy) {
-	    y = y - image.height/2;
+	if (drbl.centeredY) {
+	    y = drbl.y - drbl.scaleY*drbl.image.height/2;
 	}
-        ctx.setTransform(scalex, 0, 0, scaley, x, y); // sets scale and origin
-        ctx.rotate(rotation);
-        ctx.drawImage(image, 0, 0);
+        ctx.setTransform(drbl.scaleX, 0, 0, drbl.scaleY, x, y); // sets scale and origin
+        ctx.rotate(drbl.rotation);
+        ctx.drawImage(drbl.image, 0, 0);
         ctx.setTransform(1,0,0,1,0,0);
     }
 
-    function draw_text(text, x, y, font, color, centeredX, centeredY) {
-        ctx.font = font;
-        if (centeredX) {
-            x -= ctx.measureText(text).width / 2;
+    function draw_text(drbl) {
+
+        var x = drbl.x;
+        var y = drbl.y;
+
+        ctx.font = drbl.font;
+
+        if (drbl.centeredX) {
+            x -= drbl.w / 2;
         }
-        if (centeredY) {
-            y += parseInt(ctx.font) / 3;
+        if (drbl.centeredY) {
+            y += drbl.h / 3;
         }
-        ctx.fillStyle = color;
-        ctx.fillText(text, x, y);
+        ctx.fillStyle = drbl.color;
+
+        ctx.fillText(drbl.text, x, y);
+
     }
 
-    function draw_rect(x, y, w, h, color, outline) {
-        if (outline == 0) {
-            ctx.fillStyle = color;
-            ctx.fillRect(x, y, w, h);
+    function draw_rect(drbl) {
+        if (drbl.outline == 0) {
+            ctx.fillStyle = drbl.color;
+            ctx.fillRect(drbl.x, drbl.y, drbl.w, drbl.h);
         } else {
-            ctx.strokeStyle = color;
-            ctx.lineWidth = outline;
-            ctx.strokeRect(x, y, w, h);
+            ctx.strokeStyle = drbl.color;
+            ctx.lineWidth = drbl.outline;
+            ctx.strokeRect(drbl.x, drbl.y, drbl.w, drbl.h);
         }
     }
     
@@ -177,8 +206,12 @@ ws.onopen = (event) => {
             if (! drbl.centeredY) { drbl.centeredY = false; }
             if (! drbl.font) { drbl.font = '24px serif'; }
             if (! drbl.color) { drbl.color = '#000000'; }
-            draw_text(drbl.text, drbl.x, drbl.y, drbl.font, drbl.color,
-                      drbl.centeredX, drbl.centeredY);
+
+            ctx.font = drbl.font;
+            drbl.w = ctx.measureText(drbl.text).width;
+            drbl.h = parseInt(drbl.font);
+ 
+            draw_text(drbl);
         } else if (drbl.type == 'image') {
             if (! drbl.image) { console.log("no image for image drawable");return; }
             if (! drbl.image.complete) { return; }
@@ -190,8 +223,9 @@ ws.onopen = (event) => {
             if (! drbl.centeredX) { drbl.centeredX = false; }
             if (! drbl.centeredY) { drbl.centeredY = false; }
             if (! drbl.rotation) { drbl.rotation = 0; }
-            draw_image(drbl.image, drbl.x, drbl.y, drbl.scaleX, drbl.scaleY,
-                       drbl.centeredX, drbl.centeredY, drbl.rotation);
+            drbl.w = drbl.image.naturalWidth*drbl.scaleX;
+            drbl.h = drbl.image.naturalHeight*drbl.scaleY;
+            draw_image(drbl);
         } else if (drbl.type == 'rect') {
             if (! drbl.x) { drbl.x = 0; }
             if (! drbl.y) { drbl.y = 0; }
@@ -199,9 +233,13 @@ ws.onopen = (event) => {
             if (! drbl.h) { drbl.y = 10; }
             if (! drbl.color) { drbl.color = '#000000'; }
             if (! drbl.outline) { drbl.outline = 0; }            
-            draw_rect(drbl.x, drbl.y, drbl.w, drbl.h, drbl.color, drbl.outline);
+            draw_rect(drbl);
         } else {
             console.log("Drawable type '" + drbl.type.toString() + "' not implemented");
+        }
+        if (drbl.track)
+        {
+            drawTrackBox(drbl);
         }
     }
     
@@ -213,15 +251,94 @@ ws.onopen = (event) => {
             ws.send(msg);
         }
         let drbls = getDrawables();
-        if (drbls.length > 0) {
-            ctx.fillStyle = "#808080";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            for (drbl of drbls) {
-                draw_drawable(drbl);
+            if (drbls.length > 0) {
+                ctx.fillStyle = "#808080";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                trackedDrbls = [];
+                for (drbl of drbls) {
+                    draw_drawable(drbl);
+                }
+
+                if (trackedDrbls > 0) {
+
+                    trackedDrbls.forEach(drbl => {
+                        drawTrackBox(drbl);
+                    })
+                }
+                
+            
+
             }
-        }
     }
 
+
+    function drawTrackBox(drbl) {
+        if(!drbl.msg){
+            console.log("Trackbox Made without message");
+            return;
+        }
+
+        var x = drbl.x;
+        var y = drbl.y;
+
+        switch (drbl.type) {
+            case "image":
+                if (drbl.centeredX) {
+                    x = drbl.x - drbl.scaleX*drbl.image.width/2;
+                }
+                if (drbl.centeredY) {
+                    y = drbl.y - drbl.scaleY*drbl.image.height/2;
+                }
+                
+                break;
+
+            case "text":
+                if (drbl.centeredX) {
+                    x -= drbl.w / 2;
+                }
+                if (drbl.centeredY) {
+                    y += drbl.h / 3;
+                }
+                break;
+            default:
+                break;
+        }
+
+        drbl.trackColor = getRandomColor();
+        trackedDrbls.push(drbl);
+
+        hitCtx.fillStyle = drbl.trackColor;
+  
+
+
+
+        hitCtx.fillRect(x, y, drbl.w, drbl.h);
+    }
+
+    function getRandomColor() {
+        const r = Math.round(Math.random() * 255);
+        const g = Math.round(Math.random() * 255);
+        const b = Math.round(Math.random() * 255);
+        return `rgb(${r},${g},${b})`;
+    }
+
+    function checkTrackedDrbls(x,y) {
+  
+
+        const pixel = hitCtx.getImageData(x,y,1,1).data;
+
+        const color = `rgb(${pixel[0]},${pixel[1]},${pixel[2]})`;
+
+        trackedDrbls.forEach(drbl => {
+            if (hasSameColor(color,drbl.trackColor)){
+                messages.push(drbl.msg);
+            }
+        })
+    }
+
+    function hasSameColor(color, drbl){
+        return color === drbl;
+    }
     controlpadStart(canvas.width, canvas.height);
     setInterval(tick, 33);
 }
