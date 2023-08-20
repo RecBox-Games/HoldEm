@@ -11,7 +11,6 @@ public class controllerParse : MonoBehaviour
     {
 
         var messages = msg.Split(':');
-        Debug.Log("This is my message" + messages[0]);
 
         if (messages[0] == "RequestState") {
 
