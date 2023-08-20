@@ -46,7 +46,7 @@ function screenChange() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     console.log('resize fill');
     onFlip(window.innerWidth, window.innerHeight);
-    drawScreen();
+    stateRequest();
 
 }    
 
