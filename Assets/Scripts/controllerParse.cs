@@ -6,6 +6,7 @@ using UnityEngine;
 public class controllerParse : MonoBehaviour
 {
     static string playerName = "Greg";
+    static bool gameStarted = true;
 
     public static void messageParse(string client, string msg)
     {
@@ -22,8 +23,17 @@ public class controllerParse : MonoBehaviour
             }
 
             else {
-                controlpads_glue.SendControlpadMessage(client, "state:JoinedWaitingToStart"+ ":" + controllerParse.playerName);
 
+                if(!controllerParse.gameStarted) {
+                    controlpads_glue.SendControlpadMessage(client, "state:JoinedWaitingToStart"+ ":" + controllerParse.playerName);
+                }
+
+                else {
+                    controlpads_glue.SendControlpadMessage(client,
+                    "state:PlayingWaiting"+ ":" + controllerParse.playerName);
+
+                }
+            
 
             }
 

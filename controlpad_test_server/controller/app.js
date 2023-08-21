@@ -7,6 +7,7 @@ var text_drawables = [];
 var image_drawables = [];
 var needs_draw = false;
 var playerName = null;
+var controlpadState;
 
 // Name Generator
 
@@ -21,9 +22,9 @@ var nameList = [
 
 //Assets
 var buttonImage = new Image();
+var cardBack = new Image();
 
-//Initialize controlpad_state as joining
-var controlpadState = "joining";
+
 
 // ---- onFlip ----
 
@@ -164,8 +165,9 @@ function drawScreen(sections) {
         case "JoinedWaitingToStart":
             playerName = sections[2];
             drawJoinedWaitingToStart();
-        case "playing":
-            drawScreenPlaying();
+        case "PlayingWaiting":
+            playerName = sections[2];
+            drawScreenPlayingWaiting();
             break;
         case "finished":
             drawScreenFinished();
@@ -224,39 +226,97 @@ function drawJoinedWaitingToStart() {
 
 //TODO: Draw Playing Screen
 
-function drawScreenPlaying() {
-     // image_drawables.push({
-    //     type: 'image',
-    //     image: buttonImage,
-    //     x: SCREEN_WIDTH/2,
-    //     y: SCREEN_HEIGHT/2,
-    //     centeredX: true,
-    //     centeredY: true,
-    //     message: 'join',
-    //     scaleY: '1',
-    //     scaleX: '1',
-    //     track: true,
-    //     msg: "It worked!"
-    // });
-    // text_drawables.push({
-    //     type: 'text',
-    //         text: 'Join',
-    //         font: '36px serif',
-    //     x: SCREEN_WIDTH/2,
-    //     y: SCREEN_HEIGHT/2,
-    //     centeredX: true,
-    //     centeredY: true,
-    // });
-    // text_drawables.push({
-    //     type: 'text',
-    //         text: 'Enter Your Name:',
-    //         font: '36px serif',
-    //     x: SCREEN_WIDTH/2,
-    //     y: SCREEN_HEIGHT/8,
-    //     centeredX: true,
-    //     centeredY: true,
-    // });
-    // needs_draw = true;
+function drawScreenPlayingWaiting() {
+     image_drawables.push({
+        type: 'image',
+        image: cardBack,
+        x: SCREEN_WIDTH/2,
+        y: SCREEN_HEIGHT/2,
+        centeredX: true,
+        centeredY: true,
+        scaleY: '2',
+        scaleX: '2',
+        track: true,
+        msg: "FlipCard"
+    });
+    text_drawables.push({
+        type: 'text',
+            text: playerName,
+            font: '36px serif',
+        x: SCREEN_WIDTH/2,
+        y: SCREEN_HEIGHT/8,
+        centeredX: true,
+        centeredY: true,
+    });
+     image_drawables.push({
+        type: 'image',
+        image: buttonImage,
+        x: SCREEN_WIDTH/2,
+        y: 7*SCREEN_HEIGHT/8,
+        centeredX: true,
+        centeredY: true,
+        scaleY: '.6',
+        scaleX: '0.3',
+        track: true,
+        msg: "Call"
+    });
+        text_drawables.push({
+        type: 'text',
+            text: 'Call',
+            font: '25px serif',
+        x: SCREEN_WIDTH/2,
+        y: 7*SCREEN_HEIGHT/8,
+        centeredX: true,
+        centeredY: true,
+    });
+    image_drawables.push({
+        type: 'image',
+        image: buttonImage,
+        x: 3*SCREEN_WIDTH/4,
+        y: 7*SCREEN_HEIGHT/8,
+        centeredX: true,
+        centeredY: true,
+        scaleY: '.6',
+        scaleX: '0.3',
+        track: true,
+        msg: "Raise"
+    });
+        text_drawables.push({
+        type: 'text',
+            text: 'Raise',
+            font: '25px serif',
+            x: 3*SCREEN_WIDTH/4,
+            y: 7*SCREEN_HEIGHT/8,
+        centeredX: true,
+        centeredY: true,
+    });
+    image_drawables.push({
+        type: 'image',
+        image: buttonImage,
+        x: 1*SCREEN_WIDTH/4,
+        y: 7*SCREEN_HEIGHT/8,
+        centeredX: true,
+        centeredY: true,
+        scaleY: '.6',
+        scaleX: '0.3',
+        track: true,
+        msg: "Check"
+    });
+        text_drawables.push({
+        type: 'text',
+            text: 'Check',
+            font: '25px serif',
+            x: 1*SCREEN_WIDTH/4,
+            y: 7*SCREEN_HEIGHT/8,
+        centeredX: true,
+        centeredY: true,
+    });
+
+    
+
+    
+   
+    needs_draw = true;
     
 }
     //TODO: Function for Determining which buttons should be active
@@ -287,6 +347,7 @@ function controlpadUpdate() {
 
 function loadImages() {
     buttonImage.src = "resources/button.png"
+    cardBack.src = "resources/card_back_double.png"
 }
 
 function generateName() {
