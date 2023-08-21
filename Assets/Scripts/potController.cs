@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class potController : MonoBehaviour
 {
-    private int tottalMoney;
+    private int tottalMoney = 0;
     private List<string> players = new List<string>();
 
     // Start is called before the first frame update
@@ -33,9 +33,9 @@ public class potController : MonoBehaviour
     {
 
     }
-    public void raise()
+    public void raise(int amount)
     {
-        
+        tottalMoney += amount;
     }
 
     public void fold(string username)

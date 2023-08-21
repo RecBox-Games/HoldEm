@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class controllerParse : MonoBehaviour
 {
+    [SerializeField] GameObject playerPrefab;
     static string playerName = "Greg";
     static bool gameStarted = true;
 
@@ -43,8 +44,8 @@ public class controllerParse : MonoBehaviour
         }
     }
 
-    private void newPlayer(string playerName)
+    public void newPlayer(string playerName)
     {
-
+        Instantiate((playerPrefab), new Vector3(0, 0, 10), Quaternion.identity);
     }
 }
