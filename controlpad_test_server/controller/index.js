@@ -13,44 +13,38 @@ const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
 const offset = 4;
 
-canvas.width = window.innerWidth-offset;
-canvas.height = window.innerHeight-offset;
-
-
 const hitCanvas = document.createElement('canvas');
 const hitCtx = hitCanvas.getContext('2d');
 
-hitCanvas.width = window.innerWidth-offset;
-hitCanvas.height = window.innerHeight-offset;
-
-ctx.fillStyle = "#808080";
-ctx.fillRect(0, 0, canvas.width, canvas.height);
-ctx.fillStyle = "#000000";
-/*ctx.font = "48px serif";
-ctx.fillText("Touch", 100, 100);
-*/
-
 var touch_recognized = false
 
-function screenChange() {
-    canvas.width = window.innerWidth-offset;
-    canvas.height = window.innerHeight-offset;
-
-    hitCanvas.width = window.innerWidth-offset;
-    hitCanvas.height = window.innerHeight-offset;
-    SCREEN_HEIGHT = canvas.height;
-    SCREEN_WIDTH = canvas.width;
-
+function updateScreenHeightandWidth() {
+    SCREEN_HEIGHT = window.innerHeight - offset;
+    SCREEN_WIDTH = window.innerWidth - offset;
+    canvas.width = SCREEN_WIDTH;
+    canvas.height = SCREEN_HEIGHT;
+    hitCanvas.width = SCREEN_WIDTH;
+    hitCanvas.height = SCREEN_HEIGHT;
 
     ctx.fillStyle = "#808080";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    ctx.fillStyle = "#000000";
+}
+
+function screenChange() {
+    updateScreenHeightandWidth();
     console.log('resize fill');
-    onFlip(window.innerWidth, window.innerHeight);
+    onFlip(SCREEN_WIDTH, SCREEN_HEIGHT, ORIENTATION);
 
 }    
+window.addEventListener("resize", (event) => {
+    screenChange();
+});
+screen.orientation.addEventListener("change", (event) => {
+    ORIENTATION = screen.orientation;
+});
+  
 
-window.onresize = screenChange;
-window.onOrientationChange = screenChange;
 
 // helpers
 function isMobile() {
@@ -64,6 +58,7 @@ function isMobile() {
 let drag_start_x = 0;
 let drag_start_y = 0;
 var trackedDrbls = [];
+var ORIENTATION = screen.orientation;
 
 // websocket and main
 ws = new WebSocket("ws://" + box_ip + ":50079");
@@ -148,16 +143,7 @@ ws.onopen = (event) => {
 
     function draw_image(drbl) {
 
-        var x = drbl.x;
-        var y = drbl.y;
-
-	if (drbl.centeredX) {
-	    x = drbl.x - drbl.scaleX*drbl.image.width/2;
-	}
-	if (drbl.centeredY) {
-	    y = drbl.y - drbl.scaleY*drbl.image.height/2;
-	}
-        ctx.setTransform(drbl.scaleX, 0, 0, drbl.scaleY, x, y); // sets scale and origin
+        ctx.setTransform(drbl.scaleX, 0, 0, drbl.scaleY, drbl.x, drbl.y); // sets scale and origin
         ctx.rotate(drbl.rotation);
         ctx.drawImage(drbl.image, 0, 0);
         ctx.setTransform(1,0,0,1,0,0);
@@ -165,20 +151,11 @@ ws.onopen = (event) => {
 
     function draw_text(drbl) {
 
-        var x = drbl.x;
-        var y = drbl.y;
-
         ctx.font = drbl.font;
 
-        if (drbl.centeredX) {
-            x -= drbl.w / 2;
-        }
-        if (drbl.centeredY) {
-            y += drbl.h / 3;
-        }
         ctx.fillStyle = drbl.color;
 
-        ctx.fillText(drbl.text, x, y);
+        ctx.fillText(drbl.text, drbl.x, drbl.y);
 
     }
 
@@ -195,51 +172,120 @@ ws.onopen = (event) => {
     
     // set defaults then call the appropriate draw function depending on the type
     function draw_drawable(drbl) {
+
+        needsCentered = 0;
+        //Checking for bad inputs
         if (! drbl) { console.log("none object for drawable");return; }
         if (! drbl.type) { console.log("no type for drawable");return; }
+
+        //Defaults
+        if (! drbl.x) { drbl.x = 0; }
+        if (! drbl.y) { drbl.y = 0; }
+        if (! drbl.centeredX) { drbl.centeredX = false; }
+        if (! drbl.centeredY) { drbl.centeredY = false; }
+
+        if (drbl.centeredX | drbl.centeredY){
+            needsCentered = 1;
+        }
+
         if (drbl.type == 'text') {
             if (! drbl.text) { console.log("no text for text drawable");return; }
-            if (! drbl.x) { drbl.x = 0; }
-            if (! drbl.y) { drbl.y = 0; }
-            if (! drbl.centeredX) { drbl.centeredX = false; }
-            if (! drbl.centeredY) { drbl.centeredY = false; }
             if (! drbl.font) { drbl.font = '24px serif'; }
             if (! drbl.color) { drbl.color = '#000000'; }
 
             ctx.font = drbl.font;
             drbl.w = ctx.measureText(drbl.text).width;
             drbl.h = parseInt(drbl.font);
- 
+
+            if(needsCentered){
+                centerDrawable(drbl);
+            }
+
             draw_text(drbl);
+
         } else if (drbl.type == 'image') {
             if (! drbl.image) { console.log("no image for image drawable");return; }
             if (! drbl.image.complete) { return; }
             if (drbl.image.naturalWidth === 0) { return; }
-            if (! drbl.x) { drbl.x = 0; }
-            if (! drbl.y) { drbl.y = 0; }
             if (! drbl.scaleX) { drbl.scaleX = 1; }            
             if (! drbl.scaleY) { drbl.scaleY = 1; }
-            if (! drbl.centeredX) { drbl.centeredX = false; }
-            if (! drbl.centeredY) { drbl.centeredY = false; }
             if (! drbl.rotation) { drbl.rotation = 0; }
             drbl.w = drbl.image.naturalWidth*drbl.scaleX;
             drbl.h = drbl.image.naturalHeight*drbl.scaleY;
+
+            if(needsCentered){
+                centerDrawable(drbl);
+            }
+
             draw_image(drbl);
+
         } else if (drbl.type == 'rect') {
-            if (! drbl.x) { drbl.x = 0; }
-            if (! drbl.y) { drbl.y = 0; }
-            if (! drbl.w) { drbl.x = 10; }
-            if (! drbl.h) { drbl.y = 10; }
+            if (! drbl.w) { drbl.w = 10; }
+            if (! drbl.h) { drbl.h = 10; }
             if (! drbl.color) { drbl.color = '#000000'; }
-            if (! drbl.outline) { drbl.outline = 0; }            
+            if (! drbl.outline) { drbl.outline = 0; }
+
+            if(needsCentered){
+                centerDrawable(drbl);
+            }
+
             draw_rect(drbl);
+
         } else {
             console.log("Drawable type '" + drbl.type.toString() + "' not implemented");
         }
+
         if (drbl.track)
         {
+            if(! drbl.trackType){
+                drbl.trackType = 'rectangle'
+            }
             drawTrackBox(drbl);
         }
+    }
+    
+    function centerDrawable(drbl){
+        switch(drbl.type){
+            case "image":
+                if(drbl.centeredX){
+                    drbl.x = drbl.x - drbl.scaleX*drbl.image.width/2;                  
+                }
+                if(drbl.centeredY) {
+                    drbl.y = drbl.y - drbl.scaleY*drbl.image.height/2;
+                }
+                break;
+            case "text":
+                if (drbl.centeredX) {
+                    drbl.x -= drbl.w / 2;
+                }
+                if (drbl.centeredY) {
+                    drbl.y += drbl.h / 3;
+
+                }
+                break;
+            case "rect":
+                if (drbl.centeredX) {
+                    drbl.x -= drbl.w / 2;
+                }
+                if (drbl.centeredY) {
+                    drbl.y += drbl.h / 2;
+                }
+                break;
+            case "circle":
+                if (drbl.centeredX) {
+                    drbl.x -= drbl.r;
+                }
+                if (drbl.centeredY) {
+                    drbl.y += drbl.r;
+                }
+                break;
+            default:
+                console.log("Drawable unabled to be centered");
+                break;
+        }
+
+        drbl.centeredY = "false";
+        drbl.centeredX = "false";
     }
     
     function tick() {
@@ -276,42 +322,37 @@ ws.onopen = (event) => {
             console.log("Trackbox Made without message");
             return;
         }
+        if(!drbl.trackType) {
+            drbl.trackType = "rectangle";
+        }
 
-        var x = drbl.x;
-        var y = drbl.y;
-
-        switch (drbl.type) {
-            case "image":
-                if (drbl.centeredX) {
-                    x = drbl.x - drbl.scaleX*drbl.image.width/2;
-                }
-                if (drbl.centeredY) {
-                    y = drbl.y - drbl.scaleY*drbl.image.height/2;
-                }
-                
+        switch(drbl.trackType)
+        {
+            case "rectangle":
+                rectangularTrack();
                 break;
-
-            case "text":
-                if (drbl.centeredX) {
-                    x -= drbl.w / 2;
-                }
-                if (drbl.centeredY) {
-                    y += drbl.h / 3;
-                }
+            case "triangle":
+                triangularTrack();
+                break;
+            case "circle":
+                circularTrack();
                 break;
             default:
+                console.log("Shape " + drbl.trackType + " not supported")
                 break;
         }
+    }
+
+    function rectangularTrack(){
+        var x = drbl.x;
+        var y = drbl.y;
 
         drbl.trackColor = getRandomColor();
         trackedDrbls.push(drbl);
 
         hitCtx.fillStyle = drbl.trackColor;
-  
-
-
-
         hitCtx.fillRect(x, y, drbl.w, drbl.h);
+
     }
 
     function getRandomColor() {
@@ -320,6 +361,7 @@ ws.onopen = (event) => {
         const b = Math.round(Math.random() * 255);
         return `rgb(${r},${g},${b})`;
     }
+
 
     function checkTrackedDrbls(x,y) {
   
@@ -338,6 +380,9 @@ ws.onopen = (event) => {
     function hasSameColor(color, drbl){
         return color === drbl;
     }
-    controlpadStart(canvas.width, canvas.height);
+
+
+    updateScreenHeightandWidth();
+    controlpadStart(SCREEN_WIDTH, SCREEN_HEIGHT);
     setInterval(tick, 33);
 }

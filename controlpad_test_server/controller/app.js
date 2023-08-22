@@ -8,23 +8,41 @@ var image_drawables = [];
 var needs_draw = false;
 var playerName = null;
 var controlpadState;
+var SCREEN_HEIGHT;
+var SCREEN_WIDTH;
+var ORIENTATION;
 
-// Name Generator
+// Name Generator. Will pick a random adjective and a random name
 
 var adjList = [
-    'Zany', 'Whimsical', 'Bubbly', 'Playful', 'Lively', 'Quirky', 'Cheeky', 'Vibrant', 'Jovial', 'Energetic', 'Spirited', 'Carefree', 'Groovy', 'Eclectic', 'Spontaneous', 'Lighthearted', 'Hilarious', 'Dynamic', 'Frolicsome', 'Witty', 'Radiant', 'Wacky', 'Festive', 'Silly', 'Mischievous', 'Animated', 'Exuberant', 'Sprightly', 'Unpredictable', 'Merry', 'Buoyant', 'Fanciful', 'Unconventional', 'Chucklesome', 'Bouncy', 'Joyful', 'Effervescent', 'Amusing', 'Breezy', 'Giggly', 'Frisky', 'Spunky', 'Jaunty', 'Droll', 'Zesty', 'Dynamic', 'Peculiar', 'Euphoric', 'Zippy', 'Hysterical'
+    'Zany', 'Whimsical', 'Bubbly', 'Playful', 'Lively', 
+    'Quirky', 'Cheeky', 'Vibrant', 'Jovial', 'Energetic', 
+    'Spirited', 'Carefree', 'Groovy', 'Eclectic', 
+    'Spontaneous', 'Lighthearted', 'Hilarious', 'Dynamic', 
+    'Frolicsome', 'Witty', 'Radiant', 'Wacky', 'Festive', 
+    'Silly', 'Mischievous', 'Animated', 'Exuberant', 'Sprightly',
+    'Unpredictable', 'Merry', 'Buoyant', 'Fanciful', 
+    'Unconventional', 'Chucklesome', 'Bouncy', 'Joyful', 
+    'Effervescent', 'Amusing', 'Breezy', 'Giggly', 
+    'Frisky', 'Spunky', 'Jaunty', 'Droll', 'Zesty', 
+    'Dynamic', 'Peculiar', 'Euphoric', 'Zippy', 'Hysterical'
     ];
 var nameList = [
-    'Dog', 'Cat', 'Elephant', 'Lion', 'Tiger', 'Giraffe', 'Zebra', 'Bear', 'Monkey', 'Kangaroo', 'Dolphin', 'Penguin', 'Owl', 'Koala', 'Cheetah', 'Rhino', 'Hippo', 'Fox', 'Wolf', 'Horse', 'Rabbit', 'Squirrel', 'Gorilla', 'Orangutan', 'Octopus', 'Crocodile', 'Alligator', 'Camel', 'Peacock', 'Parrot', 'Eagle', 'Hummingbird', 'Sloth', 'Panda', 'Otter', 'Seal', 'Lemur', 'Raccoon', 'Jellyfish', 'Seahorse', 'Butterfly', 'Meerkat', 'Chimpanzee', 'Platypus', 'Hedgehog', 'Llama', 'Armadillo', 'Ostrich', 'Tortoise', 'Gazelle'
+    'Dog', 'Cat', 'Elephant', 'Lion', 'Tiger', 'Giraffe', 
+    'Zebra', 'Bear', 'Monkey', 'Kangaroo', 'Dolphin', 
+    'Penguin', 'Owl', 'Koala', 'Cheetah', 'Rhino', 'Hippo',
+    'Fox', 'Wolf', 'Horse', 'Rabbit', 'Squirrel', 'Gorilla',
+    'Orangutan', 'Octopus', 'Crocodile', 'Alligator', 
+    'Camel', 'Peacock', 'Parrot', 'Eagle', 'Hummingbird',
+    'Sloth', 'Panda', 'Otter', 'Seal', 'Lemur', 'Raccoon',
+    'Jellyfish', 'Seahorse', 'Butterfly', 'Meerkat', 
+    'Chimpanzee', 'Platypus', 'Hedgehog', 'Llama', 
+    'Armadillo', 'Ostrich', 'Tortoise', 'Gazelle'
 ]
-
-
 
 //Assets
 var buttonImage = new Image();
 var cardBack = new Image();
-
-
 
 // ---- onFlip ----
 
@@ -32,6 +50,7 @@ function onFlip(width, height) {
     SCREEN_WIDTH = width;
     SCREEN_HEIGHT = height;
     needs_draw = true;
+    drawScreen(["state:",controlpadState, playerName]);
 }
 
 // ---- Messages ----
@@ -40,21 +59,18 @@ function onFlip(width, height) {
 function handleMessage(message) {
     console.log('got ' + message);
 
-    //TODO. Handle state request. Split the message into sections seperated by ":"
     sections = message.split(":");
-    //If special state handler, change the state of the game
+
+    //If  state function, change the state of the game
     if (sections[0] == "state"){
         setState(sections); 
     }
-
 
     //TODO. If joining - draw joining screen
 
     //TODO. If playing - draw playing screen (need playername, if it's the player's turn, money, cards)
 
     //TODO. If game finished - draw finished screen (need playername, money)
-
-
     
 }
 
@@ -85,35 +101,33 @@ function getDrawables() {
 
 // Handle a single touch as it starts
 function handleTouchStart(id, x, y) {
-    let msg = "TouchStart(" + x.toString() + "," + y.toString() + ")";
-    messages.push(msg);
+    // let msg = "TouchStart(" + x.toString() + "," + y.toString() + ")";
+    // messages.push(msg);
     }
 
 
 // Handle a single touch that has moved
 function handleTouchMove(id, x, y) {
-    let msg = "TouchMove(" + x.toString() + "," + y.toString() + ")";
-    messages.push(msg);
+
 }
 
 // Handle a single touch that has ended
 function handleTouchEnd(id, x, y) {
-    let msg = "TouchEnd(" + x.toString() + "," + y.toString() + ")";
-    messages.push(msg);
+
 }
 
 // Handle a single touch that has ended in an unexpected way
 function handleTouchCancel(id, x, y) {
-    let msg = "TouchCancel(" + x.toString() + "," + y.toString() + ")";
-    messages.push(msg);
+
 }
 
 // ---- Start and Update ----
 
 // Called once upon page load (load your resources here)
-function controlpadStart(width, height) {
+function controlpadStart(width, height, orientation) {
     SCREEN_WIDTH = width;
     SCREEN_HEIGHT = height;
+    ORIENTATION = orientation;
 
     //TODO. Load Resources
 
@@ -148,7 +162,6 @@ function setState(sections) {
     if (sections[1])
     {
         controlpadState = sections[1];
-        console.log("state:" + controlpadState);
         drawScreen(sections);
     }
     else {
@@ -167,6 +180,7 @@ function drawScreen(sections) {
             drawJoinedWaitingToStart();
         case "PlayingWaiting":
             playerName = sections[2];
+
             drawScreenPlayingWaiting();
             break;
         case "finished":
@@ -181,8 +195,8 @@ function wipeScreen()
     image_drawables = [];
     text_drawables = [];
     trackedDrbls = [];
-    ctx.clearRect(0,0, canvas.width, canvas.height);
-    hitCtx.clearRect(0,0, canvas.width, canvas.height);
+    ctx.clearRect(0,0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    hitCtx.clearRect(0,0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
 }
 
