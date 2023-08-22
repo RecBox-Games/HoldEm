@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class playerController : MonoBehaviour
 {
+    [SerializeField] GameObject playerPrefab;
+
     // Player specific variables
+    [SerializeField] private int money;
     private string ip;
     private string username;
-    [SerializeField] private int money;
     private int playerNumber;
 
     // Game Specific Variables
@@ -16,24 +18,26 @@ public class playerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        Debug.Log(getName());
     }
 
 
+    // Player Getters
     public string getIP() { return ip; }
 
-    public string getName() { return username;}
+    public string getName() { return username; }
 
-    public int getMoney() { return money;}
+    public int getMoney() { return money; }
 
-    public bool isFolded() {  return folded;}
+    public bool isFolded() {  return folded; }
 
 
-
+    // Player Setters
+    public void setName(string name) { username = name;}
 }

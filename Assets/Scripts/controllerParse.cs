@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class controllerParse : MonoBehaviour
 {
+    [SerializeField] GameObject playerPrefab;
     static string playerName = "Greg";
     static bool gameStarted = true;
 
@@ -43,8 +45,14 @@ public class controllerParse : MonoBehaviour
         }
     }
 
-    private void newPlayer(string playerName)
+    public void newPlayer(string playerName)
     {
+        // Create a new Player object from the Player prefab and name it the new players name
+        Object playerObj = Instantiate((playerPrefab), new Vector3(0, 0, 10), Quaternion.identity);
+        playerObj.name = playerName;
 
+        // Get the playerController and assign anything new to the player
+        playerController player = playerObj.GetComponent<playerController>();
+        player.setName(playerName);
     }
 }
