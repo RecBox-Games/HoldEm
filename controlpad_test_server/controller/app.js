@@ -12,6 +12,9 @@ var SCREEN_HEIGHT;
 var SCREEN_WIDTH;
 var ORIENTATION;
 
+//Promises
+var playerJoinedSuccess = 0;
+
 // Name Generator. Will pick a random adjective and a random name
 
 var adjList = [
@@ -64,6 +67,12 @@ function handleMessage(message) {
     //If  state function, change the state of the game
     if (sections[0] == "state"){
         setState(sections); 
+    }
+
+    if(sections[0] == "playerJoined")
+    {
+        playerJoinedSuccess = 1;
+
     }
 
     //TODO. If joining - draw joining screen
@@ -183,9 +192,9 @@ function drawScreen(sections) {
         case "JoinedWaitingToStart":
             playerName = sections[2];
             drawJoinedWaitingToStart();
+            break;
         case "PlayingWaiting":
             playerName = sections[2];
-
             drawScreenPlayingWaiting();
             break;
         case "finished":
@@ -226,8 +235,8 @@ function drawScreenReadyToJoin() {
     while(playerName==null){
         playerName = prompt("Enter Username", generateName());
     }
-    stateRequest();
-
+    let msg = "NewPlayer:" + playerName;
+    messages.push(msg);
 
 }
 

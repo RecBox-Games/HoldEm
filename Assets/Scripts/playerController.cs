@@ -24,7 +24,7 @@ public class playerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(getName() + " Is number: " + playerNumber);
+        // Debug.Log(getName() + " Is number: " + playerNumber);
 
     }
 
@@ -44,5 +44,5 @@ public class playerController : MonoBehaviour
 
     public void setPlayerNumber(int num) { playerNumber = num; }
 
-    
+    public void setPlayerIP(string client)   { ip = client;}
 }

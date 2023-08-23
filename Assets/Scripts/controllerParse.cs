@@ -10,37 +10,47 @@ public class controllerParse : MonoBehaviour
 {
     [SerializeField] GameObject playerPrefab;
     [SerializeField] GameObject playerUI;
-    private List<string> clientList = new List<string>();
-    static bool gameStarted = true;
+    private List<playerController> playersInGame = new List<playerController>();
+    public static bool gameStarted = false;
+    
 
     public void messageParse(string client, string msg)
     {
-        // Parse msg by 
+        
+        // Parse msg by
+
         var messages = msg.Split(':');
 
-        if (messages[0] == "RequestState") {
+        if (messages[0] == "NewPlayer") {
+            string playerName = messages[1];
+            newPlayer(playerName, client);
+            checkIfGameStarted(client, playerName);
 
-            if (!clientList.Contains(client))
-            {
-                clientList.Add(client);
-                controlpads_glue.SendControlpadMessage(client, "state:ReadyToJoin");
-                // newPlayer();        
-            }
-
-            else {
-                if(!controllerParse.gameStarted) {
-                    controlpads_glue.SendControlpadMessage(client, "state:JoinedWaitingToStart"
-                        + ":" + controllerParse.playerName);
-                }
-                else {
-                    controlpads_glue.SendControlpadMessage(client,
-                    "state:PlayingWaiting" + ":" + controllerParse.playerName);
-                }
-            }
         }
+
+        var fromPlayer = grabPlayer(client);
+
+        if(fromPlayer is null)
+        {
+            controlpads_glue.SendControlpadMessage(client, "state:ReadyToJoin");
+
+        }
+
+        else{
+
+            if (messages[0] == "RequestState") {
+            
+                checkIfGameStarted(fromPlayer.getIP(), fromPlayer.getName());
+            }
+            
+        }
+
+        
+
     }
 
-    public void newPlayer(string playerName)
+
+    public void newPlayer(string playerName, string client)
     {
         Debug.Log("Player" + playerName + "Added");
 
@@ -50,9 +60,39 @@ public class controllerParse : MonoBehaviour
 
         // Get the playerController and assign anything new to the player
         playerController player = playerObj.GetComponent<playerController>();
+        playersInGame.Add(player);
         player.setName(playerName);
-        player.setPlayerNumber(clientList.Count);
+        player.setPlayerIP(client);
+        player.setPlayerNumber(playersInGame.Count);
 
         playerUI.GetComponent<UnityEngine.UI.Text>().text += playerName + "\n";
+    }
+
+    public void checkIfGameStarted(string ip, string username){
+
+
+        if(!gameStarted)
+        {
+            controlpads_glue.SendControlpadMessage(ip, "state:JoinedWaitingToStart:" + username);
+            
+        }
+
+        else {
+            controlpads_glue.SendControlpadMessage(ip,
+            "state:PlayingWaiting" + ":" + username);
+        }  
+    }
+
+    public playerController grabPlayer(string client) {
+        foreach (var player in playersInGame) 
+        {
+            var ip = player.getIP();
+
+            //player is recognized
+            if(ip == client) {
+                return player;
+            }
+        }
+        return null;
     }
 }
