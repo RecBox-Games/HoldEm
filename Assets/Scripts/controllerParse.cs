@@ -3,45 +3,38 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class controllerParse : MonoBehaviour
 {
     [SerializeField] GameObject playerPrefab;
-    static string playerName = "Greg";
+    [SerializeField] GameObject playerUI;
+    private List<string> clientList = new List<string>();
     static bool gameStarted = true;
 
-    public static void messageParse(string client, string msg)
+    public void messageParse(string client, string msg)
     {
-
+        // Parse msg by 
         var messages = msg.Split(':');
 
         if (messages[0] == "RequestState") {
 
-            if (!PlayerList.playersInGame.Contains(client))
+            if (!clientList.Contains(client))
             {
-                PlayerList.playersInGame.Add(client);
-                Debug.Log("Player" + playerName + "Added");
-                controlpads_glue.SendControlpadMessage(client, "state:ReadyToJoin");          
+                clientList.Add(client);
+                // newPlayer();        
             }
 
             else {
-
                 if(!controllerParse.gameStarted) {
                     controlpads_glue.SendControlpadMessage(client, "state:JoinedWaitingToStart"+ ":" + controllerParse.playerName);
                 }
-
                 else {
                     controlpads_glue.SendControlpadMessage(client,
                     "state:PlayingWaiting"+ ":" + controllerParse.playerName);
-
                 }
-            
-
             }
-
-
-
-
+            */
         }
     }
 
@@ -54,5 +47,8 @@ public class controllerParse : MonoBehaviour
         // Get the playerController and assign anything new to the player
         playerController player = playerObj.GetComponent<playerController>();
         player.setName(playerName);
+        player.setPlayerNumber(clientList.Count);
+
+        playerUI.GetComponent<UnityEngine.UI.Text>().text += playerName + "\n";
     }
 }

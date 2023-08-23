@@ -1,11 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class playerController : MonoBehaviour
 {
-    [SerializeField] GameObject playerPrefab;
-
     // Player specific variables
     [SerializeField] private int money;
     private string ip;
@@ -13,6 +12,7 @@ public class playerController : MonoBehaviour
     private int playerNumber;
 
     // Game Specific Variables
+    [SerializeField] Object playerUI;
     private bool folded = false;
 
     // Start is called before the first frame update
@@ -24,7 +24,8 @@ public class playerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(getName());
+        Debug.Log(getName() + " Is number: " + playerNumber);
+
     }
 
 
@@ -40,4 +41,8 @@ public class playerController : MonoBehaviour
 
     // Player Setters
     public void setName(string name) { username = name;}
+
+    public void setPlayerNumber(int num) { playerNumber = num; }
+
+    
 }
