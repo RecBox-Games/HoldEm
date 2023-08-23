@@ -132,6 +132,8 @@ function controlpadStart(width, height, orientation) {
     //TODO. Load Resources
 
     loadImages();
+    controlpadState = "Loading";
+    drawScreen(["state:",controlpadState, playerName]);
 
     //TODO. State Request
     stateRequest();
@@ -172,6 +174,9 @@ function setState(sections) {
 function drawScreen(sections) {
     wipeScreen();
     switch(controlpadState) {
+        case "Loading":
+            drawLoadingScreen();
+            break;
         case "ReadyToJoin":
             drawScreenReadyToJoin();
             break;
@@ -197,6 +202,20 @@ function wipeScreen()
     trackedDrbls = [];
     ctx.clearRect(0,0, SCREEN_WIDTH, SCREEN_HEIGHT);
     hitCtx.clearRect(0,0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+}
+
+function drawLoadingScreen() {
+    text_drawables.push({
+        type: 'text',
+            text: 'Loading Texas Hold Em',
+            font: '36px serif',
+        x: SCREEN_WIDTH/2,
+        y: SCREEN_HEIGHT/8,
+        centeredX: true,
+        centeredY: true,
+    });
+    needs_draw = true;
 
 }
 
