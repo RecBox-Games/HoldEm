@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -22,24 +23,27 @@ public class controllerParse : MonoBehaviour
             if (!clientList.Contains(client))
             {
                 clientList.Add(client);
+                controlpads_glue.SendControlpadMessage(client, "state:ReadyToJoin");
                 // newPlayer();        
             }
 
             else {
                 if(!controllerParse.gameStarted) {
-                    controlpads_glue.SendControlpadMessage(client, "state:JoinedWaitingToStart"+ ":" + controllerParse.playerName);
+                    controlpads_glue.SendControlpadMessage(client, "state:JoinedWaitingToStart"
+                        + ":" + controllerParse.playerName);
                 }
                 else {
                     controlpads_glue.SendControlpadMessage(client,
-                    "state:PlayingWaiting"+ ":" + controllerParse.playerName);
+                    "state:PlayingWaiting" + ":" + controllerParse.playerName);
                 }
             }
-            */
         }
     }
 
     public void newPlayer(string playerName)
     {
+        Debug.Log("Player" + playerName + "Added");
+
         // Create a new Player object from the Player prefab and name it the new players name
         Object playerObj = Instantiate((playerPrefab), new Vector3(0, 0, 10), Quaternion.identity);
         playerObj.name = playerName;
