@@ -10,6 +10,7 @@ public class controllerParse : MonoBehaviour
 {
     [SerializeField] GameObject playerPrefab;
     [SerializeField] GameObject playerUI;
+    [SerializeField] gameController gameController;
     private List<playerController> playersInGame = new List<playerController>();
     public static bool gameStarted = false;
     
@@ -64,7 +65,10 @@ public class controllerParse : MonoBehaviour
         player.setName(playerName);
         player.setPlayerIP(client);
         player.setPlayerNumber(playersInGame.Count);
+        gameController.initializePlayer(player);
 
+
+        // This updates a UI with the new player whos playing
         playerUI.GetComponent<UnityEngine.UI.Text>().text += playerName + "\n";
     }
 
