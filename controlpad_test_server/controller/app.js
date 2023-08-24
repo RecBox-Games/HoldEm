@@ -46,6 +46,8 @@ var nameList = [
 //Assets
 var buttonImage = new Image();
 var cardBack = new Image();
+var menuImage = new Image();
+var cardHands = new Image();
 
 // ---- onFlip ----
 
@@ -281,20 +283,87 @@ function drawScreenPlayingWaiting() {
         track: true,
         msg: "FlipCard"
     });
+    topMenu();
+    drawStatus();
+   
+    needs_draw = true;
+    
+}
+
+function drawScreenPlayingPlayerTurn() {
+    image_drawables.push({
+        type: 'image',
+        image: cardBack,
+        x: SCREEN_WIDTH/2,
+        y: SCREEN_HEIGHT/2,
+        centeredX: true,
+        centeredY: true,
+        scaleY: '2',
+        scaleX: '2',
+        track: true,
+        msg: "FlipCard"
+    });
+    topMenu()
+    drawActions();
+    drawStatus();
+
+    needs_draw = true;
+}
+    //TODO: Function for Determining which buttons should be active
+
+
+//Draw top menu
+function topMenu() {
+    var y = SCREEN_HEIGHT/16;
+
+    fontSize = sizeFont(playerName, 0.5) + "px serif";
     text_drawables.push({
         type: 'text',
             text: playerName,
-            font: '36px serif',
+            font: fontSize,
         x: SCREEN_WIDTH/2,
-        y: SCREEN_HEIGHT/8,
+        y: y,
         centeredX: true,
         centeredY: true,
     });
-     image_drawables.push({
+    scale = sizeImage(cardHands,.25)
+    image_drawables.push({
+        type: 'image',
+        image: cardHands,
+        x: 50,
+        y: y,
+        centeredX: true,
+        centeredY: true,
+        scaleY: scale,
+        scaleX: scale,
+        track: true,
+        msg: "Cards"
+    });
+    scale = sizeImage(menuImage, .2)
+    image_drawables.push({
+        type: 'image',
+        image: menuImage,
+        x: SCREEN_WIDTH - 50,
+        y: y,
+        centeredX: true,
+        centeredY: true,
+        scaleY: scale,
+        scaleX: scale,
+        track: true,
+        msg: "Menu"
+    });
+    
+}
+
+function drawActions() {
+
+    var y = 3*SCREEN_HEIGHT/16;
+
+    image_drawables.push({
         type: 'image',
         image: buttonImage,
         x: SCREEN_WIDTH/2,
-        y: 7*SCREEN_HEIGHT/8,
+        y: y,
         centeredX: true,
         centeredY: true,
         scaleY: '.6',
@@ -307,7 +376,7 @@ function drawScreenPlayingWaiting() {
             text: 'Call',
             font: '25px serif',
         x: SCREEN_WIDTH/2,
-        y: 7*SCREEN_HEIGHT/8,
+        y: y,
         centeredX: true,
         centeredY: true,
     });
@@ -315,7 +384,7 @@ function drawScreenPlayingWaiting() {
         type: 'image',
         image: buttonImage,
         x: 3*SCREEN_WIDTH/4,
-        y: 7*SCREEN_HEIGHT/8,
+        y: y,
         centeredX: true,
         centeredY: true,
         scaleY: '.6',
@@ -328,7 +397,7 @@ function drawScreenPlayingWaiting() {
             text: 'Raise',
             font: '25px serif',
             x: 3*SCREEN_WIDTH/4,
-            y: 7*SCREEN_HEIGHT/8,
+            y: y,
         centeredX: true,
         centeredY: true,
     });
@@ -336,7 +405,7 @@ function drawScreenPlayingWaiting() {
         type: 'image',
         image: buttonImage,
         x: 1*SCREEN_WIDTH/4,
-        y: 7*SCREEN_HEIGHT/8,
+        y: y,
         centeredX: true,
         centeredY: true,
         scaleY: '.6',
@@ -349,21 +418,25 @@ function drawScreenPlayingWaiting() {
             text: 'Check',
             font: '25px serif',
             x: 1*SCREEN_WIDTH/4,
-            y: 7*SCREEN_HEIGHT/8,
+            y: y,
         centeredX: true,
         centeredY: true,
     });
-
-    
-
-    
-   
-    needs_draw = true;
-    
 }
-    //TODO: Function for Determining which buttons should be active
 
+function drawStatus() {
+    text_drawables.push({
+        type: 'text',
+            text: 'Waiting for Player Turn',
+            font: '36px serif',
+        x: SCREEN_WIDTH/2,
+        y: SCREEN_HEIGHT - 100,
+        centeredX: true,
+        centeredY: true,
+        
+    });
 
+}
 
 
 //TODO: Finished Screen
@@ -390,6 +463,8 @@ function controlpadUpdate() {
 function loadImages() {
     buttonImage.src = "resources/button.png"
     cardBack.src = "resources/card_back_double.png"
+    menuImage.src = "resources/menu_bars.png"
+    cardHands.src = "resources/cardhand.png"
 }
 
 function generateName() {
@@ -400,3 +475,26 @@ function stateRequest() {
     let msg = "RequestState";
     messages.push(msg);
 }
+
+function sizeFont(text, area) {
+    fontSize = 30;
+    var width;
+    var increment = 2;
+    do{
+    ctx.font = fontSize + "px serif";
+    width = ctx.measureText(text).width;
+    fontSize -= increment;
+
+    }
+    while(width>SCREEN_WIDTH*area); 
+
+    return (fontSize + increment)
+}
+
+function sizeImage(image, area) {
+
+    var w = image.naturalWidth;
+    var scale = (SCREEN_WIDTH*area)/w;
+    return scale;
+}
+

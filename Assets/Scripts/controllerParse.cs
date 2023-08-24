@@ -11,7 +11,7 @@ public class controllerParse : MonoBehaviour
     [SerializeField] GameObject playerPrefab;
     [SerializeField] GameObject playerUI;
     private List<playerController> playersInGame = new List<playerController>();
-    public static bool gameStarted = false;
+    public static bool gameStarted = true;
     
 
     public void messageParse(string client, string msg)
@@ -87,7 +87,6 @@ public class controllerParse : MonoBehaviour
         foreach (var player in playersInGame) 
         {
             var ip = player.getIP();
-
             //player is recognized
             if(ip == client) {
                 return player;
