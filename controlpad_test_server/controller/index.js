@@ -169,6 +169,32 @@ ws.onopen = (event) => {
             ctx.strokeRect(drbl.x, drbl.y, drbl.w, drbl.h);
         }
     }
+
+    function draw_triangle(drbl) {
+        ctx.save();
+        ctx.translate(drbl.x+(drbl.b/2), drbl.y-(drbl.h/2));
+        ctx.rotate(drbl.rotation*(Math.PI/180));
+        ctx.beginPath();
+        ctx.moveTo(-drbl.b/2, -drbl.h/2);
+        ctx.lineTo(drbl.b/2,-drbl.h/2);
+        ctx.lineTo(0,drbl.h/2);
+        ctx.closePath();
+        ctx.fillStyle = drbl.color;
+        ctx.fill();
+        ctx.restore();
+
+
+
+
+
+        if(drbl.outline)
+        {
+            ctx.lineWidth = drbl.outline;
+            ctx.strokeStyle = drbl.outlineColor;
+            ctx.stroke()
+        }   
+
+    }
     
     // set defaults then call the appropriate draw function depending on the type
     function draw_drawable(drbl) {
@@ -229,9 +255,22 @@ ws.onopen = (event) => {
                 centerDrawable(drbl);
             }
 
-            draw_rect(drbl);
 
-        } else {
+
+        } 
+        
+        else if (drbl.type == 'triangle'){
+            if (! drbl.b) { drbl.w = 10; }
+            if (! drbl.h) { drbl.h = 10; }
+            if (! drbl.color) { drbl.color = '#000000'; }
+
+            if(needsCentered){
+                centerDrawable(drbl);
+            }
+
+            draw_triangle(drbl);
+        }
+        else {
             console.log("Drawable type '" + drbl.type.toString() + "' not implemented");
         }
 
@@ -271,6 +310,16 @@ ws.onopen = (event) => {
                     drbl.y += drbl.h / 2;
                 }
                 break;
+            case "triangle":
+                if (drbl.centeredX) {
+                    
+                    drbl.x -= drbl.b / 2;
+                }
+                if (drbl.centeredY) {
+                    drbl.y -= drbl.h / 2;
+                }
+                break;
+
             case "circle":
                 if (drbl.centeredX) {
                     drbl.x -= drbl.r;

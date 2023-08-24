@@ -11,6 +11,7 @@ var controlpadState;
 var SCREEN_HEIGHT;
 var SCREEN_WIDTH;
 var ORIENTATION;
+var playerTurn = true;
 
 //Promises
 var playerJoinedSuccess = 0;
@@ -199,6 +200,9 @@ function drawScreen(sections) {
             playerName = sections[2];
             drawScreenPlayingWaiting();
             break;
+        case "PlayingPlayerTurn":
+            playerName = sections[2];
+            drawScreenPlayingPlayerTurn();
         case "finished":
             drawScreenFinished();
             break;
@@ -291,21 +295,22 @@ function drawScreenPlayingWaiting() {
 }
 
 function drawScreenPlayingPlayerTurn() {
-    image_drawables.push({
-        type: 'image',
-        image: cardBack,
-        x: SCREEN_WIDTH/2,
-        y: SCREEN_HEIGHT/2,
-        centeredX: true,
-        centeredY: true,
-        scaleY: '2',
-        scaleX: '2',
-        track: true,
-        msg: "FlipCard"
-    });
+    // image_drawables.push({
+    //     type: 'image',
+    //     image: cardBack,
+    //     x: SCREEN_WIDTH/2,
+    //     y: SCREEN_HEIGHT/2,
+    //     centeredX: true,
+    //     centeredY: true,
+    //     scaleY: '2',
+    //     scaleX: '2',
+    //     track: true,
+    //     msg: "FlipCard"
+    // });
     topMenu()
     drawActions();
     drawStatus();
+    drawMoney();
 
     needs_draw = true;
 }
@@ -356,30 +361,10 @@ function topMenu() {
 }
 
 function drawActions() {
+    var y = 27*SCREEN_HEIGHT/32;
+    var scale = sizeImage(buttonImage,.4);
+    var action = "Call";
 
-    var y = 3*SCREEN_HEIGHT/16;
-
-    image_drawables.push({
-        type: 'image',
-        image: buttonImage,
-        x: SCREEN_WIDTH/2,
-        y: y,
-        centeredX: true,
-        centeredY: true,
-        scaleY: '.6',
-        scaleX: '0.3',
-        track: true,
-        msg: "Call"
-    });
-        text_drawables.push({
-        type: 'text',
-            text: 'Call',
-            font: '25px serif',
-        x: SCREEN_WIDTH/2,
-        y: y,
-        centeredX: true,
-        centeredY: true,
-    });
     image_drawables.push({
         type: 'image',
         image: buttonImage,
@@ -388,19 +373,43 @@ function drawActions() {
         centeredX: true,
         centeredY: true,
         scaleY: '.6',
-        scaleX: '0.3',
+        scaleX: scale,
         track: true,
-        msg: "Raise"
+        msg: action 
     });
-        text_drawables.push({
+    text_drawables.push({
         type: 'text',
-            text: 'Raise',
+            text: action + ":",
             font: '25px serif',
-            x: 3*SCREEN_WIDTH/4,
-            y: y,
-        centeredX: true,
+        x: 3*SCREEN_WIDTH/4 - buttonImage.width*scale/2 + 10,
+        y: y,
+        centeredX: false,
         centeredY: true,
     });
+    text_drawables.push({
+        type: 'text',
+            text: '$15',
+            font: '25px serif',
+        x: 3*SCREEN_WIDTH/4 - buttonImage.width*scale/2 + 10 + ctx.measureText(action).width + 20,
+
+        y: y,
+        centeredX: false,
+        centeredY: true,
+    });
+    image_drawables.push({
+        type: 'triangle',
+        x: SCREEN_WIDTH/2,
+        y: SCREEN_HEIGHT/2,
+        centeredX: true,
+        centeredY: true,
+        b: 100,
+        h: 100,
+        color: '#FF0000',
+        rotation: 360
+
+    });
+
+
     image_drawables.push({
         type: 'image',
         image: buttonImage,
@@ -411,7 +420,7 @@ function drawActions() {
         scaleY: '.6',
         scaleX: '0.3',
         track: true,
-        msg: "Check"
+        msg: "Check",
     });
         text_drawables.push({
         type: 'text',
@@ -425,13 +434,35 @@ function drawActions() {
 }
 
 function drawStatus() {
+
+    if(playerTurn){
+        playerStatus = "It's Your Turn!";
+    }
+    else {
+        playerStatus = "Waiting for Player Turn";
+    }
     text_drawables.push({
         type: 'text',
-            text: 'Waiting for Player Turn',
+            text: playerStatus,
             font: '36px serif',
         x: SCREEN_WIDTH/2,
-        y: SCREEN_HEIGHT - 100,
+        y: 3* SCREEN_HEIGHT/16,
         centeredX: true,
+        centeredY: true,
+        
+    });
+
+}
+
+function drawMoney() {
+    fontSize = sizeFont("Remaining Money", 0.4) + "px serif";
+    text_drawables.push({
+        type: 'text',
+            text: "Remaining Money:",
+            font: fontSize,
+        x: 10,
+        y: 15* SCREEN_HEIGHT/16,
+        centeredX: false,
         centeredY: true,
         
     });

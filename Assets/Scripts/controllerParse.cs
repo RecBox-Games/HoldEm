@@ -13,6 +13,7 @@ public class controllerParse : MonoBehaviour
     [SerializeField] gameController gameController;
     private List<playerController> playersInGame = new List<playerController>();
     public static bool gameStarted = true;
+    public static bool playerTurn = true;
     
 
     public void messageParse(string client, string msg)
@@ -65,7 +66,7 @@ public class controllerParse : MonoBehaviour
         player.setName(playerName);
         player.setPlayerIP(client);
         player.setPlayerNumber(playersInGame.Count);
-        gameController.initializePlayer(player);
+        // gameController.initializePlayer(player);
 
 
         // This updates a UI with the new player whos playing
@@ -74,17 +75,28 @@ public class controllerParse : MonoBehaviour
 
     public void checkIfGameStarted(string ip, string username){
 
+        var stateName = "";
 
         if(!gameStarted)
         {
-            controlpads_glue.SendControlpadMessage(ip, "state:JoinedWaitingToStart:" + username);
+            stateName = "Joined Waiting to Start:";
             
         }
 
         else {
-            controlpads_glue.SendControlpadMessage(ip,
-            "state:PlayingWaiting" + ":" + username);
-        }  
+
+            if(playerTurn){
+                stateName = "PlayingPlayerTurn:";
+            }
+
+            else {
+                stateName = "PlayingWaiting:";
+            }
+            
+        }
+
+        controlpads_glue.SendControlpadMessage(ip, "state:" + stateName + username);
+
     }
 
     public playerController grabPlayer(string client) {
