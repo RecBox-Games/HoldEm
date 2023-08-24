@@ -6,14 +6,15 @@ using UnityEngine;
 public class playerController : MonoBehaviour
 {
     // Player specific variables
-    [SerializeField] private int money;
-    private string ip;
+    private string ID;
     private string username;
     private int playerNumber;
+    private int turnNumber;
 
     // Game Specific Variables
-    [SerializeField] Object playerUI;
+    [SerializeField] private int money;
     private bool folded = false;
+    private List<string> holeCards = new List<string>(); // this should be a maximum of 2 cards
 
     // Start is called before the first frame update
     void Start()
@@ -26,11 +27,12 @@ public class playerController : MonoBehaviour
     {
         // Debug.Log(getName() + " Is number: " + playerNumber);
 
+
     }
 
 
     // Player Getters
-    public string getIP() { return ip; }
+    public string getIP() { return ID; }
 
     public string getName() { return username; }
 
@@ -42,7 +44,12 @@ public class playerController : MonoBehaviour
     // Player Setters
     public void setName(string name) { username = name;}
 
+    public void setPlayerIP(string client) { ID = client; }
+
+    public void setMoney(int money) { this.money = money;}
     public void setPlayerNumber(int num) { playerNumber = num; }
 
-    public void setPlayerIP(string client)   { ip = client;}
+    public void setTurnNumber(int turnNumber) { this.turnNumber = turnNumber; }
+
+
 }
