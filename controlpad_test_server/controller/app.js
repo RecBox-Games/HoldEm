@@ -295,22 +295,21 @@ function drawScreenPlayingWaiting() {
 }
 
 function drawScreenPlayingPlayerTurn() {
-    // image_drawables.push({
-    //     type: 'image',
-    //     image: cardBack,
-    //     x: SCREEN_WIDTH/2,
-    //     y: SCREEN_HEIGHT/2,
-    //     centeredX: true,
-    //     centeredY: true,
-    //     scaleY: '2',
-    //     scaleX: '2',
-    //     track: true,
-    //     msg: "FlipCard"
-    // });
+    image_drawables.push({
+        type: 'image',
+        image: cardBack,
+        x: SCREEN_WIDTH/2,
+        y: SCREEN_HEIGHT/2,
+        centeredX: true,
+        centeredY: true,
+        scaleY: '2',
+        scaleX: '2',
+        track: true,
+        msg: "FlipCard"
+    });
     topMenu()
     drawActions();
     drawStatus();
-    drawMoney();
 
     needs_draw = true;
 }
@@ -321,7 +320,8 @@ function drawScreenPlayingPlayerTurn() {
 function topMenu() {
     var y = SCREEN_HEIGHT/16;
 
-    fontSize = sizeFont(playerName, 0.5) + "px serif";
+    autoSize = sizeFont(playerName, 0.5)
+    fontSize = autoSize + "px serif";
     text_drawables.push({
         type: 'text',
             text: playerName,
@@ -357,6 +357,16 @@ function topMenu() {
         track: true,
         msg: "Menu"
     });
+    text_drawables.push({
+        type: 'text',
+            text: "$1,000",
+            font: fontSize,
+        x: SCREEN_WIDTH/2,
+        y: (y + autoSize + 10),
+        centeredX: true,
+        centeredY: true,
+        
+    });
     
 }
 
@@ -364,6 +374,10 @@ function drawActions() {
     var y = 27*SCREEN_HEIGHT/32;
     var scale = sizeImage(buttonImage,.4);
     var action = "Call";
+    var triangleOffset = 55;
+    var triangleOutline = 5;
+    var triangleBase = 80;
+    var triangleHeight = 40;
 
     image_drawables.push({
         type: 'image',
@@ -398,16 +412,36 @@ function drawActions() {
     });
     image_drawables.push({
         type: 'triangle',
-        x: SCREEN_WIDTH/2,
-        y: SCREEN_HEIGHT/2,
+        x: 3*SCREEN_WIDTH/4,
+        y: y + triangleOffset,
         centeredX: true,
         centeredY: true,
-        b: 100,
-        h: 100,
+        b: triangleBase,
+        h: triangleHeight,
         color: '#FF0000',
-        rotation: 360
+        rotation: 0,
+        outline: triangleOutline,
+        msg: "Down",
+        track: true
+
 
     });
+    image_drawables.push({
+        type: 'triangle',
+        x: 3*SCREEN_WIDTH/4,
+        y: y - triangleOffset,
+        centeredX: true,
+        centeredY: true,
+        b: triangleBase,
+        h: triangleHeight,
+        color: '#FF0000',
+        rotation: 180,
+        outline: triangleOutline,
+        msg: "Up",
+        track: true
+
+    });
+
 
 
     image_drawables.push({
@@ -446,7 +480,7 @@ function drawStatus() {
             text: playerStatus,
             font: '36px serif',
         x: SCREEN_WIDTH/2,
-        y: 3* SCREEN_HEIGHT/16,
+        y: 7* SCREEN_HEIGHT/32,
         centeredX: true,
         centeredY: true,
         
@@ -454,20 +488,7 @@ function drawStatus() {
 
 }
 
-function drawMoney() {
-    fontSize = sizeFont("Remaining Money", 0.4) + "px serif";
-    text_drawables.push({
-        type: 'text',
-            text: "Remaining Money:",
-            font: fontSize,
-        x: 10,
-        y: 15* SCREEN_HEIGHT/16,
-        centeredX: false,
-        centeredY: true,
-        
-    });
 
-}
 
 
 //TODO: Finished Screen

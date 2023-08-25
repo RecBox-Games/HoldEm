@@ -141,57 +141,56 @@ ws.onopen = (event) => {
 	});
     }    
 
-    function draw_image(drbl) {
+    function draw_image(drbl,context) {
 
-        ctx.setTransform(drbl.scaleX, 0, 0, drbl.scaleY, drbl.x, drbl.y); // sets scale and origin
-        ctx.rotate(drbl.rotation);
-        ctx.drawImage(drbl.image, 0, 0);
-        ctx.setTransform(1,0,0,1,0,0);
+        context.setTransform(drbl.scaleX, 0, 0, drbl.scaleY, drbl.x, drbl.y); // sets scale and origin
+        context.rotate(drbl.rotation);
+        context.drawImage(drbl.image, 0, 0);
+        context.setTransform(1,0,0,1,0,0);
     }
 
-    function draw_text(drbl) {
+    function draw_text(drbl,context) {
 
-        ctx.font = drbl.font;
+        context.font = drbl.font;
 
-        ctx.fillStyle = drbl.color;
+        context.fillStyle = drbl.color;
 
-        ctx.fillText(drbl.text, drbl.x, drbl.y);
+        context.fillText(drbl.text, drbl.x, drbl.y);
 
     }
 
-    function draw_rect(drbl) {
+    function draw_rect(drbl, context) {
         if (drbl.outline == 0) {
-            ctx.fillStyle = drbl.color;
-            ctx.fillRect(drbl.x, drbl.y, drbl.w, drbl.h);
+            context.fillStyle = drbl.color;
+            context.fillRect(drbl.x, drbl.y, drbl.w, drbl.h);
         } else {
-            ctx.strokeStyle = drbl.color;
-            ctx.lineWidth = drbl.outline;
-            ctx.strokeRect(drbl.x, drbl.y, drbl.w, drbl.h);
+            context.strokeStyle = drbl.color;
+            context.lineWidth = drbl.outline;
+            context.strokeRect(drbl.x, drbl.y, drbl.w, drbl.h);
         }
     }
 
-    function draw_triangle(drbl) {
-        ctx.save();
-        ctx.translate(drbl.x+(drbl.b/2), drbl.y-(drbl.h/2));
-        ctx.rotate(drbl.rotation*(Math.PI/180));
-        ctx.beginPath();
-        ctx.moveTo(-drbl.b/2, -drbl.h/2);
-        ctx.lineTo(drbl.b/2,-drbl.h/2);
-        ctx.lineTo(0,drbl.h/2);
-        ctx.closePath();
-        ctx.fillStyle = drbl.color;
-        ctx.fill();
-        ctx.restore();
-
-
+    function draw_triangle(drbl, context) {
+        context.save();
+        var median = (1/3)*drbl.h;
+        context.translate(drbl.x+(drbl.b/2), drbl.y + median);
+        context.rotate(drbl.rotation*(Math.PI/180));
+        context.beginPath();
+        context.moveTo(-(drbl.b/2), - median);
+        context.lineTo((drbl.b/2),- median);
+        context.lineTo(0,drbl.h - median);
+        context.closePath();
+        context.fillStyle = drbl.color;
+        context.fill();
+        context.restore();
 
 
 
         if(drbl.outline)
         {
-            ctx.lineWidth = drbl.outline;
-            ctx.strokeStyle = drbl.outlineColor;
-            ctx.stroke()
+            context.lineWidth = drbl.outline;
+            context.strokeStyle = drbl.outlineColor;
+            context.stroke()
         }   
 
     }
@@ -209,6 +208,8 @@ ws.onopen = (event) => {
         if (! drbl.y) { drbl.y = 0; }
         if (! drbl.centeredX) { drbl.centeredX = false; }
         if (! drbl.centeredY) { drbl.centeredY = false; }
+        if (! drbl.context) { drbl.context = ctx; }
+
 
         if (drbl.centeredX | drbl.centeredY){
             needsCentered = 1;
@@ -227,7 +228,7 @@ ws.onopen = (event) => {
                 centerDrawable(drbl);
             }
 
-            draw_text(drbl);
+            draw_text(drbl,drbl.context);
 
         } else if (drbl.type == 'image') {
             if (! drbl.image) { console.log("no image for image drawable");return; }
@@ -243,7 +244,7 @@ ws.onopen = (event) => {
                 centerDrawable(drbl);
             }
 
-            draw_image(drbl);
+            draw_image(drbl, drbl.context);
 
         } else if (drbl.type == 'rect') {
             if (! drbl.w) { drbl.w = 10; }
@@ -255,6 +256,7 @@ ws.onopen = (event) => {
                 centerDrawable(drbl);
             }
 
+            draw_rect(drbl,drbl.context)
 
 
         } 
@@ -268,7 +270,7 @@ ws.onopen = (event) => {
                 centerDrawable(drbl);
             }
 
-            draw_triangle(drbl);
+            draw_triangle(drbl, drbl.context);
         }
         else {
             console.log("Drawable type '" + drbl.type.toString() + "' not implemented");
@@ -316,7 +318,8 @@ ws.onopen = (event) => {
                     drbl.x -= drbl.b / 2;
                 }
                 if (drbl.centeredY) {
-                    drbl.y -= drbl.h / 2;
+                    drbl.y -= (drbl.h / 3);
+
                 }
                 break;
 
@@ -367,6 +370,7 @@ ws.onopen = (event) => {
 
 
     function drawTrackBox(drbl) {
+
         if(!drbl.msg){
             console.log("Trackbox Made without message");
             return;
@@ -374,35 +378,19 @@ ws.onopen = (event) => {
         if(!drbl.trackType) {
             drbl.trackType = "rectangle";
         }
-
-        switch(drbl.trackType)
-        {
-            case "rectangle":
-                rectangularTrack();
-                break;
-            case "triangle":
-                triangularTrack();
-                break;
-            case "circle":
-                circularTrack();
-                break;
-            default:
-                console.log("Shape " + drbl.trackType + " not supported")
-                break;
+        let trackDrbl = JSON.parse(JSON.stringify(drbl));
+        trackDrbl.track = 0;
+        trackDrbl.color = getRandomColor();
+        trackDrbl.context = hitCtx;
+        if(trackDrbl.type == "image" | trackDrbl.type == "text"){
+            trackDrbl.type = "rect";
         }
+
+        trackedDrbls.push(trackDrbl);
+        draw_drawable(trackDrbl);
     }
 
-    function rectangularTrack(){
-        var x = drbl.x;
-        var y = drbl.y;
 
-        drbl.trackColor = getRandomColor();
-        trackedDrbls.push(drbl);
-
-        hitCtx.fillStyle = drbl.trackColor;
-        hitCtx.fillRect(x, y, drbl.w, drbl.h);
-
-    }
 
     function getRandomColor() {
         const r = Math.round(Math.random() * 255);
@@ -420,7 +408,7 @@ ws.onopen = (event) => {
         const color = `rgb(${pixel[0]},${pixel[1]},${pixel[2]})`;
 
         trackedDrbls.forEach(drbl => {
-            if (hasSameColor(color,drbl.trackColor)){
+            if (hasSameColor(color,drbl.color)){
                 messages.push(drbl.msg);
             }
         })
