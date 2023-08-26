@@ -10,6 +10,9 @@ public class unitTest : MonoBehaviour
     private controllerParse controllerParse;
     private gameController gameController;
 
+    // Instance Variables
+    [SerializeField] List<string> list = new List<string>();
+
     // Start is called before the first frame update
     void Start()
     {
@@ -29,9 +32,21 @@ public class unitTest : MonoBehaviour
         controllerParse.newPlayer(name, "0.0.0.0");
     }
 
+    public void testSeveralPlayers()
+    {
+        for (int i = 0; i < list.Count; i++)
+        {
+            controllerParse.newPlayer(list[i], "0.0.0.0");
+        }
+    }
+
     public void testStartGame(int startMoney)
     {
         gameController.startGame(startMoney);
     }
+
+    public void testRaise(int raise) { gameController.raise(raise); }
+
+    public void testTurnOrder() { Debug.Log(gameController.getTurnOrder()); }
 
 }

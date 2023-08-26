@@ -12,15 +12,13 @@ public class controllerParse : MonoBehaviour
     [SerializeField] GameObject playerUI;
     [SerializeField] gameController gameController;
     private List<playerController> playersInGame = new List<playerController>();
-    public static bool gameStarted = true;
     public static bool playerTurn = true;
     
 
     public void messageParse(string client, string msg)
     {
         
-        // Parse msg by
-
+        // Parse msg by ':'
         var messages = msg.Split(':');
 
         if (messages[0] == "NewPlayer") {
@@ -54,7 +52,7 @@ public class controllerParse : MonoBehaviour
 
     public void newPlayer(string playerName, string client)
     {
-        Debug.Log("Player" + playerName + "Added");
+        // Debug.Log("Player " + playerName + " Added");
 
         // Create a new Player object from the Player prefab and name it the new players name
         Object playerObj = Instantiate((playerPrefab), new Vector3(0, 0, 10), Quaternion.identity);
@@ -66,7 +64,7 @@ public class controllerParse : MonoBehaviour
         player.setName(playerName);
         player.setPlayerIP(client);
         player.setPlayerNumber(playersInGame.Count);
-        // gameController.initializePlayer(player);
+        gameController.initializePlayer(player);
 
 
         // This updates a UI with the new player whos playing
@@ -77,7 +75,7 @@ public class controllerParse : MonoBehaviour
 
         var stateName = "";
 
-        if(!gameStarted)
+        if(!gameController.getGameState())
         {
             stateName = "Joined Waiting to Start:";
             
