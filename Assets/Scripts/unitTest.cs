@@ -29,14 +29,14 @@ public class unitTest : MonoBehaviour
     // Test the newPlayer function in controllerParse
     public void testNewPlayer(string name)
     {
-        controllerParse.newPlayer(name, "0.0.0.0");
+        gameController.newPlayer(name, "0.0.0.0");
     }
 
     public void testSeveralPlayers()
     {
         for (int i = 0; i < list.Count; i++)
         {
-            controllerParse.newPlayer(list[i], "0.0.0.0");
+            gameController.newPlayer(list[i], "0.0.0.0");
         }
     }
 
@@ -48,5 +48,11 @@ public class unitTest : MonoBehaviour
     public void testRaise(int raise) { gameController.raise(raise); }
 
     public void testTurnOrder() { Debug.Log(gameController.getTurnOrder()); }
+
+    public void testEndTurn()
+    {
+        gameController.endTurn();
+        Debug.Log(gameController.getCurretPlayer());
+    }
 
 }

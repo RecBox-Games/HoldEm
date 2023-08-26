@@ -8,8 +8,6 @@ using UnityEngine.UI;
 
 public class controllerParse : MonoBehaviour
 {
-    [SerializeField] GameObject playerPrefab;
-    [SerializeField] GameObject playerUI;
     [SerializeField] gameController gameController;
     private List<playerController> playersInGame = new List<playerController>();
     public static bool playerTurn = true;
@@ -21,11 +19,11 @@ public class controllerParse : MonoBehaviour
         // Parse msg by ':'
         var messages = msg.Split(':');
 
-        if (messages[0] == "NewPlayer") {
+        if (messages[0] == "NewPlayer") 
+        {
             string playerName = messages[1];
-            newPlayer(playerName, client);
+            gameController.newPlayer(playerName, client);
             checkIfGameStarted(client, playerName);
-
         }
 
         var fromPlayer = grabPlayer(client);
@@ -33,46 +31,13 @@ public class controllerParse : MonoBehaviour
         if(fromPlayer is null)
         {
             controlpads_glue.SendControlpadMessage(client, "state:ReadyToJoin");
-
+        } else if (messages[0] == "RequestState") 
+        {
+            checkIfGameStarted(fromPlayer.getIP(), fromPlayer.getName());
         }
-
-        else{
-
-            if (messages[0] == "RequestState") {
-            
-                checkIfGameStarted(fromPlayer.getIP(), fromPlayer.getName());
-            }
-            
-        }
-
-        
-
-    }
-
-
-    public void newPlayer(string playerName, string client)
-    {
-        // Debug.Log("Player " + playerName + " Added");
-
-        // Create a new Player object from the Player prefab and name it the new players name
-        Object playerObj = Instantiate((playerPrefab), new Vector3(0, 0, 10), Quaternion.identity);
-        playerObj.name = playerName;
-
-        // Get the playerController and assign anything new to the player
-        playerController player = playerObj.GetComponent<playerController>();
-        playersInGame.Add(player);
-        player.setName(playerName);
-        player.setPlayerIP(client);
-        player.setPlayerNumber(playersInGame.Count);
-        gameController.initializePlayer(player);
-
-
-        // This updates a UI with the new player whos playing
-        playerUI.GetComponent<UnityEngine.UI.Text>().text += playerName + "\n";
     }
 
     public void checkIfGameStarted(string ip, string username){
-
         var stateName = "";
 
         if(!gameController.getGameState())
