@@ -8,8 +8,6 @@ using UnityEngine.UI;
 
 public class controllerParse : MonoBehaviour
 {
-    [SerializeField] GameObject playerPrefab;
-    [SerializeField] GameObject playerUI;
     [SerializeField] gameController gameController;
     private List<playerController> playersInGame = new List<playerController>();
     public static bool gameStarted = true;
@@ -26,9 +24,10 @@ public class controllerParse : MonoBehaviour
 
         var messages = msg.Split(':');
 
-        if (messages[0] == "NewPlayer") {
+        if (messages[0] == "NewPlayer") 
+        {
             string playerName = messages[1];
-            newPlayer(playerName, client);
+            gameController.newPlayer(playerName, client);
             messageParse(client,"RequestState");
         }
 
@@ -83,7 +82,7 @@ public class controllerParse : MonoBehaviour
         variables.Add(username);
 
 
-        if(!gameStarted)
+        if(!gameController.getGameState())
         {
             stateName = "Joined Waiting to Start:";
             
