@@ -409,7 +409,21 @@ ws.onopen = (event) => {
 
         trackedDrbls.forEach(drbl => {
             if (hasSameColor(color,drbl.color)){
-                messages.push(drbl.msg);
+                switch(drbl.msg)
+                {
+                    case "Up":
+                        UpdateMoney(1);
+                        break;
+                    case "Down":
+                        UpdateMoney(-1);
+                        break;
+                    case "PlayerResponse":
+                        sendResponse();
+                        break;
+                    default:
+                        messages.push(drbl.msg);
+                        break;
+                }     
             }
         })
     }

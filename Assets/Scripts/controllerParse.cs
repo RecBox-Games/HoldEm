@@ -13,11 +13,14 @@ public class controllerParse : MonoBehaviour
     [SerializeField] gameController gameController;
     private List<playerController> playersInGame = new List<playerController>();
     public static bool gameStarted = true;
-    public static bool playerTurn = true;
+
+    public static int gvCall = 0;
+
     
 
     public void messageParse(string client, string msg)
     {
+
         
         // Parse msg by
 
@@ -26,8 +29,7 @@ public class controllerParse : MonoBehaviour
         if (messages[0] == "NewPlayer") {
             string playerName = messages[1];
             newPlayer(playerName, client);
-            checkIfGameStarted(client, playerName);
-
+            messageParse(client,"RequestState");
         }
 
         var fromPlayer = grabPlayer(client);
@@ -42,7 +44,7 @@ public class controllerParse : MonoBehaviour
 
             if (messages[0] == "RequestState") {
             
-                checkIfGameStarted(fromPlayer.getIP(), fromPlayer.getName());
+                GameState(fromPlayer.getIP(), fromPlayer.getName(),fromPlayer.getMoney().ToString(),gvCall.ToString(), fromPlayer.isTurn());
             }
             
         }
@@ -73,9 +75,13 @@ public class controllerParse : MonoBehaviour
         playerUI.GetComponent<UnityEngine.UI.Text>().text += playerName + "\n";
     }
 
-    public void checkIfGameStarted(string ip, string username){
+
+    public void GameState(string ip, string username, string playerMoney, string call, bool isPlayerTurn){
 
         var stateName = "";
+        List<string> variables = new List<string>();
+        variables.Add(username);
+
 
         if(!gameStarted)
         {
@@ -85,7 +91,11 @@ public class controllerParse : MonoBehaviour
 
         else {
 
-            if(playerTurn){
+            variables.Add(playerMoney);
+            variables.Add(call);
+            
+
+            if(isPlayerTurn){
                 stateName = "PlayingPlayerTurn:";
             }
 
@@ -94,8 +104,10 @@ public class controllerParse : MonoBehaviour
             }
             
         }
+        string variableString = string.Join(":", variables.ToArray());
+        Debug.Log(variableString);
 
-        controlpads_glue.SendControlpadMessage(ip, "state:" + stateName + username);
+        controlpads_glue.SendControlpadMessage(ip, "state:" + stateName + variableString);
 
     }
 

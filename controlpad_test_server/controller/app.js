@@ -12,6 +12,20 @@ var SCREEN_HEIGHT;
 var SCREEN_WIDTH;
 var ORIENTATION;
 var playerTurn = true;
+var currentCall;
+var playerCall;
+var betIncrement = 5;
+var action;
+var playerMoney;
+
+// Number formatter.
+const formatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  
+    minimumFractionDigits: 0, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
+    maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
+  });
 
 //Promises
 var playerJoinedSuccess = 0;
@@ -185,6 +199,7 @@ function setState(sections) {
 
 function drawScreen(sections) {
     wipeScreen();
+    updateVariables(sections);
     switch(controlpadState) {
         case "Loading":
             drawLoadingScreen();
@@ -193,15 +208,14 @@ function drawScreen(sections) {
             drawScreenReadyToJoin();
             break;
         case "JoinedWaitingToStart":
-            playerName = sections[2];
             drawJoinedWaitingToStart();
             break;
         case "PlayingWaiting":
-            playerName = sections[2];
+            playerStatus = "Waiting for your Turn";
             drawScreenPlayingWaiting();
             break;
         case "PlayingPlayerTurn":
-            playerName = sections[2];
+            playerStatus = "It's Your Turn!";
             drawScreenPlayingPlayerTurn();
         case "finished":
             drawScreenFinished();
@@ -218,6 +232,41 @@ function wipeScreen()
     ctx.clearRect(0,0, SCREEN_WIDTH, SCREEN_HEIGHT);
     hitCtx.clearRect(0,0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
+}
+
+function sendResponse(){
+    setState(["state","PlayingWaiting",playerName,(playerMoney-playerCall)]);
+    playerTurn = false;
+    let msg = "PlayerResponse:" + action + ":" + playerCall;
+    messages.push(msg);
+    
+}
+
+function updateVariables(sections){
+    for (i = 1; i < sections.length; i++){
+        switch(i) {
+            case 2:
+                playerName = sections[i];
+                break;
+            case 3:
+                playerMoney = parseInt(sections[i]);
+                break;
+            case 4:
+                currentCall = parseInt(sections[i]);
+                playerCall = currentCall;
+                if (parseInt(currentCall) > 0){
+                    action = "Call";
+                }
+                else {
+                    action = "Check";
+                }
+                break;
+            case 5:
+                break;
+            default:
+                break;
+        }
+    }
 }
 
 function drawLoadingScreen() {
@@ -295,6 +344,7 @@ function drawScreenPlayingWaiting() {
 }
 
 function drawScreenPlayingPlayerTurn() {
+
     image_drawables.push({
         type: 'image',
         image: cardBack,
@@ -308,6 +358,7 @@ function drawScreenPlayingPlayerTurn() {
         msg: "FlipCard"
     });
     topMenu()
+
     drawActions();
     drawStatus();
 
@@ -359,7 +410,7 @@ function topMenu() {
     });
     text_drawables.push({
         type: 'text',
-            text: "$1,000",
+            text: formatter.format(playerMoney),
             font: fontSize,
         x: SCREEN_WIDTH/2,
         y: (y + autoSize + 10),
@@ -373,7 +424,6 @@ function topMenu() {
 function drawActions() {
     var y = 27*SCREEN_HEIGHT/32;
     var scale = sizeImage(buttonImage,.4);
-    var action = "Call";
     var triangleOffset = 55;
     var triangleOutline = 5;
     var triangleBase = 80;
@@ -389,27 +439,18 @@ function drawActions() {
         scaleY: '.6',
         scaleX: scale,
         track: true,
-        msg: action 
+        msg: "PlayerResponse"
     });
     text_drawables.push({
         type: 'text',
-            text: action + ":",
+            text: action + ": " + formatter.format(playerCall),
             font: '25px serif',
         x: 3*SCREEN_WIDTH/4 - buttonImage.width*scale/2 + 10,
         y: y,
         centeredX: false,
         centeredY: true,
     });
-    text_drawables.push({
-        type: 'text',
-            text: '$15',
-            font: '25px serif',
-        x: 3*SCREEN_WIDTH/4 - buttonImage.width*scale/2 + 10 + ctx.measureText(action).width + 20,
-
-        y: y,
-        centeredX: false,
-        centeredY: true,
-    });
+    
     image_drawables.push({
         type: 'triangle',
         x: 3*SCREEN_WIDTH/4,
@@ -442,39 +483,32 @@ function drawActions() {
 
     });
 
+}
+function UpdateMoney(amount) {
+    let attemptedValue = playerCall + amount*betIncrement;
+    if (attemptedValue === 0) {
+        action = "Check";
+        playerCall = currentCall;
 
+    }
+    
+    else if (attemptedValue === currentCall)
+    {
+        action = "Call";
+        playerCall = currentCall;
+        
+    }
+    else if (attemptedValue > currentCall) {
+        action = "Raise";
+        playerCall = playerCall + amount*betIncrement;
+    }
+    wipeScreen();
+    drawScreenPlayingPlayerTurn();
 
-    image_drawables.push({
-        type: 'image',
-        image: buttonImage,
-        x: 1*SCREEN_WIDTH/4,
-        y: y,
-        centeredX: true,
-        centeredY: true,
-        scaleY: '.6',
-        scaleX: '0.3',
-        track: true,
-        msg: "Check",
-    });
-        text_drawables.push({
-        type: 'text',
-            text: 'Check',
-            font: '25px serif',
-            x: 1*SCREEN_WIDTH/4,
-            y: y,
-        centeredX: true,
-        centeredY: true,
-    });
 }
 
 function drawStatus() {
 
-    if(playerTurn){
-        playerStatus = "It's Your Turn!";
-    }
-    else {
-        playerStatus = "Waiting for Player Turn";
-    }
     text_drawables.push({
         type: 'text',
             text: playerStatus,
