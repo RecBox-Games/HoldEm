@@ -8,6 +8,8 @@ using UnityEngine.UI;
 
 public class controllerParse : MonoBehaviour
 {
+    [SerializeField] GameObject playerPrefab;
+    [SerializeField] GameObject playerUI;
     [SerializeField] gameController gameController;
     private List<playerController> playersInGame = new List<playerController>();
     public static bool gameStarted = true;
@@ -67,7 +69,7 @@ public class controllerParse : MonoBehaviour
         player.setName(playerName);
         player.setPlayerIP(client);
         player.setPlayerNumber(playersInGame.Count);
-        // gameController.initializePlayer(player);
+        gameController.initializePlayer(player);
 
 
         // This updates a UI with the new player whos playing
