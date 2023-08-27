@@ -86,9 +86,9 @@ function handleMessage(message) {
         setState(sections); 
     }
 
-    if(sections[0] == "playerJoined")
+    if(sections[0] == "refresh")
     {
-        playerJoinedSuccess = 1;
+        stateRequest();
 
     }
 
@@ -210,6 +210,9 @@ function drawScreen(sections) {
         case "JoinedWaitingToStart":
             drawJoinedWaitingToStart();
             break;
+        case "JoinedHost":
+            drawJoinedHost();
+            break;
         case "PlayingWaiting":
             playerStatus = "Waiting for your Turn";
             drawScreenPlayingWaiting();
@@ -314,6 +317,44 @@ function drawJoinedWaitingToStart() {
         y: SCREEN_HEIGHT/2,
         centeredX: true,
         centeredY: true,
+    });
+
+    needs_draw = true;
+
+}
+
+function drawJoinedHost() {
+    var scale = sizeImage(buttonImage,.5);
+
+    text_drawables.push({
+        type: 'text',
+            text: 'Welcome ' + playerName + '!',
+            font: '36px serif',
+        x: SCREEN_WIDTH/2,
+        y: SCREEN_HEIGHT/8,
+        centeredX: true,
+        centeredY: true,
+    });
+    text_drawables.push({
+        type: 'text',
+            text: 'Start Game',
+            font: '36px serif',
+        x: SCREEN_WIDTH/2,
+        y: SCREEN_HEIGHT/2,
+        centeredX: true,
+        centeredY: true,
+    });
+    image_drawables.push({
+        type: 'image',
+        image: buttonImage,
+        x: SCREEN_WIDTH/2,
+        y: SCREEN_HEIGHT/2,
+        centeredX: true,
+        centeredY: true,
+        scaleY: '.6',
+        scaleX: scale,
+        track: true,
+        msg: "StartGame"
     });
 
     needs_draw = true;

@@ -31,6 +31,16 @@ public class controllerParse : MonoBehaviour
             messageParse(client,"RequestState");
         }
 
+        if (messages[0] == "StartGame")
+        {
+            gameController.startGame(1000);
+        }
+        
+        if (messages[0] == "PlayerResponse")
+        {
+            gameController.endTurn();
+        }
+
         var fromPlayer = grabPlayer(client);
 
         if(fromPlayer is null)
@@ -43,7 +53,9 @@ public class controllerParse : MonoBehaviour
 
             if (messages[0] == "RequestState") {
             
-                GameState(fromPlayer.getIP(), fromPlayer.getName(),fromPlayer.getMoney().ToString(),gvCall.ToString(), fromPlayer.isTurn());
+                GameState(fromPlayer.getIP(), fromPlayer.getName(),
+                fromPlayer.getMoney().ToString(),gvCall.ToString(), 
+                fromPlayer.isTurn(), fromPlayer.getPlayerNumber());
             }
             
         }
@@ -53,16 +65,24 @@ public class controllerParse : MonoBehaviour
     }
 
 
-    public void GameState(string ip, string username, string playerMoney, string call, bool isPlayerTurn){
+    public void GameState(string ip, string username, 
+    string playerMoney, string call, bool isPlayerTurn, 
+    int number){
 
         var stateName = "";
         List<string> variables = new List<string>();
         variables.Add(username);
 
 
-        if(gameController.getGameState())
+        if(!gameController.getGameState())
         {
-            stateName = "JoinedWaitingToStart:";
+            if (number == 1)
+            {
+                stateName = "JoinedHost:";
+            }
+            else {
+                stateName = "JoinedWaitingToStart:";
+            }
             
         }
 
@@ -70,9 +90,8 @@ public class controllerParse : MonoBehaviour
 
             variables.Add(playerMoney);
             variables.Add(call);
-            
 
-            if(isPlayerTurn){
+            if((number-1) == gameController.getLeviCurrentPlayer()){
                 stateName = "PlayingPlayerTurn:";
             }
 
@@ -82,7 +101,6 @@ public class controllerParse : MonoBehaviour
             
         }
         string variableString = string.Join(":", variables.ToArray());
-        Debug.Log(variableString);
 
         controlpads_glue.SendControlpadMessage(ip, "state:" + stateName + variableString);
 

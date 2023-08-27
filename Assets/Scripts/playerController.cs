@@ -45,6 +45,8 @@ public class playerController : MonoBehaviour
 
     public bool isTurn() { return isPlayerTurn;}
 
+    public int getPlayerNumber() { return playerNumber;}
+
 
 
     // Player Setters

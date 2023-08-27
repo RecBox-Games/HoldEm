@@ -46,7 +46,7 @@ public class gameController : MonoBehaviour
 
     public string getCurretPlayer() { return turnOrder[currentPlayer]; }
 
-
+    public int getLeviCurrentPlayer() {return currentPlayer;}
     // Setters
     public void setAnte(int ante) { this.ante = ante; }
 
@@ -76,6 +76,8 @@ public class gameController : MonoBehaviour
         foreach (var playerController in playerList)
         {
             playerController.setMoney(startMoney);
+            controlpads_glue.SendControlpadMessage(playerController.getIP(), "refresh");
+
         }
     }
 
@@ -155,5 +157,11 @@ public class gameController : MonoBehaviour
     public void endTurn()
     {
         currentPlayer = (currentPlayer + 1) % turnOrder.Count;
+        foreach (var playerController in playerList)
+        {
+            controlpads_glue.SendControlpadMessage(playerController.getIP(), "refresh");
+
+        }
+
     }
 }
