@@ -12,7 +12,7 @@ public class controllerParse : MonoBehaviour
     private List<playerController> playersInGame = new List<playerController>();
     public static bool gameStarted = true;
 
-    public static int gvCall = 0;
+    public static int gvCall = 20;
 
     
 
