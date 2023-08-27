@@ -10,7 +10,6 @@ public class controllerParse : MonoBehaviour
 {
 
     [SerializeField] gameController gameController;
-    private List<playerController> playersInGame = new List<playerController>();
     public static bool gameStarted = true;
 
     public static int gvCall = 20;
@@ -61,9 +60,9 @@ public class controllerParse : MonoBehaviour
         variables.Add(username);
 
 
-        if(!gameController.getGameState())
+        if(gameController.getGameState())
         {
-            stateName = "Joined Waiting to Start:";
+            stateName = "JoinedWaitingToStart:";
             
         }
 
@@ -90,7 +89,7 @@ public class controllerParse : MonoBehaviour
     }
 
     public playerController grabPlayer(string client) {
-        foreach (var player in playersInGame) 
+        foreach (var player in gameController.playerList) 
         {
             var ip = player.getIP();
             //player is recognized

@@ -12,7 +12,7 @@ public class gameController : MonoBehaviour
     [SerializeField] GameObject playerUI;
     [SerializeField] int maxPlayers;
 
-    private List<playerController> playerList = new List<playerController>();
+    public List<playerController> playerList = new List<playerController>();
     private List<string> turnOrder = new List<string>();
     private int tottalMoney = 0;
     private int ante;
