@@ -10,6 +10,11 @@ let needs_draw = false; //Bool to trigger the draw function
 let SCREEN_HEIGHT; //Height of screen
 let SCREEN_WIDTH; //Width of screen
 let SCREEN_ORIENTATION; //Portrait, Landscape, etc.
+let betBoxX;
+let betBoxY;
+let betBoxW;
+let betBoxH;
+let betBoxIndex;
 
 // ---- Game Specific Variables ----
 
@@ -358,6 +363,7 @@ function drawScreen(sections) {
         case "PlayingPlayerTurn":
             playerStatus = "It's Your Turn!";
             drawPlayingPlayerTurn();
+            break;
         case "GameFinished":
             drawGameFinished();
             break;
@@ -365,6 +371,8 @@ function drawScreen(sections) {
             break;
     }
 }
+
+// ---- Major Drawing Functions ----
 
 function drawLoadingScreen() {
     text = "Loading Texas Hold Em"
@@ -389,57 +397,22 @@ function drawReadyToJoin() {
     while(playerName==null){
         playerName = prompt("Enter Username", generateName());
     }
+
+    //Send a message to the game with the new player information
     let msg = "NewPlayer:" + playerName;
     messages.push(msg);
-
 }
 
 function drawJoinedWaitingToStart() {
-
-    text_drawables.push({
-        type: 'text',
-            text: 'Welcome ' + playerName + '!',
-            font: '36px serif',
-        x: SCREEN_WIDTH/2,
-        y: SCREEN_HEIGHT/8,
-        centeredX: true,
-        centeredY: true,
-    });
-    text_drawables.push({
-        type: 'text',
-            text: 'Waiting on Host to Start',
-            font: '36px serif',
-        x: SCREEN_WIDTH/2,
-        y: SCREEN_HEIGHT/2,
-        centeredX: true,
-        centeredY: true,
-    });
-
-    needs_draw = true;
+    waitingScreen("Waiting on Host");
 
 }
 
 function drawJoinedHost() {
-    var scale = sizeImage(buttonImage,.5);
+    waitingScreen("Start Game");
 
-    text_drawables.push({
-        type: 'text',
-            text: 'Welcome ' + playerName + '!',
-            font: '36px serif',
-        x: SCREEN_WIDTH/2,
-        y: SCREEN_HEIGHT/8,
-        centeredX: true,
-        centeredY: true,
-    });
-    text_drawables.push({
-        type: 'text',
-            text: 'Start Game',
-            font: '36px serif',
-        x: SCREEN_WIDTH/2,
-        y: SCREEN_HEIGHT/2,
-        centeredX: true,
-        centeredY: true,
-    });
+    scale = sizeImage(buttonImage,.5);
+
     image_drawables.push({
         type: 'image',
         image: buttonImage,
@@ -447,7 +420,7 @@ function drawJoinedHost() {
         y: SCREEN_HEIGHT/2,
         centeredX: true,
         centeredY: true,
-        scaleY: '.6',
+        scaleY: buttonScale(2),
         scaleX: scale,
         track: true,
         msg: "StartGame"
@@ -458,22 +431,12 @@ function drawJoinedHost() {
 }
 
 function drawJoinedWaiting() {
+  waitingScreen("Waiting for next hand...");
 
 }
 
 function drawPlayingWaiting() {
-     image_drawables.push({
-        type: 'image',
-        image: cardBack,
-        x: SCREEN_WIDTH/2,
-        y: SCREEN_HEIGHT/2,
-        centeredX: true,
-        centeredY: true,
-        scaleY: '2',
-        scaleX: '2',
-        track: true,
-        msg: "FlipCard"
-    });
+    drawCardBack();
     topMenu();
     drawStatus();
    
@@ -483,19 +446,8 @@ function drawPlayingWaiting() {
 
 function drawPlayingPlayerTurn() {
 
-    image_drawables.push({
-        type: 'image',
-        image: cardBack,
-        x: SCREEN_WIDTH/2,
-        y: SCREEN_HEIGHT/2,
-        centeredX: true,
-        centeredY: true,
-        scaleY: '2',
-        scaleX: '2',
-        track: true,
-        msg: "FlipCard"
-    });
-    topMenu()
+    drawCardBack();
+    topMenu();
 
     drawActions();
     drawStatus();
@@ -504,20 +456,70 @@ function drawPlayingPlayerTurn() {
 }
 
 function drawGameFinished() {
+    waitingScreen("Game Finished");
     
 }
 
+// ---- Minor Drawing Functions ----
+
+//Draws the card backs
+
+function drawCardBack() {
+    scale = sizeImage(cardBack,.8);
+
+     image_drawables.push({
+        type: 'image',
+        image: cardBack,
+        x: SCREEN_WIDTH/2,
+        y: SCREEN_HEIGHT/2,
+        centeredX: true,
+        centeredY: true,
+        scaleY: scale,
+        scaleX: scale,
+        track: true,
+        msg: "FlipCard"
+    });
+}
+
+// Draws the waiting screen when a user needs to wait before an action
+
+function waitingScreen(waitingText) {
+    text = 'Welcome ' + playerName + '!';
+    autoSize = sizeFont(text, 0.75)
+
+    text_drawables.push({
+        type: 'text',
+        text: text,
+        font: autoSize,
+        x: SCREEN_WIDTH/2,
+        y: SCREEN_HEIGHT/8,
+        centeredX: true,
+        centeredY: true,
+    });
+    text = waitingText;
+    autoSize = sizeFont(text, 0.75)
+    text_drawables.push({
+        type: 'text',
+            text: text,
+            font: autoSize,
+        x: SCREEN_WIDTH/2,
+        y: SCREEN_HEIGHT/2,
+        centeredX: true,
+        centeredY: true,
+    });
+
+    needs_draw = true;
+}
 
 //Draw top menu
 function topMenu() {
     var y = SCREEN_HEIGHT/16;
 
     autoSize = sizeFont(playerName, 0.5)
-    fontSize = autoSize + "px serif";
     text_drawables.push({
         type: 'text',
-            text: playerName,
-            font: fontSize,
+        text: playerName,
+        font: autoSize,
         x: SCREEN_WIDTH/2,
         y: y,
         centeredX: true,
@@ -527,7 +529,7 @@ function topMenu() {
     image_drawables.push({
         type: 'image',
         image: cardHands,
-        x: 50,
+        x: SCREEN_WIDTH/8,
         y: y,
         centeredX: true,
         centeredY: true,
@@ -540,7 +542,7 @@ function topMenu() {
     image_drawables.push({
         type: 'image',
         image: menuImage,
-        x: SCREEN_WIDTH - 50,
+        x: 7*SCREEN_WIDTH/8,
         y: y,
         centeredX: true,
         centeredY: true,
@@ -551,50 +553,30 @@ function topMenu() {
     });
     text_drawables.push({
         type: 'text',
-            text: formatter.format(playerMoney),
-            font: fontSize,
+        text: formatter.format(playerMoney),
+        font: autoSize,
         x: SCREEN_WIDTH/2,
-        y: (y + autoSize + 10),
+        y: (1.5* parseInt(autoSize) + y),
         centeredX: true,
         centeredY: true,
         
-    });
-    
+    });    
 }
 
 function drawActions() {
-    var y = 27*SCREEN_HEIGHT/32;
-    var scale = sizeImage(buttonImage,.4);
-    var triangleOffset = 55;
-    var triangleOutline = 5;
-    var triangleBase = 80;
-    var triangleHeight = 40;
+    y = 27*SCREEN_HEIGHT/32;
+    
+
+    let triangleOffset = 55;
+    let triangleOutline = 5;
+    let triangleBase = 80;
+    let triangleHeight = 40;
+    
+    drawBetBox();
 
     image_drawables.push({
-        type: 'image',
-        image: buttonImage,
-        x: 3*SCREEN_WIDTH/4,
-        y: y,
-        centeredX: true,
-        centeredY: true,
-        scaleY: '.6',
-        scaleX: scale,
-        track: true,
-        msg: "PlayerResponse"
-    });
-    text_drawables.push({
-        type: 'text',
-            text: action + ": " + formatter.format(playerCall),
-            font: '25px serif',
-        x: 3*SCREEN_WIDTH/4 - buttonImage.width*scale/2 + 10,
-        y: y,
-        centeredX: false,
-        centeredY: true,
-    });
-    
-    image_drawables.push({
         type: 'triangle',
-        x: 3*SCREEN_WIDTH/4,
+        x: SCREEN_WIDTH/2,
         y: y + triangleOffset,
         centeredX: true,
         centeredY: true,
@@ -610,7 +592,7 @@ function drawActions() {
     });
     image_drawables.push({
         type: 'triangle',
-        x: 3*SCREEN_WIDTH/4,
+        x: SCREEN_WIDTH/2,
         y: y - triangleOffset,
         centeredX: true,
         centeredY: true,
@@ -625,6 +607,41 @@ function drawActions() {
     });
 
 }
+function drawBetBox(){
+    y = 27*SCREEN_HEIGHT/32;
+    text = action + ": " + formatter.format(playerCall); 
+    autoSize = sizeFont(text,0.4);
+    scale = sizeImage(buttonImage,.5);
+    scaleForButtonY = buttonScale(1.75)
+    betBoxX = SCREEN_WIDTH/2;
+    betBoxY = y;
+    betBoxW = buttonImage.width*scale;
+    betBoxH = buttonImage.height*scaleForButtonY;
+    betBoxIndex = text_drawables.length;
+
+    text_drawables.push({
+        type: 'text',
+        text: text,
+        font: autoSize,
+        x: SCREEN_WIDTH/2,
+        y: y,
+        centeredX: true,
+        centeredY: true,
+    });
+    image_drawables.push({
+        type: 'image',
+        image: buttonImage,
+        x: SCREEN_WIDTH/2,
+        y: y,
+        centeredX: true,
+        centeredY: true,
+        scaleY: scaleForButtonY,
+        scaleX: scale,
+        track: true,
+        msg: "PlayerResponse"
+    });
+}
+
 function UpdateMoney(amount) {
     let attemptedValue = playerCall + amount*betIncrement;
     if (attemptedValue === 0) {
@@ -643,8 +660,8 @@ function UpdateMoney(amount) {
         action = "Raise";
         playerCall = playerCall + amount*betIncrement;
     }
-    wipeScreen();
-    drawPlayingPlayerTurn();
+    wipeBetBox();
+    drawBetBox();
 
 }
 
@@ -670,6 +687,12 @@ function controlpadUpdate() {
 
 
 //Utilities
+
+//Returns a scale y for the button that is dependent on the last drawn text size
+
+function buttonScale(padding) {
+    return (padding*parseInt(ctx.font))/buttonImage.naturalHeight
+}
 
 function loadImages() {
     buttonImage.src = "resources/button.png"
@@ -699,7 +722,7 @@ function sizeFont(text, area) {
     }
     while(width>SCREEN_WIDTH*area); 
 
-    return (fontSize + increment)
+    return (fontSize + increment + "px serif")
 }
 
 function sizeImage(image, area) {
@@ -714,10 +737,16 @@ function wipeScreen()
     image_drawables = [];
     text_drawables = [];
     trackedDrbls = [];
-    ctx.clearRect(0,0, SCREEN_WIDTH, SCREEN_HEIGHT);
-    hitCtx.clearRect(0,0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
 }
+
+function wipeBetBox(drbl) {
+    console.log(text_drawables);
+    delete text_drawables[betBoxIndex];
+    needs_draw = true;
+
+}
+
 function sendResponse(){
     setState(["state","PlayingWaiting",playerName,(playerMoney-playerCall)]);
     playerTurn = false;
