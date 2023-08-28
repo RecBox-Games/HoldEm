@@ -57,8 +57,8 @@ function isMobile() {
 // globals
 let drag_start_x = 0;
 let drag_start_y = 0;
-var trackedDrbls = [];
-var ORIENTATION = screen.orientation;
+let trackedDrbls = [];
+let ORIENTATION = screen.orientation;
 
 // websocket and main
 ws = new WebSocket("ws://" + box_ip + ":50079");
@@ -309,7 +309,7 @@ ws.onopen = (event) => {
                     drbl.x -= drbl.w / 2;
                 }
                 if (drbl.centeredY) {
-                    drbl.y += drbl.h / 2;
+                    drbl.y -= drbl.h / 2;
                 }
                 break;
             case "triangle":
@@ -328,7 +328,7 @@ ws.onopen = (event) => {
                     drbl.x -= drbl.r;
                 }
                 if (drbl.centeredY) {
-                    drbl.y += drbl.r;
+                    drbl.y -= drbl.r;
                 }
                 break;
             default:

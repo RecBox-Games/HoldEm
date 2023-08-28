@@ -2,37 +2,44 @@
 
 // ---- Globals ----
 
-var messages = [];
-var text_drawables = [];
-var image_drawables = [];
-var needs_draw = false;
-var playerName = null;
-var controlpadState;
-var SCREEN_HEIGHT;
-var SCREEN_WIDTH;
-var ORIENTATION;
-var playerTurn = true;
-var currentCall;
-var playerCall;
-var betIncrement = 5;
-var action;
-var playerMoney;
+// ---- UI Setup ----
+let messages = []; //Array to hold messages to send to the controller
+let text_drawables = []; //Array to hold text boxes sent to canvas
+let image_drawables = []; //Array to hold images sent to canvas
+let needs_draw = false; //Bool to trigger the draw function
+let SCREEN_HEIGHT; //Height of screen
+let SCREEN_WIDTH; //Width of screen
+let SCREEN_ORIENTATION; //Portrait, Landscape, etc.
 
-// Number formatter.
+// ---- Game Specific Variables ----
+
+let currentCall; //The amount requested for the user to call
+let betIncrement = 5; //Sets the bet increment for the user
+let controlpadState; //State of the player that is pulled from the game
+
+// ---- Player Specific Variables ----
+
+let playerName = null; //Name of the player
+let playerTurn; //Bool of whether or not it is the player's turn 
+let playerCall; //The amount the user actually called. Will be higher than currentCall for a raise
+let action; //Will be fold, call, check, or raise. Updates in controller UI
+let playerMoney; //Amount of money the player has
+
+//Defined tools and utilities
+
+// Number formatter. Formats to USD
+
 const formatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
-  
-    minimumFractionDigits: 0, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
+
     maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
   });
 
-//Promises
-var playerJoinedSuccess = 0;
 
 // Name Generator. Will pick a random adjective and a random name
 
-var adjList = [
+const adjList = [
     'Zany', 'Whimsical', 'Bubbly', 'Playful', 'Lively', 
     'Quirky', 'Cheeky', 'Vibrant', 'Jovial', 'Energetic', 
     'Spirited', 'Carefree', 'Groovy', 'Eclectic', 
@@ -45,7 +52,7 @@ var adjList = [
     'Frisky', 'Spunky', 'Jaunty', 'Droll', 'Zesty', 
     'Dynamic', 'Peculiar', 'Euphoric', 'Zippy', 'Hysterical'
     ];
-var nameList = [
+const nameList = [
     'Dog', 'Cat', 'Elephant', 'Lion', 'Tiger', 'Giraffe', 
     'Zebra', 'Bear', 'Monkey', 'Kangaroo', 'Dolphin', 
     'Penguin', 'Owl', 'Koala', 'Cheetah', 'Rhino', 'Hippo',
@@ -65,6 +72,32 @@ var menuImage = new Image();
 var cardHands = new Image();
 
 // ---- onFlip ----
+//  This function is called when the screen is flipped, typically due to a change
+//  in device orientation. It updates the global screen width and height variables, sets a flag
+//  to indicate that a redraw is needed, and then triggers a screen redraw with updated state
+//  information.
+//  
+//  Inputs:
+//  - width (number): The new width of the screen.
+//  - height (number): The new height of the screen.
+//  
+//  Outputs:
+//  - None
+//  
+//  Through Processing:
+//  1. Update the global SCREEN_WIDTH and SCREEN_HEIGHT variables with the provided values.
+//  2. Set the needs_draw flag to true, indicating that a screen redraw is required.
+//  3. Call the drawScreen function with an array containing the current controlpadState and playerName.
+//  
+//  Assumptions:
+//  - The function assumes the existence of global variables SCREEN_WIDTH, SCREEN_HEIGHT, needs_draw,
+//  controlpadState, and playerName.
+//  - The drawScreen function is assumed to be defined and implemented elsewhere.
+//  
+//  Side Effects:
+//  - Modifies the global SCREEN_WIDTH and SCREEN_HEIGHT variables.
+//  - Sets the needs_draw flag to true.
+//  - Calls the drawScreen function.
 
 function onFlip(width, height) {
     SCREEN_WIDTH = width;
@@ -74,30 +107,53 @@ function onFlip(width, height) {
 }
 
 // ---- Messages ----
+// Function: handleMessage
 
-// handle a single message from the console
+// Inputs:
+    // message (string): The message received by the function.
+
+// Returns:
+    // None
+
+// Input-Output Relation:
+    // The function takes a single input, which is a message received as 
+    // a string. It processes this message by splitting it into sections 
+    // based on the delimiter ":". Depending on the content of the sections,
+    // the function may call other functions (setState and stateRequest) 
+    // to perform certain actions. The function doesn't directly return 
+    // any value.
+
+// Side Effects:
+
+    // Logs a message to the console.
+    // May call the setState and stateRequest functions.
+    
+// Assumptions about State:
+    // Assumes the existence of the setState and stateRequest functions.
+    // Assumes that the input message is properly formatted with 
+    // sections separated by ":".
+
+// The handleMessage function processes incoming messages and triggers 
+// actions based on their content. It splits the message into sections, 
+// and based on the content of the sections, it can change the game 
+// state or request a state update from the game.
+
 function handleMessage(message) {
     console.log('got ' + message);
-
     sections = message.split(":");
 
-    //If  state function, change the state of the game
+    //If state function recieved, change the state of the game
     if (sections[0] == "state"){
         setState(sections); 
     }
 
+    //If a refresh message is recieved, the game is trying 
+    // to update the controller's UI. Perform a state request.
+
     if(sections[0] == "refresh")
     {
         stateRequest();
-
-    }
-
-    //TODO. If joining - draw joining screen
-
-    //TODO. If playing - draw playing screen (need playername, if it's the player's turn, money, cards)
-
-    //TODO. If game finished - draw finished screen (need playername, money)
-    
+    }    
 }
 
 // Specify the list of messages to be sent to the console
@@ -107,6 +163,7 @@ function outgoingMessages() {
     return temp;
 }
 
+// Returns a list of concatenated text and images drawables for the game to draw
 function getDrawables() {
     if (needs_draw) {
         needs_draw = false;
@@ -115,20 +172,12 @@ function getDrawables() {
     return [];
 }
 
-
-// ---- Button Handler ----
-
-//TODO: Function for when button is pressed, send a message
-    //Should accomodate check, call, raise, raise incrememnt, raise decrement, menu, hands, long press on cards, 
-
 // ---- Touch Handlers ----
 
 //TODO: Fold Gesture
 
 // Handle a single touch as it starts
 function handleTouchStart(id, x, y) {
-    // let msg = "TouchStart(" + x.toString() + "," + y.toString() + ")";
-    // messages.push(msg);
     }
 
 
@@ -149,42 +198,94 @@ function handleTouchCancel(id, x, y) {
 
 // ---- Start and Update ----
 
-// Called once upon page load (load your resources here)
-function controlpadStart(width, height, orientation) {
+// Function: controlpadStart
+
+// Inputs:
+    // width (number): The width of the screen.
+    // height (number): The height of the screen.
+    // ORIENTATION (string): The orientation of the screen.
+
+// Returns:
+    // None
+
+// Input-Output Relation:
+    // The function takes three inputs: width, height, and ORIENTATION.
+    //  It sets the global variables SCREEN_WIDTH, SCREEN_HEIGHT, and
+    //  SCREEN_ORIENTATION based on these inputs. It then proceeds to
+    //  load image resources, initialize the controlpadState to 
+    // "Loading", and draw the loading screen using the drawScreen 
+    // function. Finally, it makes a state request to synchronize 
+    // the player with the game. The function doesn't directly 
+    // return any value.
+
+// Side Effects:
+    // Modifies the global variables SCREEN_WIDTH, SCREEN_HEIGHT, and SCREEN_ORIENTATION.
+    // Calls the loadImages function.
+    // Modifies the global variable controlpadState.
+    // Calls the drawScreen function.
+    // Calls the stateRequest function.
+
+// Assumptions about State:
+
+    // Assumes the existence of global variables SCREEN_WIDTH, SCREEN_HEIGHT, and SCREEN_ORIENTATION.
+    // Assumes the existence of the loadImages, drawScreen, and stateRequest functions.
+
+function controlpadStart(width, height, ORIENTATION) {
+
+    //Set screen variables from index.js
     SCREEN_WIDTH = width;
     SCREEN_HEIGHT = height;
-    ORIENTATION = orientation;
+    SCREEN_ORIENTATION = ORIENTATION;
 
-    //TODO. Load Resources
-
+    //Load Resources
     loadImages();
+
+    //Initialize controlpadState to "Loading"
     controlpadState = "Loading";
+
+    //Draw the loading screen
     drawScreen(["state:",controlpadState, playerName]);
 
-    //TODO. State Request
+    //Make a state request to synchronize the player with the game
     stateRequest();
-    
 
 }
 
 // ---- State Screens ----
 
-// setState -Sets the active state from the user
 
-//In: -state: The message from the game that 
-//            should be carrying an option that describes the current 
-//            state of the game
+// Function: setState
 
-//Out: Will return a message of the recognized state and 
-//      execute a drawing function for that specific screen 
-//      along with potentially assigning some variables
+// Inputs:
+    // sections (array): An array of sections extracted from a message.
 
-//Thru: The state will identify what screen to draw
+// Returns:
+    // None
 
-//As: There is a provided state string along with variables if appropriate
+// Input-Output Relation:
+    // The function takes a single input, which is an array of sections 
+    // extracted from a message. It checks if the second section (index 1) 
+    // exists. If it does, it updates the global controlpadState variable 
+    // with the value of the second section and calls the drawScreen 
+    // function, passing in the sections array. If the second section 
+    // doesn't exist, it logs an error message to the console indicating 
+    // that the state is not recognized. The function doesn't directly 
+    // return any value.
 
-//SE: Player name and money will be set using this function. If they are none, 
-// the player will have no money or name
+// Side Effects:
+    // Modifies the global variable controlpadState.
+    // Calls the drawScreen function.
+    // Logs a message to the console.
+
+// Assumptions about State:
+    // Assumes the existence of the global variable controlpadState.
+    // Assumes the existence of the drawScreen function.
+
+// The setState function updates the game's controlpad state based
+// on the sections of a message. It can update the state and trigger
+// a redraw of the screen based on the new state information provided
+// in the sections. If the state is not recognized, it logs an error
+// message.
 
 function setState(sections) {
     if (sections[1])
@@ -197,15 +298,49 @@ function setState(sections) {
     }
 }
 
+// Function: drawScreen
+
+// Inputs:
+    // sections (array): An array of sections extracted from a message.
+
+// Returns:
+    // None
+
+// Input-Output Relation:
+    // The function takes a single input, which is an array of sections
+    // extracted from a message. It first clears the screen using the
+    // wipeScreen function, then updates variables using the 
+    // updateVariables function based on the provided sections. The
+    // function then uses a switch-case structure to determine which
+    // screen to draw based on the current controlpadState. It calls
+    // specific functions for drawing different screens based on the
+    // state. The function doesn't directly return any value.
+
+// Side Effects:
+    // Calls various screen drawing functions based on the current controlpadState.
+    // Calls the wipeScreen and updateVariables functions.
+
+// Assumptions about State:
+
+    // Assumes the existence of the global variable controlpadState.
+    // Assumes the existence of the wipeScreen, updateVariables, and various screen drawing functions.
+
+// The drawScreen function manages the process of updating the screen
+// based on the current state of the game. It clears the screen, updates
+// variables, and then draws the appropriate screen based on the current
+// controlpad state using a switch-case structure. Each case corresponds
+// to a specific game state, and the function calls the corresponding
+// drawing function for that state.
+
 function drawScreen(sections) {
-    wipeScreen();
-    updateVariables(sections);
+    wipeScreen(); 
+    updateVariables(sections); //Updates name, money, current call
     switch(controlpadState) {
         case "Loading":
             drawLoadingScreen();
             break;
         case "ReadyToJoin":
-            drawScreenReadyToJoin();
+            drawReadyToJoin();
             break;
         case "JoinedWaitingToStart":
             drawJoinedWaitingToStart();
@@ -213,72 +348,34 @@ function drawScreen(sections) {
         case "JoinedHost":
             drawJoinedHost();
             break;
+        case "JoinedWaiting":
+            drawJoinedWaiting();
+            break;
         case "PlayingWaiting":
             playerStatus = "Waiting for your Turn";
-            drawScreenPlayingWaiting();
+            drawPlayingWaiting();
             break;
         case "PlayingPlayerTurn":
             playerStatus = "It's Your Turn!";
-            drawScreenPlayingPlayerTurn();
-        case "finished":
-            drawScreenFinished();
+            drawPlayingPlayerTurn();
+        case "GameFinished":
+            drawGameFinished();
             break;
-
-    }
-}
-
-function wipeScreen()
-{
-    image_drawables = [];
-    text_drawables = [];
-    trackedDrbls = [];
-    ctx.clearRect(0,0, SCREEN_WIDTH, SCREEN_HEIGHT);
-    hitCtx.clearRect(0,0, SCREEN_WIDTH, SCREEN_HEIGHT);
-
-}
-
-function sendResponse(){
-    setState(["state","PlayingWaiting",playerName,(playerMoney-playerCall)]);
-    playerTurn = false;
-    let msg = "PlayerResponse:" + action + ":" + playerCall;
-    messages.push(msg);
-    
-}
-
-function updateVariables(sections){
-    for (i = 1; i < sections.length; i++){
-        switch(i) {
-            case 2:
-                playerName = sections[i];
-                break;
-            case 3:
-                playerMoney = parseInt(sections[i]);
-                break;
-            case 4:
-                currentCall = parseInt(sections[i]);
-                playerCall = currentCall;
-                if (parseInt(currentCall) > 0){
-                    action = "Call";
-                }
-                else {
-                    action = "Check";
-                }
-                break;
-            case 5:
-                break;
-            default:
-                break;
-        }
+        default:
+            break;
     }
 }
 
 function drawLoadingScreen() {
+    text = "Loading Texas Hold Em"
+    autoSize = sizeFont(text, 0.75)
+
     text_drawables.push({
         type: 'text',
-            text: 'Loading Texas Hold Em',
-            font: '36px serif',
+        text: text,
+        font: autoSize,
         x: SCREEN_WIDTH/2,
-        y: SCREEN_HEIGHT/8,
+        y: SCREEN_HEIGHT/2,
         centeredX: true,
         centeredY: true,
     });
@@ -286,8 +383,7 @@ function drawLoadingScreen() {
 
 }
 
-//TODO: Draw Joining Screen
-function drawScreenReadyToJoin() {
+function drawReadyToJoin() {
    
     //Check if a spot is open
     while(playerName==null){
@@ -361,10 +457,11 @@ function drawJoinedHost() {
 
 }
 
+function drawJoinedWaiting() {
 
-//TODO: Draw Playing Screen
+}
 
-function drawScreenPlayingWaiting() {
+function drawPlayingWaiting() {
      image_drawables.push({
         type: 'image',
         image: cardBack,
@@ -384,7 +481,7 @@ function drawScreenPlayingWaiting() {
     
 }
 
-function drawScreenPlayingPlayerTurn() {
+function drawPlayingPlayerTurn() {
 
     image_drawables.push({
         type: 'image',
@@ -405,7 +502,10 @@ function drawScreenPlayingPlayerTurn() {
 
     needs_draw = true;
 }
-    //TODO: Function for Determining which buttons should be active
+
+function drawGameFinished() {
+    
+}
 
 
 //Draw top menu
@@ -544,7 +644,7 @@ function UpdateMoney(amount) {
         playerCall = playerCall + amount*betIncrement;
     }
     wipeScreen();
-    drawScreenPlayingPlayerTurn();
+    drawPlayingPlayerTurn();
 
 }
 
@@ -562,22 +662,6 @@ function drawStatus() {
     });
 
 }
-
-
-
-
-//TODO: Finished Screen
-
-function drawScreenFinished() {
-    
-}
-
-//Extra Screens
-
-//TODO: Show card ranks
-
-//TODO: Show menu
-
 
 // Called 30 times per second
 function controlpadUpdate() {
@@ -623,5 +707,49 @@ function sizeImage(image, area) {
     var w = image.naturalWidth;
     var scale = (SCREEN_WIDTH*area)/w;
     return scale;
+}
+
+function wipeScreen()
+{
+    image_drawables = [];
+    text_drawables = [];
+    trackedDrbls = [];
+    ctx.clearRect(0,0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    hitCtx.clearRect(0,0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+}
+function sendResponse(){
+    setState(["state","PlayingWaiting",playerName,(playerMoney-playerCall)]);
+    playerTurn = false;
+    let msg = "PlayerResponse:" + action + ":" + playerCall;
+    messages.push(msg);
+    
+}
+
+function updateVariables(sections){
+    for (i = 1; i < sections.length; i++){
+        switch(i) {
+            case 2:
+                playerName = sections[i];
+                break;
+            case 3:
+                playerMoney = parseInt(sections[i]);
+                break;
+            case 4:
+                currentCall = parseInt(sections[i]);
+                playerCall = currentCall;
+                if (parseInt(currentCall) > 0){
+                    action = "Call";
+                }
+                else {
+                    action = "Check";
+                }
+                break;
+            case 5:
+                break;
+            default:
+                break;
+        }
+    }
 }
 
