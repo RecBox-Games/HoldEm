@@ -10,19 +10,15 @@ public class controllerParse : MonoBehaviour
 {
 
     [SerializeField] gameController gameController;
-    public static bool gameStarted = true;
-
     public static int gvCall = 20;
 
     
 
     public void messageParse(string client, string msg)
     {
-
-        
         // Parse msg by
-
         var messages = msg.Split(':');
+        var fromPlayer = grabPlayer(client);
 
         if (messages[0] == "NewPlayer") 
         {
@@ -31,9 +27,11 @@ public class controllerParse : MonoBehaviour
             messageParse(client,"RequestState");
         }
 
+        // This message should come in like "StartGame:Money"
+        // Money = amount host player sets
         if (messages[0] == "StartGame")
         {
-            gameController.startGame(1000);
+            gameController.startGame(int.Parse(messages[1]));
         }
         
         if (messages[0] == "PlayerResponse")
@@ -41,15 +39,13 @@ public class controllerParse : MonoBehaviour
             gameController.endTurn();
         }
 
-        var fromPlayer = grabPlayer(client);
-
-        if(fromPlayer is null)
+        if (fromPlayer is null)
         {
             controlpads_glue.SendControlpadMessage(client, "state:ReadyToJoin");
 
         }
 
-        else{
+        else {
 
             if (messages[0] == "RequestState") {
             
@@ -107,7 +103,7 @@ public class controllerParse : MonoBehaviour
     }
 
     public playerController grabPlayer(string client) {
-        foreach (var player in gameController.playerList) 
+        foreach (var player in gameController.getPlayerList()) 
         {
             var ip = player.getIP();
             //player is recognized

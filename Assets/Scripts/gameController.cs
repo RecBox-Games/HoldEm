@@ -12,11 +12,12 @@ public class gameController : MonoBehaviour
     [SerializeField] GameObject playerUI;
     [SerializeField] int maxPlayers;
 
-    public List<playerController> playerList = new List<playerController>();
+    private List<playerController> playerList = new List<playerController>();
     private List<string> turnOrder = new List<string>();
     private int tottalMoney = 0;
+    private int potMoney = 0;
     private int ante;
-    private static bool gameState = false;
+    private static bool gameState = false; // Ture is a game has started
     private bool increasingAnte = false;
     private int currentPlayer;
 
@@ -34,7 +35,7 @@ public class gameController : MonoBehaviour
     }
 
 
-    // Getters
+    // ---------- Getters ----------
     public bool getGameState() { return gameState; }
 
     public string getTurnOrder()
@@ -47,10 +48,29 @@ public class gameController : MonoBehaviour
     public string getCurretPlayer() { return turnOrder[currentPlayer]; }
 
     public int getLeviCurrentPlayer() {return currentPlayer;}
-    // Setters
+
+    public List<playerController>  getPlayerList() { return playerList; }
+
+
+    // ---------- Setters ----------
     public void setAnte(int ante) { this.ante = ante; }
 
 
+    /* This function initializes a new game.
+     * 
+     * IN:
+     * startMoney = The amount of money each player starts with
+     * 
+     * Out:
+     * The game doesn't throw any exceptions however it does limit when a new
+     * game can start. 
+     * - Cant start new game if there is already a game in progress
+     * - Cant start a game if there is less than 2 players, (min of 2 people)
+     * 
+     * AS:
+     * - Turns the instance variable gameState to true.
+     * - Assumes that all players who are playing are joined.
+     */
     public void startGame(int startMoney) 
     { 
         if (gameState)
@@ -81,11 +101,27 @@ public class gameController : MonoBehaviour
         }
     }
 
+    /* Creates/Joins a new player to the game
+     * 
+     * IN: 
+     * - playerName = The username the player inputed 
+     * - client = the ID/IP of the player to keep them unique
+     * 
+     * OUT:
+     *  Returns if the maximum player limit is reached.
+     *  Returns if there is already a game in progress
+     * 
+     */
     public void newPlayer(string playerName, string client)
     {
         if (playerList.Count > maxPlayers - 1)
         {
             Debug.Log("The maximum amount of players has been reached. No More can be added");
+            return;
+        }
+        if (gameState)
+        {
+            Debug.Log("There is already a game in progress. No new players can join");
             return;
         }
 
@@ -108,7 +144,7 @@ public class gameController : MonoBehaviour
     }
 
     // This function will initialize the turnOrder list but filling it with
-    // the names from playerList. It then shuffles its self so that there is a 
+    // the names from playerList. It then shuffles itself so that there is a 
     // random turn order.
     // SE:
     // - This function assumes that the game has started.
