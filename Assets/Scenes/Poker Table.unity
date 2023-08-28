@@ -675,6 +675,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   controlInterface: {fileID: 1499767956}
   gameInterface: {fileID: 827239351}
+  startMoney: 40000
+  ante: 500
   list:
   - Levi
   - Weston
@@ -1222,6 +1224,8 @@ MonoBehaviour:
   playerPrefab: {fileID: 2746505277319676001, guid: ef2c46f69c92ebb478d8afd7ad21dd75, type: 3}
   playerUI: {fileID: 1852503607}
   maxPlayers: 20
+  ante: 50
+  startMoney: 1000
 --- !u!4 &827239353
 Transform:
   m_ObjectHideFlags: 0
@@ -2207,7 +2211,7 @@ MonoBehaviour:
       - m_Target: {fileID: 519659799}
         m_TargetAssemblyTypeName: unitTest, Assembly-CSharp
         m_MethodName: testStartGame
-        m_Mode: 3
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

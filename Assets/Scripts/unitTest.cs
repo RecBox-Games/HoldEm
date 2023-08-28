@@ -7,8 +7,14 @@ public class unitTest : MonoBehaviour
     // Objects to test
     [SerializeField] GameObject controlInterface;
     [SerializeField] GameObject gameInterface;
+    [SerializeField] int startMoney;
+    [SerializeField] int ante;
+    
+    
+    // Instance Variables
     private controllerParse controllerParse;
     private gameController gameController;
+
 
     // Instance Variables
     [SerializeField] List<string> list = new List<string>();
@@ -40,9 +46,9 @@ public class unitTest : MonoBehaviour
         }
     }
 
-    public void testStartGame(int startMoney)
+    public void testStartGame()
     {
-        gameController.startGame(startMoney);
+        gameController.startGame(startMoney, ante);
     }
 
     public void testRaise(int raise) { gameController.raise(raise); }
@@ -52,7 +58,7 @@ public class unitTest : MonoBehaviour
     public void testEndTurn()
     {
         gameController.endTurn();
-        Debug.Log(gameController.getCurretPlayer());
+        Debug.Log("It is currently " + gameController.getCurretPlayer() + "\'s turn");
     }
 
 }

@@ -7,16 +7,19 @@ using UnityEngine.UIElements;
 
 public class gameController : MonoBehaviour
 {
-
+    // Default Varaiables
     [SerializeField] GameObject playerPrefab;
     [SerializeField] GameObject playerUI;
     [SerializeField] int maxPlayers;
+    [SerializeField] int ante;
+    [SerializeField] int startMoney;
 
+
+    // Instance Variables
     private List<playerController> playerList = new List<playerController>();
     private List<string> turnOrder = new List<string>();
     private int tottalMoney = 0;
     private int potMoney = 0;
-    private int ante;
     private static bool gameState = false; // Ture is a game has started
     private bool increasingAnte = false;
     private int currentPlayer;
@@ -51,9 +54,12 @@ public class gameController : MonoBehaviour
 
     public List<playerController>  getPlayerList() { return playerList; }
 
+    
+    public void startGame() { startNewGame(this.startMoney, this.ante); }
+    
+    public void startGame(int startMoney) { startNewGame(startMoney, this.ante); }
 
-    // ---------- Setters ----------
-    public void setAnte(int ante) { this.ante = ante; }
+    public void startGame(int startMoney, int ante) { startNewGame(startMoney, ante); }
 
 
     /* This function initializes a new game.
@@ -71,7 +77,7 @@ public class gameController : MonoBehaviour
      * - Turns the instance variable gameState to true.
      * - Assumes that all players who are playing are joined.
      */
-    public void startGame(int startMoney) 
+    private void startNewGame(int startMoney, int ante) 
     { 
         if (gameState)
         {
@@ -84,9 +90,11 @@ public class gameController : MonoBehaviour
             return;
         }
 
+        // Initialize variables
         gameState = true;
         initializeTurnOrder();
         tottalMoney = startMoney * playerList.Count;
+        this.ante = ante;
 
         Debug.Log("A game of Texas Hold'Em Has begun");
         // Debug.Log("Tottal Money: " + tottalMoney);
@@ -166,6 +174,17 @@ public class gameController : MonoBehaviour
         currentPlayer = 0;
     }
 
+    public void endTurn()
+    {
+        currentPlayer = (currentPlayer + 1) % turnOrder.Count;
+        foreach (var playerController in playerList)
+        {
+            controlpads_glue.SendControlpadMessage(playerController.getIP(), "refresh");
+
+        }
+
+    }
+
     public void anteUP(string playerName, bool playing)
     {
         if (playing) { Debug.Log(playerName + " Is playing this round"); }
@@ -187,17 +206,6 @@ public class gameController : MonoBehaviour
 
     public void fold(string username)
     {
-
-    }
-
-    public void endTurn()
-    {
-        currentPlayer = (currentPlayer + 1) % turnOrder.Count;
-        foreach (var playerController in playerList)
-        {
-            controlpads_glue.SendControlpadMessage(playerController.getIP(), "refresh");
-
-        }
 
     }
 }
