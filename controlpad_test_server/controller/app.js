@@ -15,6 +15,7 @@ let betBoxY;
 let betBoxW;
 let betBoxH;
 let betBoxIndex;
+let betBoxIndexButton;
 
 // ---- Game Specific Variables ----
 
@@ -107,7 +108,6 @@ var cardHands = new Image();
 function onFlip(width, height) {
     SCREEN_WIDTH = width;
     SCREEN_HEIGHT = height;
-    needs_draw = true;
     drawScreen(["state:",controlpadState, playerName]);
 }
 
@@ -370,6 +370,7 @@ function drawScreen(sections) {
         default:
             break;
     }
+    needs_draw=true;
 }
 
 // ---- Major Drawing Functions ----
@@ -387,8 +388,6 @@ function drawLoadingScreen() {
         centeredX: true,
         centeredY: true,
     });
-    needs_draw = true;
-
 }
 
 function drawReadyToJoin() {
@@ -425,9 +424,6 @@ function drawJoinedHost() {
         track: true,
         msg: "StartGame"
     });
-
-    needs_draw = true;
-
 }
 
 function drawJoinedWaiting() {
@@ -438,10 +434,7 @@ function drawJoinedWaiting() {
 function drawPlayingWaiting() {
     drawCardBack();
     topMenu();
-    drawStatus();
-   
-    needs_draw = true;
-    
+    drawStatus();    
 }
 
 function drawPlayingPlayerTurn() {
@@ -451,8 +444,6 @@ function drawPlayingPlayerTurn() {
 
     drawActions();
     drawStatus();
-
-    needs_draw = true;
 }
 
 function drawGameFinished() {
@@ -507,8 +498,6 @@ function waitingScreen(waitingText) {
         centeredX: true,
         centeredY: true,
     });
-
-    needs_draw = true;
 }
 
 //Draw top menu
@@ -618,6 +607,7 @@ function drawBetBox(){
     betBoxW = buttonImage.width*scale;
     betBoxH = buttonImage.height*scaleForButtonY;
     betBoxIndex = text_drawables.length;
+    betBoxIndexButton = image_drawables.length;
 
     text_drawables.push({
         type: 'text',
@@ -661,7 +651,6 @@ function UpdateMoney(amount) {
         playerCall = playerCall + amount*betIncrement;
     }
     wipeBetBox();
-    drawBetBox();
 
 }
 
@@ -741,8 +730,10 @@ function wipeScreen()
 }
 
 function wipeBetBox(drbl) {
-    console.log(text_drawables);
-    delete text_drawables[betBoxIndex];
+    text_drawables.splice(betBoxIndex,1);
+    image_drawables.splice(betBoxIndexButton,1);
+
+    drawBetBox();
     needs_draw = true;
 
 }
