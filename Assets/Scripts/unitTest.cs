@@ -9,6 +9,7 @@ public class unitTest : MonoBehaviour
     [SerializeField] GameObject gameInterface;
     [SerializeField] int startMoney;
     [SerializeField] int ante;
+    [SerializeField] int raise;
     
     
     // Instance Variables
@@ -60,5 +61,9 @@ public class unitTest : MonoBehaviour
         gameController.endTurn();
         Debug.Log("It is currently " + gameController.getCurretPlayer() + "\'s turn");
     }
+
+    public void testRaise() { gameController.raise(raise); }
+
+    public void testFold() { gameController.fold(); }
 
 }
