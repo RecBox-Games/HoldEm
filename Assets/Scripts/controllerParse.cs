@@ -27,7 +27,7 @@ public class controllerParse : MonoBehaviour
             messageParse(client,"RequestState");
         }
 
-        // This message should come in like "StartGame:Money"
+        // This message should come in like "StartGame:Money:Ante"
         // Money = amount host player sets
         if (messages[0] == "StartGame")
         {

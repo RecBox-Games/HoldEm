@@ -11,16 +11,17 @@ public class gameController : MonoBehaviour
     [SerializeField] GameObject playerPrefab;
     [SerializeField] GameObject playerUI;
     [SerializeField] int maxPlayers;
-    [SerializeField] int ante;
     [SerializeField] int startMoney;
+    [SerializeField] int ante;
 
+    // Static Variables
+    private static bool gameState = false; // True means a game has started
 
     // Instance Variables
     private List<playerController> playerList = new List<playerController>();
-    private List<string> turnOrder = new List<string>();
+    private List<playerController> turnOrder = new List<playerController>();
     private int tottalMoney = 0;
     private int potMoney = 0;
-    private static bool gameState = false; // Ture is a game has started
     private bool increasingAnte = false;
     private int currentPlayer;
 
@@ -48,7 +49,7 @@ public class gameController : MonoBehaviour
         return order; 
     }
 
-    public string getCurretPlayer() { return turnOrder[currentPlayer]; }
+    public string getCurretPlayer() { return turnOrder[currentPlayer].getName(); }
 
     public int getLeviCurrentPlayer() {return currentPlayer;}
 
@@ -99,7 +100,7 @@ public class gameController : MonoBehaviour
         Debug.Log("A game of Texas Hold'Em Has begun");
         // Debug.Log("Tottal Money: " + tottalMoney);
         // Debug.Log("Turn order is: " + getTurnOrder());
-        Debug.Log("It is currently " + turnOrder[currentPlayer] +"\'s turn.");
+        Debug.Log("It is currently " + getCurretPlayer() +"\'s turn.");
         
         foreach (var playerController in playerList)
         {
@@ -145,6 +146,7 @@ public class gameController : MonoBehaviour
         player.setName(playerName);
         player.setPlayerIP(client);
         player.setPlayerNumber(playerList.Count);
+        if (playerList.Count == 1) { player.setHost(); }
 
 
         // This updates a UI with the new player whos playing
@@ -160,11 +162,11 @@ public class gameController : MonoBehaviour
     // - This also will set the first players turn (currnetPlayer gets initialized here)
     public void initializeTurnOrder()
     {
-        foreach (var player in playerList) { turnOrder.Add(player.getName()); }
+        foreach (var player in playerList) { turnOrder.Add(player); }
 
         for (int i = 0; i < turnOrder.Count; i++)
         {
-            string temp = turnOrder[i];
+            playerController temp = turnOrder[i];
             int rand = Random.Range(i, turnOrder.Count);
 
             turnOrder[i] = turnOrder[rand];
@@ -172,6 +174,11 @@ public class gameController : MonoBehaviour
         }
 
         currentPlayer = 0;
+    }
+
+    public void startTurn()
+    {
+
     }
 
     public void endTurn()
@@ -190,18 +197,23 @@ public class gameController : MonoBehaviour
         if (playing) { Debug.Log(playerName + " Is playing this round"); }
     }
 
+    // Player does not have to call to stay in
+    // Player does not wish to raise the bet
     public void check()
     {
 
     }
 
+    // Player wishes to call the previous bet and stay in
     public void call()
     {
 
     }
+
+    // The player wishes to raise the curent bet
     public void raise(int amount)
     {
-        tottalMoney += amount;
+        potMoney += amount;
     }
 
     public void fold(string username)

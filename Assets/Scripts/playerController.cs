@@ -13,11 +13,11 @@ public class playerController : MonoBehaviour
 
 
     // Game Specific Variables
-    [SerializeField] private int money;
-    private bool folded = false;
     private List<string> holeCards = new List<string>(); // this should be a maximum of 2 cards
-
-    private bool isPlayerTurn = true;
+    private int money;
+    private bool folded = false;
+    private bool isPlayerTurn = false;
+    private bool isHost = false;
 
     // Start is called before the first frame update
     void Start()
@@ -58,6 +58,8 @@ public class playerController : MonoBehaviour
     public void setPlayerNumber(int num) { playerNumber = num; }
 
     public void setTurnNumber(int turnNumber) { this.turnNumber = turnNumber; }
+
+    public void setHost() { this.isHost = true;}
 
 
 }
