@@ -8,16 +8,16 @@ public class playerController : MonoBehaviour
     // Player specific variables
     private string ID;
     private string username;
-    private int playerNumber;
+    private int playerNumber; // This is the order number that the player joined
     private int turnNumber;
 
 
     // Game Specific Variables
-    [SerializeField] private int money;
-    private bool folded = false;
     private List<string> holeCards = new List<string>(); // this should be a maximum of 2 cards
-
-    private bool isPlayerTurn = true;
+    private int money; // Ammount of money a player has to play with
+    private bool folded = false;
+    private bool isPlayerTurn = false;
+    private bool isHost = false;
 
     // Start is called before the first frame update
     void Start()
@@ -59,5 +59,23 @@ public class playerController : MonoBehaviour
 
     public void setTurnNumber(int turnNumber) { this.turnNumber = turnNumber; }
 
+    public void setHost() { isHost = true;}
 
+    public void fold() { folded = true; }
+
+
+    public int requestFunds(int amount) 
+    {
+        if (amount >= money)
+        {
+            Debug.Log(name + " is ALL IN!!!");
+            int finalAmount = money;
+            money = 0;
+
+            return finalAmount;
+        }
+
+        money -= amount;
+        return amount;
+    }
 }

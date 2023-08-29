@@ -7,18 +7,27 @@ using UnityEngine.UIElements;
 
 public class gameController : MonoBehaviour
 {
-
+    // Default Varaiables
     [SerializeField] GameObject playerPrefab;
     [SerializeField] GameObject playerUI;
+    [SerializeField] GameObject moneyUI;
+    [SerializeField] GameObject turnOrderUI;
     [SerializeField] int maxPlayers;
+    [SerializeField] int startMoney;
+    [SerializeField] int ante;
 
-    public List<playerController> playerList = new List<playerController>();
-    private List<string> turnOrder = new List<string>();
+    // Static Variables
+    private static bool gameState = false; // True means a game has started
+
+    // Instance Variables
+    private List<playerController> playerList = new List<playerController>();
+    private List<playerController> turnOrder = new List<playerController>();
+    private int rounds = 0;
+    private int potMoney = 0;
     private int tottalMoney = 0;
-    private int ante;
-    private static bool gameState = false;
-    private bool increasingAnte = false;
     private int currentPlayer;
+    private bool increasingAnte = false;
+    private bool currentRound = false;
 
 
     // Start is called before the first frame update
@@ -30,62 +39,58 @@ public class gameController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (gameState && currentRound)
+        {
+            turnOrderUI.GetComponent<UnityEngine.UI.Text>().text = getTurnOrder() + "\n";
+        }
     }
 
 
-    // Getters
+    // ---------- Getters ----------
     public bool getGameState() { return gameState; }
 
     public string getTurnOrder()
     {
         string order = "";
-        foreach (var name in turnOrder) { order += name + " "; }
+        foreach (var player in turnOrder) { order += player.getName() + " "; }
         return order; 
     }
 
-    public string getCurretPlayer() { return turnOrder[currentPlayer]; }
+    public string getCurretPlayer() { return turnOrder[currentPlayer].getName(); }
 
     public int getLeviCurrentPlayer() {return currentPlayer;}
-    // Setters
-    public void setAnte(int ante) { this.ante = ante; }
+
+    public List<playerController>  getPlayerList() { return playerList; }
+
+    
+    public void startGame() { startNewGame(this.startMoney, this.ante); }
+    
+    public void startGame(int startMoney) { startNewGame(startMoney, this.ante); }
+
+    public void startGame(int startMoney, int ante) { startNewGame(startMoney, ante); }
 
 
-    public void startGame(int startMoney) 
-    { 
-        if (gameState)
-        {
-            Debug.Log("There is already a game playing." +
-                " Please end the current game before starting a new one.");
-            return;
-        } else if (playerList.Count < 2) {
-            Debug.Log("There are not enough players to play a game of poker. " +
-                "Please add more players then continue.");
-            return;
-        }
-
-        gameState = true;
-        initializeTurnOrder();
-        tottalMoney = startMoney * playerList.Count;
-
-        Debug.Log("A game of Texas Hold'Em Has begun");
-        // Debug.Log("Tottal Money: " + tottalMoney);
-        // Debug.Log("Turn order is: " + getTurnOrder());
-        Debug.Log("It is currently " + turnOrder[currentPlayer] +"\'s turn.");
-        
-        foreach (var playerController in playerList)
-        {
-            playerController.setMoney(startMoney);
-            controlpads_glue.SendControlpadMessage(playerController.getIP(), "refresh");
-
-        }
-    }
-
+    /* Creates/Joins a new player to the game
+     * 
+     * IN: 
+     * - playerName = The username the player inputed 
+     * - client = the ID/IP of the player to keep them unique
+     * 
+     * OUT:
+     *  Returns if the maximum player limit is reached.
+     *  Returns if there is already a game in progress
+     * 
+     */
     public void newPlayer(string playerName, string client)
     {
         if (playerList.Count > maxPlayers - 1)
         {
             Debug.Log("The maximum amount of players has been reached. No More can be added");
+            return;
+        }
+        if (gameState)
+        {
+            Debug.Log("There is already a game in progress. No new players can join");
             return;
         }
 
@@ -101,14 +106,65 @@ public class gameController : MonoBehaviour
         player.setName(playerName);
         player.setPlayerIP(client);
         player.setPlayerNumber(playerList.Count);
+        if (playerList.Count == 1) { player.setHost(); }
 
 
         // This updates a UI with the new player whos playing
         playerUI.GetComponent<UnityEngine.UI.Text>().text += playerName + "\n";
     }
 
+    /* This function initializes a new game.
+      * 
+      * IN:
+      * startMoney = The amount of money each player starts with
+      * 
+      * Out:
+      * The game doesn't throw any exceptions however it does limit when a new
+      * game can start. 
+      * - Cant start new game if there is already a game in progress
+      * - Cant start a game if there is less than 2 players, (min of 2 people)
+      * 
+      * AS:
+      * - Turns the instance variable gameState to true.
+      * - Assumes that all players who are playing are joined.
+      */
+    private void startNewGame(int startMoney, int ante)
+    {
+        if (gameState)
+        {
+            Debug.Log("There is already a game playing." +
+                " Please end the current game before starting a new one.");
+            return;
+        }
+        else if (playerList.Count < 2)
+        {
+            Debug.Log("There are not enough players to play a game of poker. " +
+                "Please add more players then continue.");
+            return;
+        }
+
+        foreach (var player in playerList)
+        {
+            player.setMoney(startMoney);
+            controlpads_glue.SendControlpadMessage(player.getIP(), "refresh");
+        }
+
+        // Initialize variables
+        gameState = true;
+        initializeTurnOrder();
+        tottalMoney = startMoney * playerList.Count;
+        this.ante = ante;
+        rounds++;
+        currentRound = true;
+
+        Debug.Log("A game of Texas Hold'Em Has begun");
+        // Debug.Log("Tottal Money: " + tottalMoney);
+        // Debug.Log("Turn order is: " + getTurnOrder());
+        Debug.Log("It is currently " + getCurretPlayer() + "\'s turn.");
+    }
+
     // This function will initialize the turnOrder list but filling it with
-    // the names from playerList. It then shuffles its self so that there is a 
+    // the names from playerList. It then shuffles itself so that there is a 
     // random turn order.
     // SE:
     // - This function assumes that the game has started.
@@ -116,18 +172,40 @@ public class gameController : MonoBehaviour
     // - This also will set the first players turn (currnetPlayer gets initialized here)
     public void initializeTurnOrder()
     {
-        foreach (var player in playerList) { turnOrder.Add(player.getName()); }
+        // foreach (var player in playerList) { turnOrder.Add(player); }
 
-        for (int i = 0; i < turnOrder.Count; i++)
+        for (int i = 0; i < playerList.Count; i++)
         {
-            string temp = turnOrder[i];
-            int rand = Random.Range(i, turnOrder.Count);
+            playerController temp = playerList[i];
+            int rand = Random.Range(i, playerList.Count);
 
-            turnOrder[i] = turnOrder[rand];
-            turnOrder[rand] = temp;
+            playerList[i] = playerList[rand];
+            playerList[rand] = temp;
         }
 
+        turnOrder = playerList;
         currentPlayer = 0;
+    }
+
+    public void startTurn()
+    {
+
+    }
+
+    public void endTurn()
+    {
+        if (playerList[currentPlayer].isFolded())  
+            turnOrder.Remove(turnOrder[currentPlayer]); 
+        else
+            currentPlayer = (currentPlayer + 1) % turnOrder.Count;
+
+
+        foreach (var playerController in playerList)
+        {
+            controlpads_glue.SendControlpadMessage(playerController.getIP(), "refresh");
+        }
+
+        Debug.Log("It is now " + turnOrder[currentPlayer].getName() + "\'s turn.");
     }
 
     public void anteUP(string playerName, bool playing)
@@ -135,33 +213,34 @@ public class gameController : MonoBehaviour
         if (playing) { Debug.Log(playerName + " Is playing this round"); }
     }
 
+    // Player does not have to call to stay in
+    // Player does not wish to raise the bet
     public void check()
     {
 
     }
 
+    // Player wishes to call the previous bet and stay in
     public void call()
     {
 
     }
+
+    // The player wishes to raise the curent bet
     public void raise(int amount)
     {
-        tottalMoney += amount;
+        int money = turnOrder[currentPlayer].requestFunds(amount);
+
+        potMoney += money;
+        moneyUI.GetComponent<UnityEngine.UI.Text>().text = potMoney.ToString();
+        Debug.Log(getCurretPlayer() + " has put in " + money + " raising to " + potMoney);
+        endTurn();
     }
 
-    public void fold(string username)
+    public void fold()
     {
-
-    }
-
-    public void endTurn()
-    {
-        currentPlayer = (currentPlayer + 1) % turnOrder.Count;
-        foreach (var playerController in playerList)
-        {
-            controlpads_glue.SendControlpadMessage(playerController.getIP(), "refresh");
-
-        }
-
+        Debug.Log(getCurretPlayer() + " has folded this round");
+        playerList[currentPlayer].fold();
+        endTurn();
     }
 }
