@@ -6,6 +6,9 @@
 let messages = []; //Array to hold messages to send to the controller
 let text_drawables = []; //Array to hold text boxes sent to canvas
 let image_drawables = []; //Array to hold images sent to canvas
+const hideables = document.getElementsByClassName('hideables');
+const cardElement = document.getElementById('card')
+
 let needs_draw = false; //Bool to trigger the draw function
 let SCREEN_HEIGHT; //Height of screen
 let SCREEN_WIDTH; //Width of screen
@@ -422,7 +425,7 @@ function drawJoinedHost() {
         scaleY: buttonScale(2),
         scaleX: scale,
         track: true,
-        msg: "StartGame"
+        msg: "StartGame:1000"
     });
 }
 
@@ -456,20 +459,8 @@ function drawGameFinished() {
 //Draws the card backs
 
 function drawCardBack() {
-    scale = sizeImage(cardBack,.8);
-
-     image_drawables.push({
-        type: 'image',
-        image: cardBack,
-        x: SCREEN_WIDTH/2,
-        y: SCREEN_HEIGHT/2,
-        centeredX: true,
-        centeredY: true,
-        scaleY: scale,
-        scaleX: scale,
-        track: true,
-        msg: "FlipCard"
-    });
+    cardElement.style.display='flex';
+    
 }
 
 // Draws the waiting screen when a user needs to wait before an action
@@ -726,6 +717,10 @@ function wipeScreen()
     image_drawables = [];
     text_drawables = [];
     trackedDrbls = [];
+    console.log(hideables);
+    for (let element of hideables){
+        element.style.display = 'none';
+    }
 
 }
 

@@ -1,0 +1,57 @@
+body {
+    touch-action: none;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    touch-action: none;
+}
+
+.hitCanvas{
+    display: none;
+}
+.gameCanvas, .hitCanvas{
+    z-index: 1;
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+
+}
+.border {
+    border: 10px solid green;
+    width: calc(100vw - 20px);
+    height: calc(100vh - 20px);
+    z-index: 2;
+    position:absolute
+}
+
+#card  {
+    width: 75vw;
+    height: 50vh;
+    position: absolute;
+    left: 12.5vw;
+    top: 25vh;
+    z-index: 3;
+}
+
+.front, .back {
+    display:flex;
+    align-items: center;
+}
+
+#image-left,#image-right{
+    width: 100%;
+    height: auto;
+    position:absolute
+}
+#image-left{
+    transform: translate(12.5vw,0);
+}
+
+#image-right{
+    transform: translate(-12.5vw,0);
+}
+#screen {
+    position: relative;
+}

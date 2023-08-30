@@ -9,11 +9,11 @@ const box_ip = window.location.href.split('/')[2].split(':')[0];
 console.log("Sub ID: " + subid);
 
 // canvas
-const canvas = document.querySelector("canvas");
+const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const offset = 4;
 
-const hitCanvas = document.createElement('canvas');
+const hitCanvas = document.getElementById('hitCanvas');
 const hitCtx = hitCanvas.getContext('2d');
 
 var touch_recognized = false
