@@ -1,3 +1,13 @@
+:root {
+    --max-card-width: 300px;
+    --border-width: 10px;
+    --border-offset: calc(var(--border-width)*2);
+    --color: #32CD32;
+}
+
+/* Game Canvas is always z-index 1 */
+/* Overlay visuals are always z-index-2 */
+
 body {
     touch-action: none;
     overflow: hidden;
@@ -6,6 +16,11 @@ body {
     margin: 0;
     padding: 0;
     touch-action: none;
+}
+
+.overlay {
+    z-index:2;
+    position:absolute; 
 }
 
 .hitCanvas{
@@ -19,41 +34,114 @@ body {
 
 }
 .border {
-    border: 10px solid green;
-    width: calc(100vw - 20px);
-    height: calc(100vh - 20px);
-    z-index: 2;
-    position:absolute
+    border: var(--border-width) solid var(--color);
+    width: calc(100vw - var(--border-offset));
+    height: calc(100vh - var(--border-offset));
 }
 
 #card  {
     width: 75vw;
     height: 50vh;
-    position: absolute;
-    left: 12.5vw;
-    top: 25vh;
-    z-index: 3;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,50%);
+    max-width: var(--max-card-width);
+    
 }
 
 .front, .back {
     display:flex;
     align-items: center;
     justify-content: center;
+    max-width: var(--max-card-width);
+    height:50vh;
 }
 
 #image-left,#image-right{
-    width: 50vw;
+    width: 75%;
     height: auto;
-    position:absolute
+    position: absolute;
+    object-fit: contain;
+    display: flex;
+    justify-content: center;
+    
+    
 }
+img{
+    max-height:50vh;
+}
+
+
 #image-left{
-    transform: translate(12.5vw,0);
     z-index: 1;
+    left:0;
 }
 
 #image-right{
-    transform: translate(-12.5vw,0);
+    right:0;
+
 }
 #screen {
     position: relative;
+}
+
+.topmenu{
+    height:calc(25vh - var(--border-width));
+    width: calc(100vw - var(--border-offset));
+    margin-top: var(--border-width);
+    margin-left: var(--border-width);
+    margin-right: var(--border-width);
+    background-color: white;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+
+}
+.innermenu {
+    height:70%;
+    display: flex;
+    max-height: 70%;
+}
+.outerdiv {
+    width: 25%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+
+}
+svg {
+    position: relative;
+    width: 50%;
+    height: 50%;
+    left:0;
+    top:0;
+
+}
+
+.innerdiv {
+    width:50%;
+    text-align: center;
+}
+.namediv,.moneydiv {
+    height: 50%;
+    font-size: 1em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+    display: flex;
+    align-items: center;
+    justify-content: center;    
+}
+
+h2 {
+    font-size: 1.5em;
+    margin: 0;
+}
+
+.statusmenu{
+    height:30%;
+    max-height: 30%;
+    text-align: center;
+    font-size: 1.5em;
 }

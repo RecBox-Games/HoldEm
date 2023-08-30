@@ -7,8 +7,10 @@ let messages = []; //Array to hold messages to send to the controller
 let text_drawables = []; //Array to hold text boxes sent to canvas
 let image_drawables = []; //Array to hold images sent to canvas
 const hideables = document.getElementsByClassName('hideables');
-const cardElement = document.getElementById('card')
-
+const cardElement = document.getElementById('card');
+const menuOverlay = document.getElementById('topmenu');
+const nameField = document.getElementById('playerName');
+const moneyField = document.getElementById('playerMoney');
 let needs_draw = false; //Bool to trigger the draw function
 let SCREEN_HEIGHT; //Height of screen
 let SCREEN_WIDTH; //Width of screen
@@ -76,7 +78,6 @@ const nameList = [
 
 //Assets
 var buttonImage = new Image();
-var cardBack = new Image();
 var menuImage = new Image();
 var cardHands = new Image();
 
@@ -186,6 +187,7 @@ function getDrawables() {
 
 // Handle a single touch as it starts
 function handleTouchStart(id, x, y) {
+    console.log("hi");
     }
 
 
@@ -493,54 +495,8 @@ function waitingScreen(waitingText) {
 
 //Draw top menu
 function topMenu() {
-    var y = SCREEN_HEIGHT/16;
+    menuOverlay.style.display='flex';
 
-    autoSize = sizeFont(playerName, 0.5)
-    text_drawables.push({
-        type: 'text',
-        text: playerName,
-        font: autoSize,
-        x: SCREEN_WIDTH/2,
-        y: y,
-        centeredX: true,
-        centeredY: true,
-    });
-    scale = sizeImage(cardHands,.25)
-    image_drawables.push({
-        type: 'image',
-        image: cardHands,
-        x: SCREEN_WIDTH/8,
-        y: y,
-        centeredX: true,
-        centeredY: true,
-        scaleY: scale,
-        scaleX: scale,
-        track: true,
-        msg: "Cards"
-    });
-    scale = sizeImage(menuImage, .2)
-    image_drawables.push({
-        type: 'image',
-        image: menuImage,
-        x: 7*SCREEN_WIDTH/8,
-        y: y,
-        centeredX: true,
-        centeredY: true,
-        scaleY: scale,
-        scaleX: scale,
-        track: true,
-        msg: "Menu"
-    });
-    text_drawables.push({
-        type: 'text',
-        text: formatter.format(playerMoney),
-        font: autoSize,
-        x: SCREEN_WIDTH/2,
-        y: (1.5* parseInt(autoSize) + y),
-        centeredX: true,
-        centeredY: true,
-        
-    });    
 }
 
 function drawActions() {
@@ -676,7 +632,6 @@ function buttonScale(padding) {
 
 function loadImages() {
     buttonImage.src = "resources/button.png"
-    cardBack.src = "resources/card_back_double.png"
     menuImage.src = "resources/menu_bars.png"
     cardHands.src = "resources/cardhand.png"
 }
@@ -745,9 +700,12 @@ function updateVariables(sections){
         switch(i) {
             case 2:
                 playerName = sections[i];
+                nameField.innerHTML = playerName;
                 break;
             case 3:
                 playerMoney = parseInt(sections[i]);
+                moneyField.innerHTML = formatter.format(playerMoney);
+
                 break;
             case 4:
                 currentCall = parseInt(sections[i]);
