@@ -38,15 +38,17 @@ body {
 .front, .back {
     display:flex;
     align-items: center;
+    justify-content: center;
 }
 
 #image-left,#image-right{
-    width: 100%;
+    width: 50vw;
     height: auto;
     position:absolute
 }
 #image-left{
     transform: translate(12.5vw,0);
+    z-index: 1;
 }
 
 #image-right{

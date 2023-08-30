@@ -717,7 +717,6 @@ function wipeScreen()
     image_drawables = [];
     text_drawables = [];
     trackedDrbls = [];
-    console.log(hideables);
     for (let element of hideables){
         element.style.display = 'none';
     }

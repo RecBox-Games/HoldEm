@@ -6,6 +6,7 @@
     <title>Texas Hold 'Em</title>
     <script src="jquery-3.7.1.min.js"></script>
     <script src="jquery.flip.min.js"></script>
+    <script src="elements.cardmeister.min.js"></script>
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
@@ -21,12 +22,12 @@
       <div class="border" style="position:absolute"></div>
       <div id="card" class= "hideables">
         <div class="front">
-          <img id="image-left" src="resources/card_back.png">
-          <img id="image-right" src="resources/card_back.png">
+          <card-t id="image-left" rank="0" backcolor="#32CD32" backtext="">          </card-t>
+          <card-t id="image-right" rank="0" backcolor="#32CD32" backtext=""></card-t>
         </div> 
         <div class="back">
-          <img id="image-left" src="resources/card_clubs_03.png">
-          <img id="image-right" src="resources/card_diamonds_J.png">
+          <card-t id="image-left" rank="Jack" suit="Hearts"></card-t>
+          <card-t id="image-right" rank="Queen" suit="Hearts"></card-t>
         </div> 
       </div>
       
