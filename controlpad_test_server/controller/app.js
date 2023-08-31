@@ -11,6 +11,7 @@ const cardElement = document.getElementById('card');
 const menuOverlay = document.getElementById('topmenu');
 const nameField = document.getElementById('playerName');
 const moneyField = document.getElementById('playerMoney');
+const statusField = document.getElementById('playerStatus');
 let needs_draw = false; //Bool to trigger the draw function
 let SCREEN_HEIGHT; //Height of screen
 let SCREEN_WIDTH; //Width of screen
@@ -21,6 +22,10 @@ let betBoxW;
 let betBoxH;
 let betBoxIndex;
 let betBoxIndexButton;
+let isHeld = false;
+let timer = null;
+let cardFlipped = false;
+
 
 // ---- Game Specific Variables ----
 
@@ -187,7 +192,6 @@ function getDrawables() {
 
 // Handle a single touch as it starts
 function handleTouchStart(id, x, y) {
-    console.log("hi");
     }
 
 
@@ -198,11 +202,24 @@ function handleTouchMove(id, x, y) {
 
 // Handle a single touch that has ended
 function handleTouchEnd(id, x, y) {
+    clearTimeout( timer );
+    if(cardFlipped){
+        $("#card").flip(false);
+        cardFlipped=false;
+
+    }
 
 }
 
 // Handle a single touch that has ended in an unexpected way
 function handleTouchCancel(id, x, y) {
+    clearTimeout( timer );
+
+    if(cardFlipped){
+        $("#card").flip(false);
+        cardFlipped=false;
+
+    }
 
 }
 
@@ -437,6 +454,7 @@ function drawJoinedWaiting() {
 }
 
 function drawPlayingWaiting() {
+    wipeScreen();
     drawCardBack();
     topMenu();
     drawStatus();    
@@ -446,7 +464,6 @@ function drawPlayingPlayerTurn() {
 
     drawCardBack();
     topMenu();
-
     drawActions();
     drawStatus();
 }
@@ -500,19 +517,17 @@ function topMenu() {
 }
 
 function drawActions() {
-    y = 27*SCREEN_HEIGHT/32;
-    
 
-    let triangleOffset = 55;
-    let triangleOutline = 5;
-    let triangleBase = 80;
-    let triangleHeight = 40;
+    let triangleOffset = SCREEN_HEIGHT/10;
+    let triangleOutline = borderWidth/2;
+    let triangleBase = SCREEN_WIDTH/3;
+    let triangleHeight = SCREEN_HEIGHT/15;
     
     drawBetBox();
 
     image_drawables.push({
         type: 'triangle',
-        x: SCREEN_WIDTH/2,
+        x: x,
         y: y + triangleOffset,
         centeredX: true,
         centeredY: true,
@@ -528,7 +543,7 @@ function drawActions() {
     });
     image_drawables.push({
         type: 'triangle',
-        x: SCREEN_WIDTH/2,
+        x: x,
         y: y - triangleOffset,
         centeredX: true,
         centeredY: true,
@@ -541,15 +556,43 @@ function drawActions() {
         track: true
 
     });
+    x=SCREEN_WIDTH/4;
+    text = "Hold to Peek"; 
+    autoSize = sizeFont(text,0.25);
+    scale = sizeImage(buttonImage,.3);
+
+
+    text_drawables.push({
+        type: 'text',
+        text: text,
+        font: autoSize,
+        x: x,
+        y: y,
+        centeredX: true,
+        centeredY: true,
+    });
+    image_drawables.push({
+        type: 'image',
+        image: buttonImage,
+        x: x,
+        y: y,
+        centeredX: true,
+        centeredY: true,
+        scaleY: scaleForButtonY,
+        scaleX: scale,
+        track: true,
+        msg: "Peek"
+    });
 
 }
 function drawBetBox(){
     y = 27*SCREEN_HEIGHT/32;
+    x = 11*SCREEN_WIDTH/16;
     text = action + ": " + formatter.format(playerCall); 
     autoSize = sizeFont(text,0.4);
     scale = sizeImage(buttonImage,.5);
     scaleForButtonY = buttonScale(1.75)
-    betBoxX = SCREEN_WIDTH/2;
+    betBoxX = x;
     betBoxY = y;
     betBoxW = buttonImage.width*scale;
     betBoxH = buttonImage.height*scaleForButtonY;
@@ -560,7 +603,7 @@ function drawBetBox(){
         type: 'text',
         text: text,
         font: autoSize,
-        x: SCREEN_WIDTH/2,
+        x: x,
         y: y,
         centeredX: true,
         centeredY: true,
@@ -568,7 +611,7 @@ function drawBetBox(){
     image_drawables.push({
         type: 'image',
         image: buttonImage,
-        x: SCREEN_WIDTH/2,
+        x: x,
         y: y,
         centeredX: true,
         centeredY: true,
@@ -578,6 +621,24 @@ function drawBetBox(){
         msg: "PlayerResponse"
     });
 }
+
+window.addEventListener('touchmove', ev => {
+    ev.preventDefault();
+})
+
+$("#card").flip({
+    trigger: 'manual'
+  });
+
+
+function flipCard(){
+    $("#card").flip(true);
+    cardFlipped = true;
+
+}
+
+
+
 
 function UpdateMoney(amount) {
     let attemptedValue = playerCall + amount*betIncrement;
@@ -602,18 +663,7 @@ function UpdateMoney(amount) {
 }
 
 function drawStatus() {
-
-    text_drawables.push({
-        type: 'text',
-            text: playerStatus,
-            font: '36px serif',
-        x: SCREEN_WIDTH/2,
-        y: 7* SCREEN_HEIGHT/32,
-        centeredX: true,
-        centeredY: true,
-        
-    });
-
+    statusField.innerHTML = playerStatus;
 }
 
 // Called 30 times per second
@@ -675,7 +725,8 @@ function wipeScreen()
     for (let element of hideables){
         element.style.display = 'none';
     }
-
+    ctx.fillStyle = "#808080";
+    ctx.fillRect(borderWidth, borderWidth, canvas.width, canvas.height);
 }
 
 function wipeBetBox(drbl) {
@@ -705,7 +756,6 @@ function updateVariables(sections){
             case 3:
                 playerMoney = parseInt(sections[i]);
                 moneyField.innerHTML = formatter.format(playerMoney);
-
                 break;
             case 4:
                 currentCall = parseInt(sections[i]);

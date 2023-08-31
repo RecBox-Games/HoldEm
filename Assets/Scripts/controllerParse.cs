@@ -18,7 +18,6 @@ public class controllerParse : MonoBehaviour
     {
         // Parse msg by
         var messages = msg.Split(':');
-        var fromPlayer = grabPlayer(client);
 
         if (messages[0] == "NewPlayer") 
         {
@@ -26,6 +25,8 @@ public class controllerParse : MonoBehaviour
             gameController.newPlayer(playerName, client);
             messageParse(client,"RequestState");
         }
+
+        var fromPlayer = grabPlayer(client);
 
         // This message should come in like "StartGame:Money:Ante"
         // Money = amount host player sets
@@ -105,7 +106,7 @@ public class controllerParse : MonoBehaviour
     public playerController grabPlayer(string client) {
         foreach (var player in gameController.getPlayerList()) 
         {
-            var ip = player.getIP();
+            string ip = player.getIP();
             //player is recognized
             if(ip == client) {
                 return player;

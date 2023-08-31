@@ -11,14 +11,6 @@
   </head>
   <body>
     <div id ="screen">
-      <script type="text/javascript">
-
-        $(document).ready(function(){
-         $("#msgid").html("This is Hello World by JQuery");
-        });
-        
-        </script>
-  
       <div class="border overlay" style="position:absolute"></div>
       <div id="card" class= "hideables overlay">
         <div class="front">
@@ -31,9 +23,7 @@
         </div> 
       </div>
       
-      <script type="text/javascript">
-        $("#card").flip();
-      </script>
+
 
       <div id="topmenu" class="topmenu overlay">
         <div class="innermenu">
@@ -47,22 +37,20 @@
             <div  class="moneydiv">
               <h2 id="playerMoney">ffffffffffffffffffff</h2>
             </div>
-
           </div>
           <div class="outerdiv">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg>
           </div>
-
         </div>
-
-        <div id="statusmessage" class="statusmenu">This is a status message!</div>
-
+        <div id="playerStatus" class="statusmenu"></div>
       </div>
+
+
   
-      <canvas id="gameCanvas" class="gameCanvas">
-  
-      </canvas>
-      <canvas id="hitCanvas" class="hitCanvas"></canvas>
+      <canvas id="gameCanvas" willReadFrequently="true" class="gameCanvas"></canvas>
+      <canvas id="hitCanvas" willReadFrequently="true" class="hitCanvas"></canvas>
+
+
     </div>
     
 

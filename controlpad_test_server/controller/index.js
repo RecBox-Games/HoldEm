@@ -11,7 +11,7 @@ console.log("Sub ID: " + subid);
 // canvas
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
-const offset = 4;
+const borderWidth = 10;
 
 const hitCanvas = document.getElementById('hitCanvas');
 const hitCtx = hitCanvas.getContext('2d');
@@ -19,8 +19,8 @@ const hitCtx = hitCanvas.getContext('2d');
 var touch_recognized = false
 
 function updateScreenHeightandWidth() {
-    SCREEN_HEIGHT = window.innerHeight - offset;
-    SCREEN_WIDTH = window.innerWidth - offset;
+    SCREEN_HEIGHT = window.innerHeight - borderWidth*2;
+    SCREEN_WIDTH = window.innerWidth - borderWidth*2;
     canvas.width = SCREEN_WIDTH;
     canvas.height = SCREEN_HEIGHT;
     hitCanvas.width = SCREEN_WIDTH;
@@ -109,6 +109,7 @@ ws.onopen = (event) => {
 	
 	window.addEventListener("touchend", (event) => {
             for (touch of event.changedTouches) {
+                
 		handleTouchEnd(touch.identifier, touch.pageX, touch.pageY);
             }
 	});
@@ -381,6 +382,7 @@ ws.onopen = (event) => {
         let trackDrbl = JSON.parse(JSON.stringify(drbl));
         trackDrbl.track = 0;
         trackDrbl.color = getRandomColor();
+        trackDrbl.outline = 0;
         trackDrbl.context = hitCtx;
         if(trackDrbl.type == "image" | trackDrbl.type == "text"){
             trackDrbl.type = "rect";
@@ -419,6 +421,9 @@ ws.onopen = (event) => {
                         break;
                     case "PlayerResponse":
                         sendResponse();
+                        break;
+                    case "Peek":
+                        timer = setTimeout( flipCard, 1000 );
                         break;
                     default:
                         messages.push(drbl.msg);
