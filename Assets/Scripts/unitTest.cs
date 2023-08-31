@@ -58,7 +58,7 @@ public class unitTest : MonoBehaviour
 
     public void testEndTurn()
     {
-        gameController.endTurn();
+        gameController.nextTurn();
         Debug.Log("It is currently " + gameController.getCurretPlayer() + "\'s turn");
     }
 

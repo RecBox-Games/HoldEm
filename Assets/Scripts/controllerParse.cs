@@ -36,7 +36,7 @@ public class controllerParse : MonoBehaviour
         
         if (messages[0] == "PlayerResponse")
         {
-            gameController.endTurn();
+            gameController.nextTurn();
         }
 
         if (fromPlayer is null)
@@ -87,7 +87,7 @@ public class controllerParse : MonoBehaviour
             variables.Add(playerMoney);
             variables.Add(call);
 
-            if((number-1) == gameController.getLeviCurrentPlayer()){
+            if((number-1) == gameController.getPlayerTurn()){
                 stateName = "PlayingPlayerTurn:";
             }
 

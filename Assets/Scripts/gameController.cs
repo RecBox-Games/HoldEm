@@ -21,11 +21,13 @@ public class gameController : MonoBehaviour
 
     // Instance Variables
     private List<playerController> playerList = new List<playerController>();
-    private List<playerController> turnOrder = new List<playerController>();
+    private Queue<playerController> turnOrder = new Queue<playerController>();
+    private Queue<playerController> roundRobin = new Queue<playerController>();
+    private playerController currentPlayer;
     private int rounds = 0;
     private int potMoney = 0;
     private int tottalMoney = 0;
-    private int currentPlayer;
+    private int playerTurn = 0;
     private bool increasingAnte = false;
     private bool currentRound = false;
 
@@ -39,9 +41,11 @@ public class gameController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (gameState && currentRound)
+        if (gameState)
         {
             turnOrderUI.GetComponent<UnityEngine.UI.Text>().text = getTurnOrder() + "\n";
+            moneyUI.GetComponent<UnityEngine.UI.Text>().text = potMoney.ToString();
+
         }
     }
 
@@ -56,13 +60,12 @@ public class gameController : MonoBehaviour
         return order; 
     }
 
-    public string getCurretPlayer() { return turnOrder[currentPlayer].getName(); }
+    public string getCurretPlayer() { return currentPlayer.getName(); }
 
-    public int getLeviCurrentPlayer() {return currentPlayer;}
+    public int getPlayerTurn() { return playerTurn; }
 
-    public List<playerController>  getPlayerList() { return playerList; }
+    public List<playerController> getPlayerList() { return playerList; }
 
-    
     public void startGame() { startNewGame(this.startMoney, this.ante); }
     
     public void startGame(int startMoney) { startNewGame(startMoney, this.ante); }
@@ -157,7 +160,7 @@ public class gameController : MonoBehaviour
         rounds++;
         currentRound = true;
 
-        Debug.Log("A game of Texas Hold'Em Has begun");
+        // Debug.Log("A game of Texas Hold'Em Has begun");
         // Debug.Log("Tottal Money: " + tottalMoney);
         // Debug.Log("Turn order is: " + getTurnOrder());
         Debug.Log("It is currently " + getCurretPlayer() + "\'s turn.");
@@ -172,7 +175,6 @@ public class gameController : MonoBehaviour
     // - This also will set the first players turn (currnetPlayer gets initialized here)
     public void initializeTurnOrder()
     {
-        // foreach (var player in playerList) { turnOrder.Add(player); }
 
         for (int i = 0; i < playerList.Count; i++)
         {
@@ -183,29 +185,45 @@ public class gameController : MonoBehaviour
             playerList[rand] = temp;
         }
 
-        turnOrder = playerList;
-        currentPlayer = 0;
+        foreach (var player in playerList) { turnOrder.Enqueue(player); }
+        foreach (var player in playerList) { roundRobin.Enqueue(player); }
+        currentPlayer = turnOrder.Peek();
+        playerTurn = 0;
     }
 
-    public void startTurn()
+    public void newRound()
     {
+        currentPlayer = turnOrder.Peek();
+        Debug.Log(currentPlayer.getName() + " has won " + potMoney + "$");
+        currentPlayer.payPlayer(potMoney);
+        potMoney = 0;
+        turnOrder.Clear();
 
+        // Move the first player to the back of the roundRobin then reinstantiate the turnOrder
+        roundRobin.Enqueue(roundRobin.Dequeue());
+        foreach (var player in roundRobin) { turnOrder.Enqueue(player); }
+        currentPlayer = turnOrder.Peek();
+        playerTurn = 0;
+
+        Debug.Log("A new round has started!");
     }
 
-    public void endTurn()
+    public void nextTurn()
     {
-        if (playerList[currentPlayer].isFolded())  
-            turnOrder.Remove(turnOrder[currentPlayer]); 
-        else
-            currentPlayer = (currentPlayer + 1) % turnOrder.Count;
+        turnOrder.Enqueue(turnOrder.Dequeue());
+        if (turnOrder.Count == 1) { newRound(); }
 
+        // Update the current player
+        currentPlayer = turnOrder.Peek();
+        playerTurn = (playerTurn + 1) % turnOrder.Count;
 
         foreach (var playerController in playerList)
         {
             controlpads_glue.SendControlpadMessage(playerController.getIP(), "refresh");
         }
 
-        Debug.Log("It is now " + turnOrder[currentPlayer].getName() + "\'s turn.");
+
+        Debug.Log("It is now " + currentPlayer.getName() + "\'s turn.");
     }
 
     public void anteUP(string playerName, bool playing)
@@ -229,18 +247,18 @@ public class gameController : MonoBehaviour
     // The player wishes to raise the curent bet
     public void raise(int amount)
     {
-        int money = turnOrder[currentPlayer].requestFunds(amount);
+        int money = currentPlayer.requestFunds(amount);
 
         potMoney += money;
-        moneyUI.GetComponent<UnityEngine.UI.Text>().text = potMoney.ToString();
         Debug.Log(getCurretPlayer() + " has put in " + money + " raising to " + potMoney);
-        endTurn();
+        nextTurn();
     }
 
     public void fold()
     {
         Debug.Log(getCurretPlayer() + " has folded this round");
-        playerList[currentPlayer].fold();
-        endTurn();
+        currentPlayer.fold();
+        turnOrder.Dequeue();
+        nextTurn();
     }
 }

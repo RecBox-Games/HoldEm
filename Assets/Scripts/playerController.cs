@@ -47,6 +47,8 @@ public class playerController : MonoBehaviour
 
     public int getPlayerNumber() { return playerNumber;}
 
+    public int getTurnNumber() {  return turnNumber;}
+
 
 
     // Player Setters
@@ -61,7 +63,9 @@ public class playerController : MonoBehaviour
 
     public void setHost() { isHost = true;}
 
-    public void fold() { folded = true; }
+    public void fold() { folded = !folded; }
+
+    public void payPlayer(int amount) { money += amount; }
 
 
     public int requestFunds(int amount) 
