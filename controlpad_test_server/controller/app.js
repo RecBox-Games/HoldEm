@@ -12,6 +12,11 @@ const menuOverlay = document.getElementById('topmenu');
 const nameField = document.getElementById('playerName');
 const moneyField = document.getElementById('playerMoney');
 const statusField = document.getElementById('playerStatus');
+// const carddiv = document.getElementById('customCards');
+const card1 = document.getElementById('card1');
+const card2 = document.getElementById('card2');
+
+
 let needs_draw = false; //Bool to trigger the draw function
 let SCREEN_HEIGHT; //Height of screen
 let SCREEN_WIDTH; //Width of screen
@@ -40,6 +45,8 @@ let playerTurn; //Bool of whether or not it is the player's turn
 let playerCall; //The amount the user actually called. Will be higher than currentCall for a raise
 let action; //Will be fold, call, check, or raise. Updates in controller UI
 let playerMoney; //Amount of money the player has
+let cards = [];
+
 
 //Defined tools and utilities
 
@@ -457,6 +464,7 @@ function drawPlayingWaiting() {
     wipeScreen();
     drawCardBack();
     topMenu();
+    drawPeek()
     drawStatus();    
 }
 
@@ -479,7 +487,6 @@ function drawGameFinished() {
 
 function drawCardBack() {
     cardElement.style.display='flex';
-    
 }
 
 // Draws the waiting screen when a user needs to wait before an action
@@ -556,10 +563,18 @@ function drawActions() {
         track: true
 
     });
+   drawPeek();
+
+}
+function drawPeek(){
+    y = 27*SCREEN_HEIGHT/32;
+   
     x=SCREEN_WIDTH/4;
     text = "Hold to Peek"; 
     autoSize = sizeFont(text,0.25);
     scale = sizeImage(buttonImage,.3);
+    scaleForButtonY = buttonScale(3);
+
 
 
     text_drawables.push({
@@ -583,8 +598,8 @@ function drawActions() {
         track: true,
         msg: "Peek"
     });
-
 }
+
 function drawBetBox(){
     y = 27*SCREEN_HEIGHT/32;
     x = 11*SCREEN_WIDTH/16;
@@ -621,15 +636,6 @@ function drawBetBox(){
         msg: "PlayerResponse"
     });
 }
-
-window.addEventListener('touchmove', ev => {
-    ev.preventDefault();
-})
-
-$("#card").flip({
-    trigger: 'manual'
-  });
-
 
 function flipCard(){
     $("#card").flip(true);
@@ -747,6 +753,7 @@ function sendResponse(){
 }
 
 function updateVariables(sections){
+    cards = [];
     for (i = 1; i < sections.length; i++){
         switch(i) {
             case 2:
@@ -768,10 +775,32 @@ function updateVariables(sections){
                 }
                 break;
             case 5:
+            case 6:
+                cardvalues = sections[i].split("-");
+                addCard(cardvalues);
                 break;
             default:
                 break;
         }
+    }
+}
+
+function addCard(cardarray)
+{
+    let card = {
+        suit: cardarray[0],
+        rank: cardarray[1]
+    }
+    cards.push(card);
+    if (cards.length > 1){
+        card1.suit = cards[0].suit;
+        card1.rank = cards[0].rank;
+        card2.suit = cards[1].suit;
+        card2.rank = cards[1].rank;
+        
+        $("#card").flip({
+            trigger: 'manual'
+          });
     }
 }
 

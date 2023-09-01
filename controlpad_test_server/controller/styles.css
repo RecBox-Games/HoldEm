@@ -7,7 +7,9 @@
 }
 
 /* Game Canvas is always z-index 1 */
-/* Overlay visuals are always z-index-2 */
+/* Overlay visuals are always z-index-2 or 3*/
+/* Modal visuals are always z-index-4*/
+
 
 body {
     touch-action: none;
@@ -57,6 +59,25 @@ canvas {
     
 }
 
+.modal {
+    width: 90vw;
+    height: 90vh;
+    z-index: 4;
+    background-color: white;
+    left: 5vw;
+    top: 5vh;
+    overflow:auto;
+    position:fixed;
+    display: none;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 20vw;
+    font-weight: bold;
+  }
+
 
 
 .front, .back {
@@ -69,7 +90,7 @@ canvas {
     object-fit: contain;
 }
 
-#image-left,#image-right{
+.image-left,.image-right{
     width: 75%;
     height: auto;
     position: absolute;
@@ -80,13 +101,14 @@ canvas {
 }
 
 
-#image-left{
-    z-index: 1;
+.image-left{
+    z-index: 2;
     left:0;
 }
 
-#image-right{
+.image-right{
     right:0;
+    z-index: 3;
 
 }
 #screen {

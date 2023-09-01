@@ -88,6 +88,10 @@ public class controllerParse : MonoBehaviour
             variables.Add(playerMoney);
             variables.Add(call);
 
+            //Need to add card variable tie in here
+            variables.Add("Hearts-King");
+            variables.Add("Clubs-Queen");
+
             if((number-1) == gameController.getPlayerTurn()){
                 stateName = "PlayingPlayerTurn:";
             }
