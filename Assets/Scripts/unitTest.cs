@@ -52,6 +52,8 @@ public class unitTest : MonoBehaviour
         gameController.startGame(startMoney, ante);
     }
 
+    public void testBet(int bet) { gameController.bet(bet); }
+
     public void testRaise(int raise) { gameController.raise(raise); }
 
     public void testTurnOrder() { Debug.Log(gameController.getTurnOrder()); }
@@ -65,5 +67,10 @@ public class unitTest : MonoBehaviour
     public void testRaise() { gameController.raise(raise); }
 
     public void testFold() { gameController.fold(); }
+
+    public void testCall() {  gameController.call(); }
+
+    public void testMyTottalBet() { 
+        Debug.Log("I\'ve Betted: " + gameController.getCurretPlayer().getPlayMoney()); }
 
 }

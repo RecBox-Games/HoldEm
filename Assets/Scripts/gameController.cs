@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -24,10 +25,13 @@ public class gameController : MonoBehaviour
     private Queue<playerController> turnOrder = new Queue<playerController>();
     private Queue<playerController> roundRobin = new Queue<playerController>();
     private playerController currentPlayer;
+    private playerController underTheGun;
+    private playerController highestBidder;
     private int rounds = 0;
     private int potMoney = 0;
     private int tottalMoney = 0;
     private int playerTurn = 0;
+    private int currentBet = 0;
     private bool increasingAnte = false;
     private bool currentRound = false;
 
@@ -45,12 +49,19 @@ public class gameController : MonoBehaviour
         {
             turnOrderUI.GetComponent<UnityEngine.UI.Text>().text = getTurnOrder() + "\n";
             moneyUI.GetComponent<UnityEngine.UI.Text>().text = potMoney.ToString();
+            playerUI.GetComponent<UnityEngine.UI.Text>().text = getPlayerMoneyInfo();
 
         }
     }
 
 
     // ---------- Getters ----------
+    public List<playerController> getPlayerList() { return playerList; }
+
+    public playerController getCurretPlayer() { return currentPlayer; }
+
+    public int getPlayerTurn() { return playerTurn; }
+
     public bool getGameState() { return gameState; }
 
     public string getTurnOrder()
@@ -60,17 +71,16 @@ public class gameController : MonoBehaviour
         return order; 
     }
 
-    public string getCurretPlayer() { return currentPlayer.getName(); }
+    public string getPlayerMoneyInfo()
+    {
+        string finalInfo = "";
+        foreach (var player in playerList)
+        {
+            finalInfo += player.getName()+ "    " + player.getPlayMoney() + "\n";
+        }
 
-    public int getPlayerTurn() { return playerTurn; }
-
-    public List<playerController> getPlayerList() { return playerList; }
-
-    public void startGame() { startNewGame(this.startMoney, this.ante); }
-    
-    public void startGame(int startMoney) { startNewGame(startMoney, this.ante); }
-
-    public void startGame(int startMoney, int ante) { startNewGame(startMoney, ante); }
+        return finalInfo;
+    }
 
 
     /* Creates/Joins a new player to the game
@@ -116,10 +126,17 @@ public class gameController : MonoBehaviour
         playerUI.GetComponent<UnityEngine.UI.Text>().text += playerName + "\n";
     }
 
+    public void startGame() { startNewGame(this.startMoney, this.ante); }
+
+    public void startGame(int startMoney) { startNewGame(startMoney, this.ante); }
+
+    public void startGame(int startMoney, int ante) { startNewGame(startMoney, ante); }
+
     /* This function initializes a new game.
       * 
       * IN:
       * startMoney = The amount of money each player starts with
+      * ante = how much each player has to atne to play a round
       * 
       * Out:
       * The game doesn't throw any exceptions however it does limit when a new
@@ -163,7 +180,7 @@ public class gameController : MonoBehaviour
         // Debug.Log("A game of Texas Hold'Em Has begun");
         // Debug.Log("Tottal Money: " + tottalMoney);
         // Debug.Log("Turn order is: " + getTurnOrder());
-        Debug.Log("It is currently " + getCurretPlayer() + "\'s turn.");
+        Debug.Log("It is currently " + currentPlayer.getName() + "\'s turn.");
     }
 
     // This function will initialize the turnOrder list but filling it with
@@ -188,6 +205,7 @@ public class gameController : MonoBehaviour
         foreach (var player in playerList) { turnOrder.Enqueue(player); }
         foreach (var player in playerList) { roundRobin.Enqueue(player); }
         currentPlayer = turnOrder.Peek();
+        underTheGun = currentPlayer;
         playerTurn = 0;
     }
 
@@ -203,6 +221,7 @@ public class gameController : MonoBehaviour
         roundRobin.Enqueue(roundRobin.Dequeue());
         foreach (var player in roundRobin) { turnOrder.Enqueue(player); }
         currentPlayer = turnOrder.Peek();
+        underTheGun = currentPlayer;
         playerTurn = 0;
 
         Debug.Log("A new round has started!");
@@ -210,10 +229,8 @@ public class gameController : MonoBehaviour
 
     public void nextTurn()
     {
+        // Update the to the next player
         turnOrder.Enqueue(turnOrder.Dequeue());
-        if (turnOrder.Count == 1) { newRound(); }
-
-        // Update the current player
         currentPlayer = turnOrder.Peek();
         playerTurn = (playerTurn + 1) % turnOrder.Count;
 
@@ -222,13 +239,59 @@ public class gameController : MonoBehaviour
             controlpads_glue.SendControlpadMessage(playerController.getIP(), "refresh");
         }
 
-
         Debug.Log("It is now " + currentPlayer.getName() + "\'s turn.");
+
+        if (currentPlayer.isTappedOut()) { nextTurn(); }
     }
 
     public void anteUP(string playerName, bool playing)
     {
         if (playing) { Debug.Log(playerName + " Is playing this round"); }
+    }
+
+    public void bet(int amount)
+    {
+        if (currentBet > 0)
+        {
+            Debug.Log("You cant bet off a bet, you will instead raise the current bet.");
+            raise(amount);
+            return;
+        }
+
+        int money = currentPlayer.requestFunds(amount);
+        currentBet = money;
+        potMoney += money;
+        Debug.Log(currentPlayer.getName() + " has betted " + money + "$.");
+        highestBidder = currentPlayer;
+        nextTurn();
+    }
+
+    // The player wishes to raise the curent bet by amount
+    public void raise(int amount)
+    {
+        if (currentPlayer == highestBidder) { currentBet = 0; }
+        int request = currentBet + amount;
+        int money = currentPlayer.requestFunds(request);
+
+        Debug.Log(currentPlayer.getName() + " sees the last bet of " + 
+            currentBet + " and raises it by " + amount + " putting in a tottal of " + money);
+
+
+        currentBet = money;
+        potMoney += money;
+        highestBidder = currentPlayer;
+        nextTurn();
+    }
+
+    // Player wishes to call the previous bet and stay in
+    public void call()
+    {
+        int money = currentPlayer.requestFunds(Mathf.Abs(currentBet - currentPlayer.getPlayMoney()));
+        
+        Debug.Log(currentPlayer.getName() + " calls the current bet of " + currentBet);
+
+        potMoney += money;
+        nextTurn();
     }
 
     // Player does not have to call to stay in
@@ -238,27 +301,15 @@ public class gameController : MonoBehaviour
 
     }
 
-    // Player wishes to call the previous bet and stay in
-    public void call()
-    {
-
-    }
-
-    // The player wishes to raise the curent bet
-    public void raise(int amount)
-    {
-        int money = currentPlayer.requestFunds(amount);
-
-        potMoney += money;
-        Debug.Log(getCurretPlayer() + " has put in " + money + " raising to " + potMoney);
-        nextTurn();
-    }
-
     public void fold()
     {
-        Debug.Log(getCurretPlayer() + " has folded this round");
+        Debug.Log(currentPlayer.getName() + " has folded this round");
         currentPlayer.fold();
         turnOrder.Dequeue();
+
+        // Check if everyone has folded
+        if (turnOrder.Count == 1) { newRound(); }
+
         nextTurn();
     }
 }
