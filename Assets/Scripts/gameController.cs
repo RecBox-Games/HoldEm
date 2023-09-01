@@ -219,9 +219,15 @@ public class gameController : MonoBehaviour
 
         // Move the first player to the back of the roundRobin then reinstantiate the turnOrder
         roundRobin.Enqueue(roundRobin.Dequeue());
-        foreach (var player in roundRobin) { turnOrder.Enqueue(player); }
+        foreach (var player in roundRobin) { 
+            turnOrder.Enqueue(player); 
+            player.resetPlayMoney();
+            if (player.isFolded()) { player.fold(); }
+
+        }
         currentPlayer = turnOrder.Peek();
         underTheGun = currentPlayer;
+        currentBet = 0;
         playerTurn = 0;
 
         Debug.Log("A new round has started!");
@@ -229,8 +235,12 @@ public class gameController : MonoBehaviour
 
     public void nextTurn()
     {
-        // Update the to the next player
-        turnOrder.Enqueue(turnOrder.Dequeue());
+        // Update the to the next player, unless the current player folded then just remove them.
+        if (currentPlayer.isFolded())
+            turnOrder.Dequeue();
+        else
+            turnOrder.Enqueue(turnOrder.Dequeue());
+
         currentPlayer = turnOrder.Peek();
         playerTurn = (playerTurn + 1) % turnOrder.Count;
 
@@ -300,6 +310,8 @@ public class gameController : MonoBehaviour
     // Player wishes to call the previous bet and stay in
     public void call()
     {
+        if (currentPlayer == highestBidder) { newRound(); return; }
+
         int money;
         if (currentPlayer.getPlayMoney() < currentBet)
             money = currentPlayer.requestFunds(currentBet - currentPlayer.getPlayMoney());
@@ -320,12 +332,12 @@ public class gameController : MonoBehaviour
 
     public void fold()
     {
+        if (currentPlayer == highestBidder) { highestBidder = turnOrder.Peek();}
         Debug.Log(currentPlayer.getName() + " has folded this round");
         currentPlayer.fold();
-        turnOrder.Dequeue();
-
+        
         // Check if everyone has folded
-        if (turnOrder.Count == 1) { newRound(); }
+        if (turnOrder.Count == 1) { newRound(); return; }
 
         nextTurn();
     }
