@@ -269,27 +269,44 @@ public class gameController : MonoBehaviour
     // The player wishes to raise the curent bet by amount
     public void raise(int amount)
     {
-        if (currentPlayer == highestBidder) { currentBet = 0; }
-        int request = currentBet + amount;
-        int money = currentPlayer.requestFunds(request);
+        int money;
+        int lastBet = currentBet;
 
-        Debug.Log(currentPlayer.getName() + " sees the last bet of " + 
-            currentBet + " and raises it by " + amount + " putting in a tottal of " + money);
+        if (currentPlayer.getPlayMoney() < currentBet)
+        {
+            // request funds to call the current bet
+            int callBet = currentPlayer.requestFunds(currentBet - currentPlayer.getPlayMoney());
+            // requst funds to raise the current bet
+            int raiseMoney = currentPlayer.requestFunds(amount);
 
+            money = callBet + raiseMoney;
+            currentBet += raiseMoney;
+        } else
+        {
+            money = currentPlayer.requestFunds(amount);
+            currentBet += money;
+        }
 
-        currentBet = money;
+        // Increment the amount in the pot and then set the current player as the highest bidder
         potMoney += money;
         highestBidder = currentPlayer;
+
+        Debug.Log(currentPlayer.getName() + " sees the last bet of " + 
+            lastBet + " and raises it by " + amount + " putting in a tottal of " + money);
+
         nextTurn();
     }
 
     // Player wishes to call the previous bet and stay in
     public void call()
     {
-        int money = currentPlayer.requestFunds(Mathf.Abs(currentBet - currentPlayer.getPlayMoney()));
+        int money;
+        if (currentPlayer.getPlayMoney() < currentBet)
+            money = currentPlayer.requestFunds(currentBet - currentPlayer.getPlayMoney());
+        else
+            money = currentPlayer.requestFunds(currentBet);
         
         Debug.Log(currentPlayer.getName() + " calls the current bet of " + currentBet);
-
         potMoney += money;
         nextTurn();
     }
@@ -297,7 +314,7 @@ public class gameController : MonoBehaviour
     // Player does not have to call to stay in
     // Player does not wish to raise the bet
     public void check()
-    {
+    { 
 
     }
 
