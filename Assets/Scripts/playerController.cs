@@ -65,6 +65,7 @@ public class playerController : MonoBehaviour
     public void setPlayerIP(string client) { ID = client; }
 
     public void setMoney(int money) { this.money = money;}
+
     public void setPlayerNumber(int num) { playerNumber = num; }
 
     public void setTurnNumber(int turnNumber) { this.turnNumber = turnNumber; }

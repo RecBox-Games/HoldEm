@@ -251,6 +251,9 @@ public class gameController : MonoBehaviour
 
         Debug.Log("It is now " + currentPlayer.getName() + "\'s turn.");
 
+        // This is for limited play, were only allowing players to bet once per draw.
+        if (currentPlayer == highestBidder) { newRound(); return; }
+
         if (currentPlayer.isTappedOut()) { nextTurn(); }
     }
 
@@ -310,7 +313,8 @@ public class gameController : MonoBehaviour
     // Player wishes to call the previous bet and stay in
     public void call()
     {
-        if (currentPlayer == highestBidder) { newRound(); return; }
+        // No limits
+        // if (currentPlayer == highestBidder) { newRound(); return; }
 
         int money;
         if (currentPlayer.getPlayMoney() < currentBet)
@@ -332,7 +336,8 @@ public class gameController : MonoBehaviour
 
     public void fold()
     {
-        if (currentPlayer == highestBidder) { highestBidder = turnOrder.Peek();}
+        // No limits
+        // if (currentPlayer == highestBidder) { highestBidder = turnOrder.Peek();}
         Debug.Log(currentPlayer.getName() + " has folded this round");
         currentPlayer.fold();
         
