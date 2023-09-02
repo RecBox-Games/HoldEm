@@ -59,8 +59,6 @@ public class unitTest : MonoBehaviour
 
     public void testCall() { gameController.call(); }
 
-    public void testCheck() { gameController.check(); }
-
     public void testFold() { gameController.fold(); }
 
     public void testTurnOrder() { Debug.Log(gameController.getTurnOrder()); }

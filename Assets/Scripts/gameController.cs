@@ -9,6 +9,7 @@ using UnityEngine.UIElements;
 public class gameController : MonoBehaviour
 {
     // Default Varaiables
+    [SerializeField] List<Material> gameCards = new List<Material>();
     [SerializeField] GameObject playerPrefab;
     [SerializeField] GameObject playerUI;
     [SerializeField] GameObject moneyUI;
@@ -21,6 +22,7 @@ public class gameController : MonoBehaviour
     private static bool gameState = false; // True means a game has started
 
     // Instance Variables
+    private List<Material> deck = new List<Material>();
     private List<playerController> playerList = new List<playerController>();
     private Queue<playerController> turnOrder = new Queue<playerController>();
     private Queue<playerController> roundRobin = new Queue<playerController>();
@@ -39,7 +41,8 @@ public class gameController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        deck = gameCards;
+        shuffleDeck();
     }
 
     // Update is called once per frame
@@ -327,13 +330,6 @@ public class gameController : MonoBehaviour
         nextTurn();
     }
 
-    // Player does not have to call to stay in
-    // Player does not wish to raise the bet
-    public void check()
-    { 
-
-    }
-
     public void fold()
     {
         // No limits
@@ -345,5 +341,20 @@ public class gameController : MonoBehaviour
         if (turnOrder.Count == 1) { newRound(); return; }
 
         nextTurn();
+    }
+
+    public void shuffleDeck()
+    {
+        Debug.Log("Shuffling the Deck!!! Shuffle Shuffle Shuffle");
+        for (int i = 3;  i > 0; i--) {
+            for (int j = 0; j < deck.Count; j++)
+            {
+                Material temp = deck[j];
+                int rand = Random.Range(j, deck.Count);
+
+                deck[j] = deck[rand];
+                deck[rand] = temp;
+            }
+        }
     }
 }
