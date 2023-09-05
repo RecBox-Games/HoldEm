@@ -30,6 +30,8 @@ let betBoxIndexButton;
 let isHeld = false;
 let timer = null;
 let cardFlipped = false;
+let foldHold = false;
+let foldHoldStartY;
 
 
 // ---- Game Specific Variables ----
@@ -193,22 +195,50 @@ function getDrawables() {
     return [];
 }
 
+function foldTimer()    {
+    if(playerTurn){
+        foldHold = true;
+
+
+    }
+
+}
+
+function fold() {
+    console.log("fold");
+//     action = "Fold";
+//     playerCall = 0;
+//     sendResponse();
+} 
+
 // ---- Touch Handlers ----
 
 //TODO: Fold Gesture
 
 // Handle a single touch as it starts
 function handleTouchStart(id, x, y) {
+    if(foldHold)
+    {
+        foldHoldStartY = y;
+    }
     }
 
 
 // Handle a single touch that has moved
 function handleTouchMove(id, x, y) {
+    if(foldHold && (foldHoldStartY-y)> (SCREEN_HEIGHT/8))
+    {
+        foldHold = false;
+        action = "Fold";
+        playerCall = 0;
+        sendResponse();
+    }
 
 }
 
 // Handle a single touch that has ended
 function handleTouchEnd(id, x, y) {
+    foldHold = false;
     clearTimeout( timer );
     if(cardFlipped){
         $("#card").flip(false);
@@ -221,6 +251,7 @@ function handleTouchEnd(id, x, y) {
 // Handle a single touch that has ended in an unexpected way
 function handleTouchCancel(id, x, y) {
     clearTimeout( timer );
+    foldHold = false;
 
     if(cardFlipped){
         $("#card").flip(false);
@@ -390,6 +421,7 @@ function drawScreen(sections) {
             drawPlayingWaiting();
             break;
         case "PlayingPlayerTurn":
+            playerTurn=true;
             playerStatus = "It's Your Turn!";
             drawPlayingPlayerTurn();
             break;
@@ -528,7 +560,7 @@ function drawActions() {
     let triangleOffset = SCREEN_HEIGHT/10;
     let triangleOutline = borderWidth/2;
     let triangleBase = SCREEN_WIDTH/3;
-    let triangleHeight = SCREEN_HEIGHT/15;
+    let triangleHeight = SCREEN_HEIGHT/20;
     
     drawBetBox();
 

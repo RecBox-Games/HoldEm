@@ -3,7 +3,7 @@
     --border-width: 10px;
     --border-offset: calc(var(--border-width) * 2);
     --color: #32CD32;
-    --card-height: 40vh;
+    --card-height: calc(40 * var(--vh));
 }
 
 /* Game Canvas is always z-index 1 */
@@ -15,15 +15,16 @@ body {
     touch-action: none;
     overflow: hidden;
     width: 100vw;
-    height: 100vh;
+    height: calc(100 * var(--vh));
     margin: 0;
     padding: 0;
     touch-action: none;
+
 }
 
 canvas {
-    width: calc(100vw - var(--border-offset));
-    height: calc(100vh - var(--border-offset));
+    width: 100vw;
+    height: calc(100 * var(--vh) - var(--border-offset));
     top: var(--border-width);
     left: var(--border-width);
 }
@@ -43,16 +44,16 @@ canvas {
 }
 .border {
     border: var(--border-width) solid var(--color);
-    width: calc(100vw - var(--border-offset));
-    height: calc(100vh - var(--border-offset));
+    width: calc(100vw - 20px);
+    height: calc((100 * var(--vh)) - var(--border-offset));
 }
 
 #card  {
     width: 75vw;
     height: var(--card-height);
     left: 50vw;
-    top: 50vh;
-    transform: translate(-50%, -60%);
+    top: calc(50 * var(--vh));
+    transform: translate(-50%, -50%);
     max-width: var(--max-card-width);
     display:none;
     position:absolute;
@@ -61,11 +62,11 @@ canvas {
 
 .modal {
     width: 90vw;
-    height: 90vh;
+    height: calc(90 * var(--vh));
     z-index: 4;
     background-color: white;
     left: 5vw;
-    top: 5vh;
+    top: calc(5 * var(--vh));
     overflow:auto;
     position:fixed;
     display: none;

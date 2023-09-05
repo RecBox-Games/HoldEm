@@ -15,12 +15,16 @@ const borderWidth = 10;
 
 const hitCanvas = document.getElementById('hitCanvas');
 const hitCtx = hitCanvas.getContext('2d');
+var vh;
 
 var touch_recognized = false
 
 function updateScreenHeightandWidth() {
     SCREEN_HEIGHT = window.innerHeight - borderWidth*2;
     SCREEN_WIDTH = window.innerWidth - borderWidth*2;
+    vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', vh + 'px');
+
     canvas.width = SCREEN_WIDTH;
     canvas.height = SCREEN_HEIGHT;
     hitCanvas.width = SCREEN_WIDTH;
