@@ -90,7 +90,7 @@ public class PokerHandEvaluator : MonoBehaviour
         return cards.Take(5).ToList();
     }
 
-    // Implement methods to check for poker hands (Four of a Kind, Full House, etc.) here
+    // Implement methods to check for poker hands (Four of a Kind, Full House, etc.) 
 
     public static bool IsFourOfAKind(List<Card> cards, out List<Card> fourOfAKind)
     {
@@ -362,11 +362,4 @@ foreach(List<Card> sublist in testList){
 
 }                       
 
-        
-        
-
-        // You can now work with the best poker hand (bestHand) as needed in your game logic.
-    }
-
-    // Other game logic methods here...
 }
