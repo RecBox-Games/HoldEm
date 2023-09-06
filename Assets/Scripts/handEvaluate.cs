@@ -39,64 +39,64 @@ public class PokerHandEvaluator : MonoBehaviour
         // Check for the best poker hand starting with the highest ranked cards
         if (IsRoyalFlush(cards, out List<Card> royalFlush))
         {
-            Debug.Log("royal flush");
+            //Debug.Log("royal flush");
             return royalFlush;
         }
         if (IsStraightFlush(cards, out List<Card> straightFlush))
         {
-            Debug.Log("straight flush");
+            //Debug.Log("straight flush");
             return straightFlush;
         }
         if (IsFourOfAKind(cards, out List<Card> fourOfAKind))
         {
-                        Debug.Log("four of a kind");
+                        //Debug.Log("four of a kind");
 
             return fourOfAKind;
         }
 
         if (IsFullHouse(cards, out List<Card> fullHouse))
         {
-                        Debug.Log("full house");
+                        //Debug.Log("full house");
 
             return fullHouse;
         }
 
         if (IsFlush(cards, out List<Card> flush))
         {
-            Debug.Log("flush");
+            //Debug.Log("flush");
             return flush;
         }
 
         if (IsStraight(cards, out List<Card> straight))
         {
-                        Debug.Log("straight");
+                        //Debug.Log("straight");
 
             return straight;
         }
 
         if (IsThreeOfAKind(cards, out List<Card> threeOfAKind))
         {
-                        Debug.Log("three of a kind");
+                        //Debug.Log("three of a kind");
 
             return threeOfAKind;
         }
 
         if (IsTwoPair(cards, out List<Card> twoPair))
         {
-                        Debug.Log("two pair");
+                        //Debug.Log("two pair");
 
             return twoPair;
         }
 
         if (IsOnePair(cards, out List<Card> onePair))
         {
-                        Debug.Log("one pair");
+                        //Debug.Log("one pair");
 
             return onePair;
         }
 
         // If no specific hand is found, return the highest ranked five cards
-        Debug.Log("High Card");
+        //Debug.Log("High Card");
         return cards.Take(5).ToList();
     }
 

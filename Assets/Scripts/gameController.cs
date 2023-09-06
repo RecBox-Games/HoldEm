@@ -22,7 +22,6 @@ public class gameController : MonoBehaviour
     private static bool gameState = false; // True means a game has started
 
     // Instance Variables
-    private List<Material> deck = new List<Material>();
     private List<playerController> playerList = new List<playerController>();
     private Queue<playerController> turnOrder = new Queue<playerController>();
     private Queue<playerController> roundRobin = new Queue<playerController>();
@@ -41,8 +40,7 @@ public class gameController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        deck = gameCards;
-        shuffleDeck();
+
     }
 
     // Update is called once per frame
@@ -79,7 +77,8 @@ public class gameController : MonoBehaviour
         string finalInfo = "";
         foreach (var player in playerList)
         {
-            finalInfo += player.getName()+ "    " + player.getPlayMoney() + "\n";
+            finalInfo += player.getName()+ "    " + player.getPlayMoney() + "     " +
+                player.getMoney() + "\n";
         }
 
         return finalInfo;
@@ -341,21 +340,6 @@ public class gameController : MonoBehaviour
         if (turnOrder.Count == 1) { newRound(); return; }
 
         nextTurn();
-    }
-
-    public void shuffleDeck()
-    {
-        Debug.Log("Shuffling the Deck!!! Shuffle Shuffle Shuffle");
-        for (int i = 3;  i > 0; i--) {
-            for (int j = 0; j < deck.Count; j++)
-            {
-                Material temp = deck[j];
-                int rand = Random.Range(j, deck.Count);
-
-                deck[j] = deck[rand];
-                deck[rand] = temp;
-            }
-        }
     }
 
     public int getCurrentCall() { return currentBet; }

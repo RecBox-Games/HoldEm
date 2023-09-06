@@ -19,6 +19,8 @@ public class controllerParse : MonoBehaviour
         // Parse msg by
         var messages = msg.Split(':');
 
+        foreach (var message in messages) { Debug.Log("messages is: " + message); }
+
         if (messages[0] == "NewPlayer") 
         {
             string playerName = messages[1];
@@ -56,6 +58,7 @@ public class controllerParse : MonoBehaviour
 
         if (fromPlayer is null)
         {
+            Debug.Log("Sent:ReadyToJoin");
             controlpads_glue.SendControlpadMessage(client, "state:ReadyToJoin");
 
         }
