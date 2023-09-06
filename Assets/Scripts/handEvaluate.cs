@@ -37,6 +37,16 @@ public class PokerHandEvaluator : MonoBehaviour
         
 
         // Check for the best poker hand starting with the highest ranked cards
+        if (IsRoyalFlush(cards, out List<Card> royalFlush))
+        {
+            Debug.Log("royal flush");
+            return royalFlush;
+        }
+        if (IsStraightFlush(cards, out List<Card> straightFlush))
+        {
+            Debug.Log("straight flush");
+            return straightFlush;
+        }
         if (IsFourOfAKind(cards, out List<Card> fourOfAKind))
         {
                         Debug.Log("four of a kind");
@@ -91,7 +101,40 @@ public class PokerHandEvaluator : MonoBehaviour
     }
 
     // Implement methods to check for poker hands (Four of a Kind, Full House, etc.) 
+    public static bool IsRoyalFlush(List<Card> cards, out List<Card> royalFlush)
+    {
+        royalFlush = null;
+        if(IsStraightFlush(cards, out List<Card> candidate))
+        {
+            if(candidate[0].rank.ToString() == "Ace")
+            {
+                royalFlush = candidate;
+                return true;
+            }
+            return false;
+        }      
 
+
+        return false;
+    }
+    public static bool IsStraightFlush(List<Card> cards, out List<Card> straightFlush)
+    {
+        straightFlush = null;         
+
+        foreach (var suit in Enum.GetValues(typeof(Card.Suit)))
+        {
+            var suitCards = cards.Where(c => c.suit == (Card.Suit)suit).ToList();
+            if (suitCards.Count >= 5)
+            {
+                if(IsStraight(suitCards, out List<Card> bbqSauce))
+                {
+                    straightFlush = bbqSauce;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     public static bool IsFourOfAKind(List<Card> cards, out List<Card> fourOfAKind)
     {
         fourOfAKind = null;
@@ -111,12 +154,24 @@ public class PokerHandEvaluator : MonoBehaviour
 
     public static bool IsFullHouse(List<Card> cards, out List<Card> fullHouse)
     {
-        fullHouse = null;
-        if (IsThreeOfAKind(cards, out List<Card> threeOfAKind) && IsOnePair(cards, out List<Card> onePair))
+        fullHouse = null;         
+        if(IsThreeOfAKind(cards, out List<Card> threeOfAKind))
         {
-            fullHouse = threeOfAKind.Concat(onePair).ToList();
-            return true;
+            List<Card> leftovers = new List<Card>(cards);
+
+            for(int i = 0; i < 3; i++)
+            {
+                leftovers.Remove(threeOfAKind[i]);
+            }
+
+            if(IsOnePair(leftovers, out List<Card> onePair))
+            {
+                fullHouse = threeOfAKind.Concat(onePair).ToList();
+                return true; 
+            }
+
         }
+
         return false;
     }
 
@@ -143,7 +198,7 @@ public class PokerHandEvaluator : MonoBehaviour
             bool isConsecutive = true;
             for (int j = i; j < i + 4; j++)
             {
-                if (cards[j].rank != cards[j + 1].rank - 1)
+                if (cards[j+1].rank != cards[j].rank - 1)
                 {
                     isConsecutive = false;
                     break;
@@ -174,28 +229,28 @@ public class PokerHandEvaluator : MonoBehaviour
     }
 
     public static bool IsTwoPair(List<Card> cards, out List<Card> twoPair)
-{
-    twoPair = null;
-    var pairs = new List<Card>();
-    for (int i = 0; i <= cards.Count - 2; i++)
     {
-        if (cards[i].rank == cards[i + 1].rank)
+        twoPair = null;
+        var pairs = new List<Card>();
+        for (int i = 0; i <= cards.Count - 2; i++)
         {
-            pairs.Add(cards[i]);
-            pairs.Add(cards[i+1]);
-            i++; // Skip the next card since it's part of the pair
+            if (cards[i].rank == cards[i + 1].rank)
+            {
+                pairs.Add(cards[i]);
+                pairs.Add(cards[i+1]);
+                i++; // Skip the next card since it's part of the pair
+            }
         }
-    }
 
-    if (pairs.Count >= 4)
-    {
-        var tempTwoPair = new List<Card>(pairs.OrderByDescending(c => c.rank).Take(4));
-        tempTwoPair.Add(cards.First(c => c.rank != tempTwoPair[0].rank && c.rank != tempTwoPair[2].rank)); // Add the highest non-matching card
-        twoPair = tempTwoPair; // Assign the result to the 'twoPair' out parameter
-        return true;
+        if (pairs.Count >= 4)
+        {
+            var tempTwoPair = new List<Card>(pairs.OrderByDescending(c => c.rank).Take(4));
+            tempTwoPair.Add(cards.First(c => c.rank != tempTwoPair[0].rank && c.rank != tempTwoPair[2].rank)); // Add the highest non-matching card
+            twoPair = tempTwoPair; // Assign the result to the 'twoPair' out parameter
+            return true;
+        }
+        return false;
     }
-    return false;
-}
 
 
 
@@ -362,4 +417,5 @@ foreach(List<Card> sublist in testList){
 
 }                       
 
+}
 }
