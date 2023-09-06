@@ -357,4 +357,7 @@ public class gameController : MonoBehaviour
             }
         }
     }
+
+    public int getCurrentCall() { return currentBet; }
+
 }

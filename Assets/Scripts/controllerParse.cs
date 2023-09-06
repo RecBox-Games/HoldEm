@@ -37,7 +37,21 @@ public class controllerParse : MonoBehaviour
         
         if (messages[0] == "PlayerResponse")
         {
-            gameController.nextTurn();
+            string action = messages[1];
+            int amount = int.Parse(messages[2]);
+            switch (action)
+            {
+                case "Fold":
+                    gameController.fold();
+                    break;
+                case "Call":
+                case "Check":
+                    gameController.call();
+                    break;
+                case "Raise":
+                    gameController.raise(amount-gameController.getCurrentCall());
+                    break;              
+            }
         }
 
         if (fromPlayer is null)
@@ -86,7 +100,7 @@ public class controllerParse : MonoBehaviour
         else {
 
             variables.Add(playerMoney);
-            variables.Add(call);
+            variables.Add(gameController.getCurrentCall().ToString());
 
             //Need to add card variable tie in here
             variables.Add("Hearts-King");
