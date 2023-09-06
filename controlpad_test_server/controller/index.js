@@ -19,6 +19,8 @@ var vh;
 
 var touch_recognized = false
 
+
+
 function updateScreenHeightandWidth() {
     SCREEN_HEIGHT = window.innerHeight - borderWidth*2;
     SCREEN_WIDTH = window.innerWidth - borderWidth*2;
@@ -44,9 +46,11 @@ function screenChange() {
 window.addEventListener("resize", (event) => {
     screenChange();
 });
-screen.orientation.addEventListener("change", (event) => {
-    ORIENTATION = screen.orientation;
-});
+// screen.orientation.addEventListener("change", (event) => {
+//     ORIENTATION = screen.orientation;
+// });
+console.log("Here");
+
   
 
 
@@ -440,7 +444,6 @@ ws.onopen = (event) => {
     function hasSameColor(color, drbl){
         return color === drbl;
     }
-
 
     updateScreenHeightandWidth();
     controlpadStart(SCREEN_WIDTH, SCREEN_HEIGHT);
