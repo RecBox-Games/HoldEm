@@ -43,7 +43,7 @@ public class Card
 
 public class PokerHandEvaluator : MonoBehaviour
 {
-     public static List<PlayerHandInfo>  DetermineWinnersArray(List<PlayerHandInfo> playerHands)
+     public static List<PlayerHandInfo>  DetermineWinners(List<PlayerHandInfo> playerHands)
     {
         if (playerHands == null || playerHands.Count == 0)
         {
@@ -60,10 +60,38 @@ public class PokerHandEvaluator : MonoBehaviour
             {
                 winnerList.Add(playerHand);
             }
-            
+            else
+            {
+                break;
+            }         
         }
+
+        
+
+        //Check for multiple winners
+        if(winnerList.Count > 1)
+        {
+            for(int i = 0; i < 5; i++ )
+            {
+                if (winnerList.Count == 1)
+                {
+                    Debug.Log("Winner Found");
+                    break;
+                }
+                //Sort By the i-th card
+                winnerList.Sort((p1, p2) => p2.Hand.HandCards[i].rank.CompareTo(p1.Hand.HandCards[i].rank));
+
+                var highestCard = winnerList[0].Hand.HandCards[i].rank;
+
+                winnerList.RemoveAll(p => p.Hand.HandCards[i].rank < highestCard);
+
+            }
+        }
+
         return winnerList;
     }
+
+
 
    
 
@@ -289,24 +317,24 @@ public class handEvaluate : MonoBehaviour
         // Test Case 1: High Card
         var cards1 = new List<Card>
         {
+            new Card(Card.Suit.Hearts, Card.Rank.Eight),
             new Card(Card.Suit.Hearts, Card.Rank.Seven),
-            new Card(Card.Suit.Diamonds, Card.Rank.Three),
-            new Card(Card.Suit.Clubs, Card.Rank.Ten),
-            new Card(Card.Suit.Spades, Card.Rank.Ace),
-            new Card(Card.Suit.Hearts, Card.Rank.King),
+            new Card(Card.Suit.Hearts, Card.Rank.Jack),
+            new Card(Card.Suit.Hearts, Card.Rank.Ten),
+            new Card(Card.Suit.Hearts, Card.Rank.Nine),
             new Card(Card.Suit.Diamonds, Card.Rank.Two),
             new Card(Card.Suit.Clubs, Card.Rank.Queen)
         };
 
 
-        // Test Case 2: One Pair
+        // Test Case 2: 
         var cards2 = new List<Card>
         {
-            new Card(Card.Suit.Hearts, Card.Rank.Seven),
-            new Card(Card.Suit.Diamonds, Card.Rank.Seven),
+            new Card(Card.Suit.Clubs, Card.Rank.Eight),
+            new Card(Card.Suit.Clubs, Card.Rank.Seven),
+            new Card(Card.Suit.Clubs, Card.Rank.Jack),
             new Card(Card.Suit.Clubs, Card.Rank.Ten),
-            new Card(Card.Suit.Spades, Card.Rank.Ace),
-            new Card(Card.Suit.Hearts, Card.Rank.King),
+            new Card(Card.Suit.Clubs, Card.Rank.Nine),
             new Card(Card.Suit.Diamonds, Card.Rank.Two),
             new Card(Card.Suit.Clubs, Card.Rank.Queen)
         };
@@ -406,6 +434,17 @@ public class handEvaluate : MonoBehaviour
             new Card(Card.Suit.Diamonds, Card.Rank.Two),
             new Card(Card.Suit.Clubs, Card.Rank.Queen)
         };
+        // Test Case 9: Straight Flush, but a touch higher
+        var cards11 = new List<Card>
+        {
+            new Card(Card.Suit.Hearts, Card.Rank.Eight),
+            new Card(Card.Suit.Hearts, Card.Rank.Nine),
+            new Card(Card.Suit.Hearts, Card.Rank.Ten),
+            new Card(Card.Suit.Hearts, Card.Rank.Jack),
+            new Card(Card.Suit.Hearts, Card.Rank.Queen),
+            new Card(Card.Suit.Diamonds, Card.Rank.Two),
+            new Card(Card.Suit.Clubs, Card.Rank.Queen)
+        };
 
         List<List<Card>> testList = new List<List<Card>>();
         testList.Add(cards1);
@@ -417,8 +456,9 @@ public class handEvaluate : MonoBehaviour
         testList.Add(cards7);
         testList.Add(cards8);
         testList.Add(cards9);
-        testList.Add(cards10);
-        testList.Add(cards10);
+        testList.Add(cards11);
+
+        
 
 
         var groupTestList = new List<PlayerHandInfo>();
@@ -430,37 +470,42 @@ public class handEvaluate : MonoBehaviour
             count = count + 1;
         }
         
-        List<PlayerHandInfo>  bbqSauce = PokerHandEvaluator.DetermineWinnersArray(groupTestList);
+        List<PlayerHandInfo>  bbqSauce = PokerHandEvaluator.DetermineWinners(groupTestList);
+        string bestHandDescription = bbqSauce[0].Hand.HandDescription.ToString();
+
+        Debug.Log("Best Hand: " + bestHandDescription);
+
         foreach (PlayerHandInfo player in bbqSauce)
         {
-            Debug.Log(player.PlayerNumber);
-            Debug.Log(player.Hand.HandDescription);
+
+            Debug.Log("Player " + player.PlayerNumber.ToString() + " Hand: " + string.Join(", ", player.Hand.HandCards.Select(card => card.rank + " of " + card.suit)));
+
         }
 
 
         
-        // foreach (List<Card> sublist in testList)
-        // {
-        //     PokerHandEvaluator.PokerHandResult result = PokerHandEvaluator.FindBestPokerHand(sublist);
-        //     string bestHandDescription = result.HandDescription;
-        //     List<Card> bestHandCards = result.HandCards;
-        //     int bestHandRank = result.HandRank;
+        // // foreach (List<Card> sublist in testList)
+        // // {
+        // //     PokerHandEvaluator.PokerHandResult result = PokerHandEvaluator.FindBestPokerHand(sublist);
+        // //     string bestHandDescription = result.HandDescription;
+        // //     List<Card> bestHandCards = result.HandCards;
+        // //     int bestHandRank = result.HandRank;
 
-        //     Debug.Log("Best Hand: " + bestHandDescription);
-        //     Debug.Log("Best Hand Cards: " + string.Join(", ", bestHandCards.Select(card => card.rank + " of " + card.suit)));
-        //     Debug.Log("Best Hand Rank: " + bestHandRank);
-        // }
+        // //     Debug.Log("Best Hand: " + bestHandDescription);
+        // //     Debug.Log("Best Hand Cards: " + string.Join(", ", bestHandCards.Select(card => card.rank + " of " + card.suit)));
+        // //     Debug.Log("Best Hand Rank: " + bestHandRank);
+        // // }
 
 
-        //Kevin Look here for how to call it
-        PokerHandResult result = PokerHandEvaluator.FindBestPokerHand(cards1);
-        string bestHandDescription = result.HandDescription;
-        List<Card> bestHandCards = result.HandCards;
-        int bestHandRank = result.HandRank;
+        // //Kevin Look here for how to call it
+        // PokerHandResult result = PokerHandEvaluator.FindBestPokerHand(cards1);
+        // string bestHandDescription = result.HandDescription;
+        // List<Card> bestHandCards = result.HandCards;
+        // int bestHandRank = result.HandRank;
 
-        Debug.Log("Best Hand: " + bestHandDescription);
-        Debug.Log("Best Hand Cards: " + string.Join(", ", bestHandCards.Select(card => card.rank + " of " + card.suit)));
-        Debug.Log("Best Hand Rank: " + bestHandRank);
+        // Debug.Log("Best Hand: " + bestHandDescription);
+        // Debug.Log("Best Hand Cards: " + string.Join(", ", bestHandCards.Select(card => card.rank + " of " + card.suit)));
+        // Debug.Log("Best Hand Rank: " + bestHandRank);
 
 
         }
