@@ -28,14 +28,46 @@ public class Card
     }
 }
 
-public class PokerHandEvaluator : MonoBehaviour
-{
+ public class PlayerHandInfo
+    {
+        public PokerHandResult Hand {get; set;}
+        public int PlayerNumber {get;set;}
+    }
+
     public class PokerHandResult
     {
         public string HandDescription { get; set; }
         public List<Card> HandCards { get; set; }
         public int HandRank {get; set;}
     }
+
+public class PokerHandEvaluator : MonoBehaviour
+{
+     public static List<PlayerHandInfo>  DetermineWinnersArray(List<PlayerHandInfo> playerHands)
+    {
+        if (playerHands == null || playerHands.Count == 0)
+        {
+            throw new ArgumentException("Invalid player hands input.");
+        }
+
+        playerHands.Sort((p1, p2) => p1.Hand.HandRank.CompareTo(p2.Hand.HandRank));
+        int winningRank = playerHands[0].Hand.HandRank;
+        var winnerList = new List<PlayerHandInfo>();
+
+        foreach (var playerHand in playerHands)
+        {
+            if(playerHand.Hand.HandRank == winningRank)
+            {
+                winnerList.Add(playerHand);
+            }
+            
+        }
+        return winnerList;
+    }
+
+   
+
+
      public static PokerHandResult FindBestPokerHand(List<Card> cards)
     {
         cards.Sort((c1, c2) => c2.rank.CompareTo(c1.rank));
@@ -386,6 +418,24 @@ public class handEvaluate : MonoBehaviour
         testList.Add(cards8);
         testList.Add(cards9);
         testList.Add(cards10);
+        testList.Add(cards10);
+
+
+        var groupTestList = new List<PlayerHandInfo>();
+        int count = 0;
+        foreach (List<Card> sublist in testList)
+        {
+            var addedInfo = new PlayerHandInfo { Hand = PokerHandEvaluator.FindBestPokerHand(sublist) , PlayerNumber = count  };
+            groupTestList.Add(addedInfo);
+            count = count + 1;
+        }
+        
+        List<PlayerHandInfo>  bbqSauce = PokerHandEvaluator.DetermineWinnersArray(groupTestList);
+        foreach (PlayerHandInfo player in bbqSauce)
+        {
+            Debug.Log(player.PlayerNumber);
+            Debug.Log(player.Hand.HandDescription);
+        }
 
 
         
@@ -403,7 +453,7 @@ public class handEvaluate : MonoBehaviour
 
 
         //Kevin Look here for how to call it
-        PokerHandEvaluator.PokerHandResult result = PokerHandEvaluator.FindBestPokerHand(cards1);
+        PokerHandResult result = PokerHandEvaluator.FindBestPokerHand(cards1);
         string bestHandDescription = result.HandDescription;
         List<Card> bestHandCards = result.HandCards;
         int bestHandRank = result.HandRank;
