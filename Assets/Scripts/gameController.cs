@@ -9,11 +9,11 @@ using UnityEngine.UIElements;
 public class gameController : MonoBehaviour
 {
     // Default Varaiables
-    [SerializeField] List<Material> gameCards = new List<Material>();
     [SerializeField] GameObject playerPrefab;
     [SerializeField] GameObject playerUI;
     [SerializeField] GameObject moneyUI;
     [SerializeField] GameObject turnOrderUI;
+    [SerializeField] cardController cardController;
     [SerializeField] int maxPlayers;
     [SerializeField] int startMoney;
     [SerializeField] int ante;
@@ -26,15 +26,14 @@ public class gameController : MonoBehaviour
     private Queue<playerController> turnOrder = new Queue<playerController>();
     private Queue<playerController> roundRobin = new Queue<playerController>();
     private playerController currentPlayer;
-    private playerController underTheGun;
     private playerController highestBidder;
     private int rounds = 0;
+    private int turn = 0;
     private int potMoney = 0;
     private int tottalMoney = 0;
     private int playerTurn = 0;
     private int currentBet = 0;
     private bool increasingAnte = false;
-    private bool currentRound = false;
 
 
     // Start is called before the first frame update
@@ -177,12 +176,15 @@ public class gameController : MonoBehaviour
         tottalMoney = startMoney * playerList.Count;
         this.ante = ante;
         rounds++;
-        currentRound = true;
+        cardController.dealCards(playerList);
+
 
         // Debug.Log("A game of Texas Hold'Em Has begun");
         // Debug.Log("Tottal Money: " + tottalMoney);
         // Debug.Log("Turn order is: " + getTurnOrder());
-        Debug.Log("It is currently " + currentPlayer.getName() + "\'s turn.");
+        string cards = "Hole Cards:";
+        foreach (var card in currentPlayer.getHoleCards()) { cards = cards + " " + card + ","; }
+        Debug.Log("It is now " + currentPlayer.getName() + "\'s turn. \n " + cards);
     }
 
     // This function will initialize the turnOrder list but filling it with
@@ -207,30 +209,41 @@ public class gameController : MonoBehaviour
         foreach (var player in playerList) { turnOrder.Enqueue(player); }
         foreach (var player in playerList) { roundRobin.Enqueue(player); }
         currentPlayer = turnOrder.Peek();
-        underTheGun = currentPlayer;
+        highestBidder = currentPlayer;
         playerTurn = 0;
     }
 
     public void newRound()
     {
+        if (turn == 0) { cardController.revealFlop(); turn++; currentBet = 0; return; }
+        else if (turn == 1) { cardController.revealTurn(); turn++; currentBet = 0; return; }
+        else if (turn == 2) { cardController.revealRiver(); turn++; currentBet = 0; return; }
+
         currentPlayer = turnOrder.Peek();
         Debug.Log(currentPlayer.getName() + " has won " + potMoney + "$");
         currentPlayer.payPlayer(potMoney);
-        potMoney = 0;
+
+        rounds++;
         turnOrder.Clear();
+        cardController.resetCards();
 
         // Move the first player to the back of the roundRobin then reinstantiate the turnOrder
         roundRobin.Enqueue(roundRobin.Dequeue());
         foreach (var player in roundRobin) { 
             turnOrder.Enqueue(player); 
             player.resetPlayMoney();
+            player.resetHoleCards();
             if (player.isFolded()) { player.fold(); }
 
         }
+
+        // Reset variables
         currentPlayer = turnOrder.Peek();
-        underTheGun = currentPlayer;
+        highestBidder = currentPlayer;
+        potMoney = 0;
         currentBet = 0;
         playerTurn = 0;
+        turn = 0;
 
         Debug.Log("A new round has started!");
     }
@@ -251,7 +264,9 @@ public class gameController : MonoBehaviour
             controlpads_glue.SendControlpadMessage(playerController.getIP(), "refresh");
         }
 
-        Debug.Log("It is now " + currentPlayer.getName() + "\'s turn.");
+        string cards = "Hole Cards:";
+        foreach (var card in currentPlayer.getHoleCards()) { cards = cards + " " + card + ","; }
+        Debug.Log("It is now " + currentPlayer.getName() + "\'s turn. \n " + cards);
 
         // This is for limited play, were only allowing players to bet once per draw.
         if (currentPlayer == highestBidder) { newRound(); return; }

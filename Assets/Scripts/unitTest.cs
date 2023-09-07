@@ -74,4 +74,11 @@ public class unitTest : MonoBehaviour
     public void testMyTottalBet() { 
         Debug.Log("I\'ve Betted: " + gameController.getCurretPlayer().getPlayMoney()); }
 
+    public void testShowMyCards()
+    {
+        string final = "Cards:";
+        foreach (var card in gameController.getCurretPlayer().getHoleCards()) { final += " " + card; }
+        Debug.Log(final);
+    }
+
 }

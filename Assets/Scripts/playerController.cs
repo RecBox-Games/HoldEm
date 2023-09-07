@@ -58,6 +58,8 @@ public class playerController : MonoBehaviour
 
     public int getPlayMoney() { return playMoney; }
 
+    public List<string> getHoleCards() {  return holeCards; }
+
 
     // Player Setters
     public void setName(string name) { username = name;}
@@ -78,6 +80,8 @@ public class playerController : MonoBehaviour
 
     public void payPlayer(int amount) { money += amount; }
 
+    public void holeCardAdd(Material holecard) { holeCards.Add(holecard.name); }
+
 
     public int requestFunds(int amount) 
     {
@@ -96,4 +100,6 @@ public class playerController : MonoBehaviour
         money -= amount;
         return amount;
     }
+
+    public void resetHoleCards() { holeCards.Clear(); }
 }
