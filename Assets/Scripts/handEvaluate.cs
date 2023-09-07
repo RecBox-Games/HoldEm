@@ -30,75 +30,56 @@ public class Card
 
 public class PokerHandEvaluator : MonoBehaviour
 {
-    public static List<Card> FindBestPokerHand(List<Card> cards)
+    public class PokerHandResult
+    {
+        public string HandDescription { get; set; }
+        public List<Card> HandCards { get; set; }
+        public int HandRank {get; set;}
+    }
+     public static PokerHandResult FindBestPokerHand(List<Card> cards)
     {
         cards.Sort((c1, c2) => c2.rank.CompareTo(c1.rank));
 
-        
-
-        // Check for the best poker hand starting with the highest ranked cards
         if (IsRoyalFlush(cards, out List<Card> royalFlush))
         {
-            //Debug.Log("royal flush");
-            return royalFlush;
+            return new PokerHandResult { HandDescription = "Royal Flush", HandCards = royalFlush, HandRank = 0 };
         }
         if (IsStraightFlush(cards, out List<Card> straightFlush))
         {
-            //Debug.Log("straight flush");
-            return straightFlush;
+            return new PokerHandResult { HandDescription = "Straight Flush", HandCards = straightFlush, HandRank = 1 };
         }
         if (IsFourOfAKind(cards, out List<Card> fourOfAKind))
         {
-                        //Debug.Log("four of a kind");
-
-            return fourOfAKind;
+            return new PokerHandResult { HandDescription = "Four of a Kind", HandCards = fourOfAKind, HandRank = 2 };
         }
-
         if (IsFullHouse(cards, out List<Card> fullHouse))
         {
-                        //Debug.Log("full house");
-
-            return fullHouse;
+            return new PokerHandResult { HandDescription = "Full House", HandCards = fullHouse, HandRank = 3 };
         }
-
         if (IsFlush(cards, out List<Card> flush))
         {
-            //Debug.Log("flush");
-            return flush;
+            return new PokerHandResult { HandDescription = "Flush", HandCards = flush, HandRank = 4 };
         }
-
         if (IsStraight(cards, out List<Card> straight))
         {
-                        //Debug.Log("straight");
-
-            return straight;
+            return new PokerHandResult { HandDescription = "Straight", HandCards = straight, HandRank = 5 };
         }
-
         if (IsThreeOfAKind(cards, out List<Card> threeOfAKind))
         {
-                        //Debug.Log("three of a kind");
-
-            return threeOfAKind;
+            return new PokerHandResult { HandDescription = "Three of a Kind", HandCards = threeOfAKind, HandRank = 6 };
         }
-
         if (IsTwoPair(cards, out List<Card> twoPair))
         {
-                        //Debug.Log("two pair");
-
-            return twoPair;
+            return new PokerHandResult { HandDescription = "Two Pair", HandCards = twoPair, HandRank = 7};
         }
-
         if (IsOnePair(cards, out List<Card> onePair))
         {
-                        //Debug.Log("one pair");
-
-            return onePair;
+            return new PokerHandResult { HandDescription = "One Pair", HandCards = onePair, HandRank = 8};
         }
-
-        // If no specific hand is found, return the highest ranked five cards
-        //Debug.Log("High Card");
-        return cards.Take(5).ToList();
+        List<Card> highCard = cards.Take(5).ToList();
+        return new PokerHandResult { HandDescription = "High Card", HandCards = highCard, HandRank = 9 };
     }
+
 
     // Implement methods to check for poker hands (Four of a Kind, Full House, etc.) 
     public static bool IsRoyalFlush(List<Card> cards, out List<Card> royalFlush)
@@ -151,7 +132,6 @@ public class PokerHandEvaluator : MonoBehaviour
         }
         return false;
     }
-
     public static bool IsFullHouse(List<Card> cards, out List<Card> fullHouse)
     {
         fullHouse = null;         
@@ -174,7 +154,6 @@ public class PokerHandEvaluator : MonoBehaviour
 
         return false;
     }
-
     public static bool IsFlush(List<Card> cards, out List<Card> flush)
     {
         flush = null;
@@ -252,8 +231,6 @@ public class PokerHandEvaluator : MonoBehaviour
         return false;
     }
 
-
-
     public static bool IsOnePair(List<Card> cards, out List<Card> onePair)
     {
         onePair = null;
@@ -278,144 +255,163 @@ public class handEvaluate : MonoBehaviour
 
         // Example usage:
         // Test Case 1: High Card
-var cards1 = new List<Card>
-{
-    new Card(Card.Suit.Hearts, Card.Rank.Seven),
-    new Card(Card.Suit.Diamonds, Card.Rank.Three),
-    new Card(Card.Suit.Clubs, Card.Rank.Ten),
-    new Card(Card.Suit.Spades, Card.Rank.Ace),
-    new Card(Card.Suit.Hearts, Card.Rank.King),
-    new Card(Card.Suit.Diamonds, Card.Rank.Two),
-    new Card(Card.Suit.Clubs, Card.Rank.Queen)
-};
+        var cards1 = new List<Card>
+        {
+            new Card(Card.Suit.Hearts, Card.Rank.Seven),
+            new Card(Card.Suit.Diamonds, Card.Rank.Three),
+            new Card(Card.Suit.Clubs, Card.Rank.Ten),
+            new Card(Card.Suit.Spades, Card.Rank.Ace),
+            new Card(Card.Suit.Hearts, Card.Rank.King),
+            new Card(Card.Suit.Diamonds, Card.Rank.Two),
+            new Card(Card.Suit.Clubs, Card.Rank.Queen)
+        };
 
 
-// Test Case 2: One Pair
-var cards2 = new List<Card>
-{
-    new Card(Card.Suit.Hearts, Card.Rank.Seven),
-    new Card(Card.Suit.Diamonds, Card.Rank.Seven),
-    new Card(Card.Suit.Clubs, Card.Rank.Ten),
-    new Card(Card.Suit.Spades, Card.Rank.Ace),
-    new Card(Card.Suit.Hearts, Card.Rank.King),
-    new Card(Card.Suit.Diamonds, Card.Rank.Two),
-    new Card(Card.Suit.Clubs, Card.Rank.Queen)
-};
+        // Test Case 2: One Pair
+        var cards2 = new List<Card>
+        {
+            new Card(Card.Suit.Hearts, Card.Rank.Seven),
+            new Card(Card.Suit.Diamonds, Card.Rank.Seven),
+            new Card(Card.Suit.Clubs, Card.Rank.Ten),
+            new Card(Card.Suit.Spades, Card.Rank.Ace),
+            new Card(Card.Suit.Hearts, Card.Rank.King),
+            new Card(Card.Suit.Diamonds, Card.Rank.Two),
+            new Card(Card.Suit.Clubs, Card.Rank.Queen)
+        };
 
-// Test Case 3: Two Pair
-var cards3 = new List<Card>
-{
-    new Card(Card.Suit.Hearts, Card.Rank.Seven),
-    new Card(Card.Suit.Diamonds, Card.Rank.Seven),
-    new Card(Card.Suit.Clubs, Card.Rank.Ten),
-    new Card(Card.Suit.Spades, Card.Rank.Ten),
-    new Card(Card.Suit.Hearts, Card.Rank.King),
-    new Card(Card.Suit.Diamonds, Card.Rank.Two),
-    new Card(Card.Suit.Clubs, Card.Rank.Queen)
-};
+        // Test Case 3: Two Pair
+        var cards3 = new List<Card>
+        {
+            new Card(Card.Suit.Hearts, Card.Rank.Seven),
+            new Card(Card.Suit.Diamonds, Card.Rank.Seven),
+            new Card(Card.Suit.Clubs, Card.Rank.Ten),
+            new Card(Card.Suit.Spades, Card.Rank.Ten),
+            new Card(Card.Suit.Hearts, Card.Rank.King),
+            new Card(Card.Suit.Diamonds, Card.Rank.Two),
+            new Card(Card.Suit.Clubs, Card.Rank.Queen)
+        };
 
-// Test Case 4: Three of a Kind
-var cards4 = new List<Card>
-{
-    new Card(Card.Suit.Hearts, Card.Rank.Seven),
-    new Card(Card.Suit.Diamonds, Card.Rank.Seven),
-    new Card(Card.Suit.Clubs, Card.Rank.Seven),
-    new Card(Card.Suit.Spades, Card.Rank.Ace),
-    new Card(Card.Suit.Hearts, Card.Rank.King),
-    new Card(Card.Suit.Diamonds, Card.Rank.Two),
-    new Card(Card.Suit.Clubs, Card.Rank.Queen)
-};
+        // Test Case 4: Three of a Kind
+        var cards4 = new List<Card>
+        {
+            new Card(Card.Suit.Hearts, Card.Rank.Seven),
+            new Card(Card.Suit.Diamonds, Card.Rank.Seven),
+            new Card(Card.Suit.Clubs, Card.Rank.Seven),
+            new Card(Card.Suit.Spades, Card.Rank.Ace),
+            new Card(Card.Suit.Hearts, Card.Rank.King),
+            new Card(Card.Suit.Diamonds, Card.Rank.Two),
+            new Card(Card.Suit.Clubs, Card.Rank.Queen)
+        };
 
-// Test Case 5: Straight
-var cards5 = new List<Card>
-{
-    new Card(Card.Suit.Hearts, Card.Rank.Three),
-    new Card(Card.Suit.Diamonds, Card.Rank.Four),
-    new Card(Card.Suit.Clubs, Card.Rank.Five),
-    new Card(Card.Suit.Spades, Card.Rank.Six),
-    new Card(Card.Suit.Hearts, Card.Rank.Seven),
-    new Card(Card.Suit.Diamonds, Card.Rank.Two),
-    new Card(Card.Suit.Clubs, Card.Rank.Ace)
-};
+        // Test Case 5: Straight
+        var cards5 = new List<Card>
+        {
+            new Card(Card.Suit.Hearts, Card.Rank.Three),
+            new Card(Card.Suit.Diamonds, Card.Rank.Four),
+            new Card(Card.Suit.Clubs, Card.Rank.Five),
+            new Card(Card.Suit.Spades, Card.Rank.Six),
+            new Card(Card.Suit.Hearts, Card.Rank.Seven),
+            new Card(Card.Suit.Diamonds, Card.Rank.Two),
+            new Card(Card.Suit.Clubs, Card.Rank.Ace)
+        };
 
-// Test Case 6: Flush
-var cards6 = new List<Card>
-{
-    new Card(Card.Suit.Hearts, Card.Rank.Seven),
-    new Card(Card.Suit.Hearts, Card.Rank.Ten),
-    new Card(Card.Suit.Hearts, Card.Rank.Two),
-    new Card(Card.Suit.Hearts, Card.Rank.King),
-    new Card(Card.Suit.Hearts, Card.Rank.Eight),
-    new Card(Card.Suit.Diamonds, Card.Rank.Six),
-    new Card(Card.Suit.Clubs, Card.Rank.Five)
-};
+        // Test Case 6: Flush
+        var cards6 = new List<Card>
+        {
+            new Card(Card.Suit.Hearts, Card.Rank.Seven),
+            new Card(Card.Suit.Hearts, Card.Rank.Ten),
+            new Card(Card.Suit.Hearts, Card.Rank.Two),
+            new Card(Card.Suit.Hearts, Card.Rank.King),
+            new Card(Card.Suit.Hearts, Card.Rank.Eight),
+            new Card(Card.Suit.Diamonds, Card.Rank.Six),
+            new Card(Card.Suit.Clubs, Card.Rank.Five)
+        };
 
-// Test Case 7: Full House
-var cards7 = new List<Card>
-{
-    new Card(Card.Suit.Hearts, Card.Rank.Seven),
-    new Card(Card.Suit.Diamonds, Card.Rank.Seven),
-    new Card(Card.Suit.Clubs, Card.Rank.Seven),
-    new Card(Card.Suit.Spades, Card.Rank.King),
-    new Card(Card.Suit.Diamonds, Card.Rank.King),
-    new Card(Card.Suit.Diamonds, Card.Rank.Two),
-    new Card(Card.Suit.Clubs, Card.Rank.Queen)
-};
+        // Test Case 7: Full House
+        var cards7 = new List<Card>
+        {
+            new Card(Card.Suit.Hearts, Card.Rank.Seven),
+            new Card(Card.Suit.Diamonds, Card.Rank.Seven),
+            new Card(Card.Suit.Clubs, Card.Rank.Seven),
+            new Card(Card.Suit.Spades, Card.Rank.King),
+            new Card(Card.Suit.Diamonds, Card.Rank.King),
+            new Card(Card.Suit.Diamonds, Card.Rank.Two),
+            new Card(Card.Suit.Clubs, Card.Rank.Queen)
+        };
 
-// Test Case 8: Four of a Kind
-var cards8 = new List<Card>
-{
-    new Card(Card.Suit.Hearts, Card.Rank.Seven),
-    new Card(Card.Suit.Diamonds, Card.Rank.Seven),
-    new Card(Card.Suit.Clubs, Card.Rank.Seven),
-    new Card(Card.Suit.Spades, Card.Rank.Seven),
-    new Card(Card.Suit.Hearts, Card.Rank.King),
-    new Card(Card.Suit.Diamonds, Card.Rank.Two),
-    new Card(Card.Suit.Clubs, Card.Rank.Queen)
-};
+        // Test Case 8: Four of a Kind
+        var cards8 = new List<Card>
+        {
+            new Card(Card.Suit.Hearts, Card.Rank.Seven),
+            new Card(Card.Suit.Diamonds, Card.Rank.Seven),
+            new Card(Card.Suit.Clubs, Card.Rank.Seven),
+            new Card(Card.Suit.Spades, Card.Rank.Seven),
+            new Card(Card.Suit.Hearts, Card.Rank.King),
+            new Card(Card.Suit.Diamonds, Card.Rank.Two),
+            new Card(Card.Suit.Clubs, Card.Rank.Queen)
+        };
 
-// Test Case 9: Straight Flush
-var cards9 = new List<Card>
-{
-    new Card(Card.Suit.Hearts, Card.Rank.Seven),
-    new Card(Card.Suit.Hearts, Card.Rank.Eight),
-    new Card(Card.Suit.Hearts, Card.Rank.Nine),
-    new Card(Card.Suit.Hearts, Card.Rank.Ten),
-    new Card(Card.Suit.Hearts, Card.Rank.Jack),
-    new Card(Card.Suit.Diamonds, Card.Rank.Two),
-    new Card(Card.Suit.Clubs, Card.Rank.Queen)
-};
+        // Test Case 9: Straight Flush
+        var cards9 = new List<Card>
+        {
+            new Card(Card.Suit.Hearts, Card.Rank.Seven),
+            new Card(Card.Suit.Hearts, Card.Rank.Eight),
+            new Card(Card.Suit.Hearts, Card.Rank.Nine),
+            new Card(Card.Suit.Hearts, Card.Rank.Ten),
+            new Card(Card.Suit.Hearts, Card.Rank.Jack),
+            new Card(Card.Suit.Diamonds, Card.Rank.Two),
+            new Card(Card.Suit.Clubs, Card.Rank.Queen)
+        };
 
-// Test Case 10: Royal Flush
-var cards10 = new List<Card>
-{
-    new Card(Card.Suit.Hearts, Card.Rank.Ten),
-    new Card(Card.Suit.Hearts, Card.Rank.Jack),
-    new Card(Card.Suit.Hearts, Card.Rank.Queen),
-    new Card(Card.Suit.Hearts, Card.Rank.King),
-    new Card(Card.Suit.Hearts, Card.Rank.Ace),
-    new Card(Card.Suit.Diamonds, Card.Rank.Two),
-    new Card(Card.Suit.Clubs, Card.Rank.Queen)
-};
+        // Test Case 10: Royal Flush
+        var cards10 = new List<Card>
+        {
+            new Card(Card.Suit.Hearts, Card.Rank.Ten),
+            new Card(Card.Suit.Hearts, Card.Rank.Jack),
+            new Card(Card.Suit.Hearts, Card.Rank.Queen),
+            new Card(Card.Suit.Hearts, Card.Rank.King),
+            new Card(Card.Suit.Hearts, Card.Rank.Ace),
+            new Card(Card.Suit.Diamonds, Card.Rank.Two),
+            new Card(Card.Suit.Clubs, Card.Rank.Queen)
+        };
 
-List<List<Card>> testList = new List<List<Card>>();
-testList.Add(cards1);
-testList.Add(cards2);
-testList.Add(cards3);
-testList.Add(cards4);
-testList.Add(cards5);
-testList.Add(cards6);
-testList.Add(cards7);
-testList.Add(cards8);
-testList.Add(cards9);
-testList.Add(cards10);
+        List<List<Card>> testList = new List<List<Card>>();
+        testList.Add(cards1);
+        testList.Add(cards2);
+        testList.Add(cards3);
+        testList.Add(cards4);
+        testList.Add(cards5);
+        testList.Add(cards6);
+        testList.Add(cards7);
+        testList.Add(cards8);
+        testList.Add(cards9);
+        testList.Add(cards10);
 
 
+        
+        // foreach (List<Card> sublist in testList)
+        // {
+        //     PokerHandEvaluator.PokerHandResult result = PokerHandEvaluator.FindBestPokerHand(sublist);
+        //     string bestHandDescription = result.HandDescription;
+        //     List<Card> bestHandCards = result.HandCards;
+        //     int bestHandRank = result.HandRank;
 
-foreach(List<Card> sublist in testList){
-    List<Card> bestHand = PokerHandEvaluator.FindBestPokerHand(sublist);
+        //     Debug.Log("Best Hand: " + bestHandDescription);
+        //     Debug.Log("Best Hand Cards: " + string.Join(", ", bestHandCards.Select(card => card.rank + " of " + card.suit)));
+        //     Debug.Log("Best Hand Rank: " + bestHandRank);
+        // }
 
-}                       
 
-}
+        //Kevin Look here for how to call it
+        PokerHandEvaluator.PokerHandResult result = PokerHandEvaluator.FindBestPokerHand(cards1);
+        string bestHandDescription = result.HandDescription;
+        List<Card> bestHandCards = result.HandCards;
+        int bestHandRank = result.HandRank;
+
+        Debug.Log("Best Hand: " + bestHandDescription);
+        Debug.Log("Best Hand Cards: " + string.Join(", ", bestHandCards.Select(card => card.rank + " of " + card.suit)));
+        Debug.Log("Best Hand Rank: " + bestHandRank);
+
+
+        }
 }
