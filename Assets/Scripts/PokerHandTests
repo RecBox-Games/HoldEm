@@ -1,0 +1,512 @@
+Royal Flush Test - Works
+
+// Test Case 1: Royal Flush - Hearts
+var cards1 = new List<Card>
+{
+    new Card(Card.Suit.Hearts, Card.Rank.Ten),
+    new Card(Card.Suit.Hearts, Card.Rank.Jack),
+    new Card(Card.Suit.Hearts, Card.Rank.Queen),
+    new Card(Card.Suit.Hearts, Card.Rank.King),
+    new Card(Card.Suit.Hearts, Card.Rank.Ace),
+    new Card(Card.Suit.Diamonds, Card.Rank.Two),
+    new Card(Card.Suit.Clubs, Card.Rank.Queen)
+};
+
+// Test Case 2: Royal Flush - Diamonds
+var cards2 = new List<Card>
+{
+    new Card(Card.Suit.Diamonds, Card.Rank.Ten),
+    new Card(Card.Suit.Diamonds, Card.Rank.Jack),
+    new Card(Card.Suit.Diamonds, Card.Rank.Queen),
+    new Card(Card.Suit.Diamonds, Card.Rank.King),
+    new Card(Card.Suit.Diamonds, Card.Rank.Ace),
+    new Card(Card.Suit.Hearts, Card.Rank.Two),
+    new Card(Card.Suit.Clubs, Card.Rank.Ten)
+};
+
+// Test Case 3: Royal Flush - Clubs
+var cards3 = new List<Card>
+{
+    new Card(Card.Suit.Clubs, Card.Rank.Ten),
+    new Card(Card.Suit.Clubs, Card.Rank.Jack),
+    new Card(Card.Suit.Clubs, Card.Rank.Queen),
+    new Card(Card.Suit.Clubs, Card.Rank.King),
+    new Card(Card.Suit.Clubs, Card.Rank.Ace),
+    new Card(Card.Suit.Hearts, Card.Rank.Two),
+    new Card(Card.Suit.Diamonds, Card.Rank.Ace)
+};
+
+// Test Case 4: Royal Flush - Spades
+var cards4 = new List<Card>
+{
+    new Card(Card.Suit.Spades, Card.Rank.Ten),
+    new Card(Card.Suit.Spades, Card.Rank.Jack),
+    new Card(Card.Suit.Spades, Card.Rank.Queen),
+    new Card(Card.Suit.Spades, Card.Rank.King),
+    new Card(Card.Suit.Spades, Card.Rank.Ace),
+    new Card(Card.Suit.Diamonds, Card.Rank.Four),
+    new Card(Card.Suit.Clubs, Card.Rank.Seven)
+};
+
+
+Straight Flush Test
+
+// Test Case 1: Straight Flush - Hearts
+var cards1 = new List<Card>
+{
+    new Card(Card.Suit.Hearts, Card.Rank.Six),
+    new Card(Card.Suit.Hearts, Card.Rank.Seven),
+    new Card(Card.Suit.Hearts, Card.Rank.Eight),
+    new Card(Card.Suit.Hearts, Card.Rank.Nine),
+    new Card(Card.Suit.Hearts, Card.Rank.Ten),
+    new Card(Card.Suit.Diamonds, Card.Rank.Two),
+    new Card(Card.Suit.Clubs, Card.Rank.Queen)
+};
+
+// Test Case 2: Straight Flush - Diamonds
+var cards2 = new List<Card>
+{
+    new Card(Card.Suit.Diamonds, Card.Rank.Five),
+    new Card(Card.Suit.Diamonds, Card.Rank.Six),
+    new Card(Card.Suit.Diamonds, Card.Rank.Seven),
+    new Card(Card.Suit.Diamonds, Card.Rank.Eight),
+    new Card(Card.Suit.Diamonds, Card.Rank.Nine),
+    new Card(Card.Suit.Hearts, Card.Rank.Two),
+    new Card(Card.Suit.Clubs, Card.Rank.King)
+};
+
+// Test Case 3: Straight Flush - Clubs
+var cards3 = new List<Card>
+{
+    new Card(Card.Suit.Clubs, Card.Rank.Seven),
+    new Card(Card.Suit.Clubs, Card.Rank.Eight),
+    new Card(Card.Suit.Clubs, Card.Rank.Nine),
+    new Card(Card.Suit.Clubs, Card.Rank.Ten),
+    new Card(Card.Suit.Clubs, Card.Rank.Jack),
+    new Card(Card.Suit.Hearts, Card.Rank.Two),
+    new Card(Card.Suit.Diamonds, Card.Rank.Queen)
+};
+
+// Test Case 4: Straight Flush - Spades
+var cards4 = new List<Card>
+{
+    new Card(Card.Suit.Spades, Card.Rank.Nine),
+    new Card(Card.Suit.Spades, Card.Rank.Ten),
+    new Card(Card.Suit.Spades, Card.Rank.Jack),
+    new Card(Card.Suit.Spades, Card.Rank.Queen),
+    new Card(Card.Suit.Spades, Card.Rank.King),
+    new Card(Card.Suit.Diamonds, Card.Rank.Four),
+    new Card(Card.Suit.Clubs, Card.Rank.Ace)
+};
+
+Four of a Kind Test
+
+// Test Case 1: Four of a Kind - Sevens
+var cards1 = new List<Card>
+{
+    new Card(Card.Suit.Hearts, Card.Rank.Seven),
+    new Card(Card.Suit.Diamonds, Card.Rank.Seven),
+    new Card(Card.Suit.Clubs, Card.Rank.Seven),
+    new Card(Card.Suit.Spades, Card.Rank.Seven),
+    new Card(Card.Suit.Hearts, Card.Rank.King),
+    new Card(Card.Suit.Diamonds, Card.Rank.Two),
+    new Card(Card.Suit.Clubs, Card.Rank.Queen)
+};
+
+// Test Case 2: Four of a Kind - Aces
+var cards2 = new List<Card>
+{
+    new Card(Card.Suit.Diamonds, Card.Rank.Ace),
+    new Card(Card.Suit.Clubs, Card.Rank.Ace),
+    new Card(Card.Suit.Spades, Card.Rank.Ace),
+    new Card(Card.Suit.Hearts, Card.Rank.Ace),
+    new Card(Card.Suit.Hearts, Card.Rank.King),
+    new Card(Card.Suit.Diamonds, Card.Rank.Two),
+    new Card(Card.Suit.Clubs, Card.Rank.Queen)
+};
+
+// Test Case 3: Four of a Kind - Queens
+var cards3 = new List<Card>
+{
+    new Card(Card.Suit.Clubs, Card.Rank.Queen),
+    new Card(Card.Suit.Spades, Card.Rank.Queen),
+    new Card(Card.Suit.Hearts, Card.Rank.Queen),
+    new Card(Card.Suit.Diamonds, Card.Rank.Queen),
+    new Card(Card.Suit.Hearts, Card.Rank.King),
+    new Card(Card.Suit.Diamonds, Card.Rank.Two),
+    new Card(Card.Suit.Clubs, Card.Rank.Ace)
+};
+
+// Test Case 4: Four of a Kind - Jacks
+var cards4 = new List<Card>
+{
+    new Card(Card.Suit.Hearts, Card.Rank.Jack),
+    new Card(Card.Suit.Diamonds, Card.Rank.Jack),
+    new Card(Card.Suit.Clubs, Card.Rank.Jack),
+    new Card(Card.Suit.Spades, Card.Rank.Jack),
+    new Card(Card.Suit.Clubs, Card.Rank.King),
+    new Card(Card.Suit.Diamonds, Card.Rank.Two),
+    new Card(Card.Suit.Clubs, Card.Rank.Ace)
+};
+
+
+Full House Test
+
+// Test Case 1: Full House - Sevens over Kings
+var cards1 = new List<Card>
+{
+    new Card(Card.Suit.Hearts, Card.Rank.Seven),
+    new Card(Card.Suit.Diamonds, Card.Rank.Seven),
+    new Card(Card.Suit.Clubs, Card.Rank.Seven),
+    new Card(Card.Suit.Spades, Card.Rank.King),
+    new Card(Card.Suit.Hearts, Card.Rank.King),
+    new Card(Card.Suit.Diamonds, Card.Rank.Ten),
+    new Card(Card.Suit.Clubs, Card.Rank.Ace)
+};
+
+// Test Case 2: Full House - Jacks over Aces
+var cards2 = new List<Card>
+{
+    new Card(Card.Suit.Hearts, Card.Rank.Jack),
+    new Card(Card.Suit.Diamonds, Card.Rank.Jack),
+    new Card(Card.Suit.Clubs, Card.Rank.Jack),
+    new Card(Card.Suit.Spades, Card.Rank.Ace),
+    new Card(Card.Suit.Hearts, Card.Rank.Ace),
+    new Card(Card.Suit.Diamonds, Card.Rank.Ten),
+    new Card(Card.Suit.Clubs, Card.Rank.Queen)
+};
+
+// Test Case 3: Full House - Queens over Tens
+var cards3 = new List<Card>
+{
+    new Card(Card.Suit.Hearts, Card.Rank.Queen),
+    new Card(Card.Suit.Diamonds, Card.Rank.Queen),
+    new Card(Card.Suit.Clubs, Card.Rank.Queen),
+    new Card(Card.Suit.Spades, Card.Rank.Ten),
+    new Card(Card.Suit.Hearts, Card.Rank.Ten),
+    new Card(Card.Suit.Diamonds, Card.Rank.Seven),
+    new Card(Card.Suit.Clubs, Card.Rank.Seven)
+};
+
+// Test Case 4: Full House - Kings over Eights
+var cards4 = new List<Card>
+{
+    new Card(Card.Suit.Hearts, Card.Rank.King),
+    new Card(Card.Suit.Diamonds, Card.Rank.King),
+    new Card(Card.Suit.Clubs, Card.Rank.King),
+    new Card(Card.Suit.Spades, Card.Rank.Eight),
+    new Card(Card.Suit.Hearts, Card.Rank.Eight),
+    new Card(Card.Suit.Diamonds, Card.Rank.Seven),
+    new Card(Card.Suit.Clubs, Card.Rank.Seven)
+};
+
+
+Flush Test
+
+// Test Case 1: Flush - Hearts
+var cards1 = new List<Card>
+{
+    new Card(Card.Suit.Hearts, Card.Rank.Eight),
+    new Card(Card.Suit.Hearts, Card.Rank.Seven),
+    new Card(Card.Suit.Hearts, Card.Rank.Three),
+    new Card(Card.Suit.Hearts, Card.Rank.Ace),
+    new Card(Card.Suit.Hearts, Card.Rank.Nine),
+    new Card(Card.Suit.Diamonds, Card.Rank.Two),
+    new Card(Card.Suit.Clubs, Card.Rank.Queen)
+};
+
+// Test Case 2: Flush - Spades
+var cards2 = new List<Card>
+{
+    new Card(Card.Suit.Spades, Card.Rank.Ace),
+    new Card(Card.Suit.Spades, Card.Rank.Six),
+    new Card(Card.Suit.Spades, Card.Rank.Queen),
+    new Card(Card.Suit.Spades, Card.Rank.Jack),
+    new Card(Card.Suit.Spades, Card.Rank.Ten),
+    new Card(Card.Suit.Diamonds, Card.Rank.Two),
+    new Card(Card.Suit.Clubs, Card.Rank.Nine)
+};
+
+// Test Case 3: Flush - Diamonds
+var cards3 = new List<Card>
+{
+    new Card(Card.Suit.Diamonds, Card.Rank.Seven),
+    new Card(Card.Suit.Diamonds, Card.Rank.Six),
+    new Card(Card.Suit.Diamonds, Card.Rank.King),
+    new Card(Card.Suit.Diamonds, Card.Rank.Four),
+    new Card(Card.Suit.Diamonds, Card.Rank.Ten),
+    new Card(Card.Suit.Diamonds, Card.Rank.Two),
+    new Card(Card.Suit.Clubs, Card.Rank.Queen)
+};
+
+// Test Case 4: Flush - Clubs
+var cards4 = new List<Card>
+{
+    new Card(Card.Suit.Clubs, Card.Rank.Eight),
+    new Card(Card.Suit.Clubs, Card.Rank.Seven),
+    new Card(Card.Suit.Clubs, Card.Rank.Jack),
+    new Card(Card.Suit.Clubs, Card.Rank.Three),
+    new Card(Card.Suit.Clubs, Card.Rank.Nine),
+    new Card(Card.Suit.Diamonds, Card.Rank.Two),
+    new Card(Card.Suit.Clubs, Card.Rank.Queen)
+};
+
+Straights Test
+
+// Test Case 1: Straight
+var cards1 = new List<Card>
+{
+    new Card(Card.Suit.Hearts, Card.Rank.Eight),
+    new Card(Card.Suit.Hearts, Card.Rank.Seven),
+    new Card(Card.Suit.Diamonds, Card.Rank.Six),
+    new Card(Card.Suit.Spades, Card.Rank.Five),
+    new Card(Card.Suit.Clubs, Card.Rank.Four),
+    new Card(Card.Suit.Hearts, Card.Rank.Two),
+    new Card(Card.Suit.Diamonds, Card.Rank.Three)
+};
+
+// Test Case 2: Straight
+var cards2 = new List<Card>
+{
+    new Card(Card.Suit.Diamonds, Card.Rank.King),
+    new Card(Card.Suit.Hearts, Card.Rank.Queen),
+    new Card(Card.Suit.Clubs, Card.Rank.Jack),
+    new Card(Card.Suit.Spades, Card.Rank.Ten),
+    new Card(Card.Suit.Diamonds, Card.Rank.Nine),
+    new Card(Card.Suit.Spades, Card.Rank.Two),
+    new Card(Card.Suit.Clubs, Card.Rank.Ace)
+};
+
+// Test Case 3: Straight
+var cards3 = new List<Card>
+{
+    new Card(Card.Suit.Clubs, Card.Rank.Six),
+    new Card(Card.Suit.Spades, Card.Rank.Five),
+    new Card(Card.Suit.Hearts, Card.Rank.Four),
+    new Card(Card.Suit.Diamonds, Card.Rank.Three),
+    new Card(Card.Suit.Clubs, Card.Rank.Two),
+    new Card(Card.Suit.Hearts, Card.Rank.Ten),
+    new Card(Card.Suit.Hearts, Card.Rank.King)
+};
+
+// Test Case 4: Straight
+var cards4 = new List<Card>
+{
+    new Card(Card.Suit.Spades, Card.Rank.Eight),
+    new Card(Card.Suit.Diamonds, Card.Rank.Seven),
+    new Card(Card.Suit.Clubs, Card.Rank.Six),
+    new Card(Card.Suit.Hearts, Card.Rank.Five),
+    new Card(Card.Suit.Spades, Card.Rank.Four),
+    new Card(Card.Suit.Diamonds, Card.Rank.Two),
+    new Card(Card.Suit.Hearts, Card.Rank.Three)
+};
+
+
+Three of a Kind Test
+
+
+// Test Case 1: Three of a Kind
+var cards1 = new List<Card>
+{
+    new Card(Card.Suit.Hearts, Card.Rank.Seven),
+    new Card(Card.Suit.Diamonds, Card.Rank.Seven),
+    new Card(Card.Suit.Clubs, Card.Rank.Seven),
+    new Card(Card.Suit.Spades, Card.Rank.Ace),
+    new Card(Card.Suit.Hearts, Card.Rank.King),
+    new Card(Card.Suit.Diamonds, Card.Rank.Two),
+    new Card(Card.Suit.Clubs, Card.Rank.Queen)
+};
+
+// Test Case 2: Three of a Kind
+var cards2 = new List<Card>
+{
+    new Card(Card.Suit.Clubs, Card.Rank.Eight),
+    new Card(Card.Suit.Hearts, Card.Rank.Eight),
+    new Card(Card.Suit.Spades, Card.Rank.Eight),
+    new Card(Card.Suit.Diamonds, Card.Rank.Three),
+    new Card(Card.Suit.Clubs, Card.Rank.Ten),
+    new Card(Card.Suit.Hearts, Card.Rank.Two),
+    new Card(Card.Suit.Spades, Card.Rank.Ace)
+};
+
+// Test Case 3: Three of a Kind
+var cards3 = new List<Card>
+{
+    new Card(Card.Suit.Diamonds, Card.Rank.Queen),
+    new Card(Card.Suit.Hearts, Card.Rank.Queen),
+    new Card(Card.Suit.Clubs, Card.Rank.Queen),
+    new Card(Card.Suit.Spades, Card.Rank.King),
+    new Card(Card.Suit.Hearts, Card.Rank.Ace),
+    new Card(Card.Suit.Diamonds, Card.Rank.Two),
+    new Card(Card.Suit.Clubs, Card.Rank.Three)
+};
+
+// Test Case 4: Three of a Kind
+var cards4 = new List<Card>
+{
+    new Card(Card.Suit.Spades, Card.Rank.Five),
+    new Card(Card.Suit.Diamonds, Card.Rank.Five),
+    new Card(Card.Suit.Clubs, Card.Rank.Five),
+    new Card(Card.Suit.Hearts, Card.Rank.Nine),
+    new Card(Card.Suit.Spades, Card.Rank.Seven),
+    new Card(Card.Suit.Diamonds, Card.Rank.Jack),
+    new Card(Card.Suit.Hearts, Card.Rank.Six)
+};
+
+
+Two Pair Test
+
+// Test Case 1: Two Pair
+var cards1 = new List<Card>
+{
+    new Card(Card.Suit.Hearts, Card.Rank.Seven),
+    new Card(Card.Suit.Diamonds, Card.Rank.Seven),
+    new Card(Card.Suit.Clubs, Card.Rank.King),
+    new Card(Card.Suit.Spades, Card.Rank.King),
+    new Card(Card.Suit.Hearts, Card.Rank.Ten),
+    new Card(Card.Suit.Diamonds, Card.Rank.Two),
+    new Card(Card.Suit.Clubs, Card.Rank.Queen)
+};
+
+// Test Case 2: Two Pair
+var cards2 = new List<Card>
+{
+    new Card(Card.Suit.Clubs, Card.Rank.Eight),
+    new Card(Card.Suit.Hearts, Card.Rank.Eight),
+    new Card(Card.Suit.Spades, Card.Rank.Ace),
+    new Card(Card.Suit.Diamonds, Card.Rank.Ace),
+    new Card(Card.Suit.Clubs, Card.Rank.Ten),
+    new Card(Card.Suit.Hearts, Card.Rank.Two),
+    new Card(Card.Suit.Spades, Card.Rank.Two)
+};
+
+// Test Case 3: Two Pair
+var cards3 = new List<Card>
+{
+    new Card(Card.Suit.Diamonds, Card.Rank.Queen),
+    new Card(Card.Suit.Hearts, Card.Rank.Queen),
+    new Card(Card.Suit.Clubs, Card.Rank.Jack),
+    new Card(Card.Suit.Spades, Card.Rank.Jack),
+    new Card(Card.Suit.Hearts, Card.Rank.Ace),
+    new Card(Card.Suit.Diamonds, Card.Rank.Two),
+    new Card(Card.Suit.Clubs, Card.Rank.Three)
+};
+
+// Test Case 4: Two Pair
+var cards4 = new List<Card>
+{
+    new Card(Card.Suit.Spades, Card.Rank.Five),
+    new Card(Card.Suit.Diamonds, Card.Rank.Five),
+    new Card(Card.Suit.Clubs, Card.Rank.Eight),
+    new Card(Card.Suit.Hearts, Card.Rank.Eight),
+    new Card(Card.Suit.Spades, Card.Rank.Seven),
+    new Card(Card.Suit.Diamonds, Card.Rank.Jack),
+    new Card(Card.Suit.Hearts, Card.Rank.Seven)
+};
+
+
+One Pair
+
+// Test Case 1: One Pair
+var cards1 = new List<Card>
+{
+    new Card(Card.Suit.Hearts, Card.Rank.Seven),
+    new Card(Card.Suit.Diamonds, Card.Rank.Seven),
+    new Card(Card.Suit.Clubs, Card.Rank.King),
+    new Card(Card.Suit.Spades, Card.Rank.Ten),
+    new Card(Card.Suit.Hearts, Card.Rank.Jack),
+    new Card(Card.Suit.Diamonds, Card.Rank.Two),
+    new Card(Card.Suit.Clubs, Card.Rank.Queen)
+};
+
+// Test Case 2: One Pair
+var cards2 = new List<Card>
+{
+    new Card(Card.Suit.Clubs, Card.Rank.Eight),
+    new Card(Card.Suit.Hearts, Card.Rank.Nine),
+    new Card(Card.Suit.Spades, Card.Rank.Ace),
+    new Card(Card.Suit.Diamonds, Card.Rank.Ace),
+    new Card(Card.Suit.Clubs, Card.Rank.Ten),
+    new Card(Card.Suit.Hearts, Card.Rank.Two),
+    new Card(Card.Suit.Spades, Card.Rank.Three)
+};
+
+// Test Case 3: One Pair
+var cards3 = new List<Card>
+{
+    new Card(Card.Suit.Diamonds, Card.Rank.Queen),
+    new Card(Card.Suit.Hearts, Card.Rank.King),
+    new Card(Card.Suit.Clubs, Card.Rank.Jack),
+    new Card(Card.Suit.Spades, Card.Rank.Jack),
+    new Card(Card.Suit.Hearts, Card.Rank.Ace),
+    new Card(Card.Suit.Diamonds, Card.Rank.Two),
+    new Card(Card.Suit.Clubs, Card.Rank.Three)
+};
+
+// Test Case 4: One Pair
+var cards4 = new List<Card>
+{
+    new Card(Card.Suit.Spades, Card.Rank.Five),
+    new Card(Card.Suit.Diamonds, Card.Rank.Six),
+    new Card(Card.Suit.Clubs, Card.Rank.Eight),
+    new Card(Card.Suit.Hearts, Card.Rank.Eight),
+    new Card(Card.Suit.Spades, Card.Rank.Seven),
+    new Card(Card.Suit.Diamonds, Card.Rank.Ten),
+    new Card(Card.Suit.Hearts, Card.Rank.Nine)
+};
+
+
+High Card Test
+
+// Test Case 1: High Card
+var cards1 = new List<Card>
+{
+    new Card(Card.Suit.Hearts, Card.Rank.Eight),
+    new Card(Card.Suit.Diamonds, Card.Rank.Seven),
+    new Card(Card.Suit.Clubs, Card.Rank.Jack),
+    new Card(Card.Suit.Spades, Card.Rank.Ten),
+    new Card(Card.Suit.Hearts, Card.Rank.Nine),
+    new Card(Card.Suit.Diamonds, Card.Rank.Two),
+    new Card(Card.Suit.Clubs, Card.Rank.Queen)
+};
+
+// Test Case 2: High Card
+var cards2 = new List<Card>
+{
+    new Card(Card.Suit.Spades, Card.Rank.Two),
+    new Card(Card.Suit.Hearts, Card.Rank.Five),
+    new Card(Card.Suit.Clubs, Card.Rank.Six),
+    new Card(Card.Suit.Diamonds, Card.Rank.Nine),
+    new Card(Card.Suit.Spades, Card.Rank.Jack),
+    new Card(Card.Suit.Hearts, Card.Rank.Ace),
+    new Card(Card.Suit.Clubs, Card.Rank.King)
+};
+
+// Test Case 3: High Card
+var cards3 = new List<Card>
+{
+    new Card(Card.Suit.Diamonds, Card.Rank.Ten),
+    new Card(Card.Suit.Hearts, Card.Rank.Seven),
+    new Card(Card.Suit.Clubs, Card.Rank.Three),
+    new Card(Card.Suit.Spades, Card.Rank.Six),
+    new Card(Card.Suit.Hearts, Card.Rank.Queen),
+    new Card(Card.Suit.Diamonds, Card.Rank.Ace),
+    new Card(Card.Suit.Clubs, Card.Rank.King)
+};
+
+// Test Case 4: High Card
+var cards4 = new List<Card>
+{
+    new Card(Card.Suit.Spades, Card.Rank.Four),
+    new Card(Card.Suit.Diamonds, Card.Rank.Three),
+    new Card(Card.Suit.Clubs, Card.Rank.Five),
+    new Card(Card.Suit.Hearts, Card.Rank.Six),
+    new Card(Card.Suit.Spades, Card.Rank.Nine),
+    new Card(Card.Suit.Diamonds, Card.Rank.Ace),
+    new Card(Card.Suit.Hearts, Card.Rank.Ten)
+};
+
+
+
+
+
