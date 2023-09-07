@@ -16,11 +16,9 @@ public class cardController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        foreach (var card in gameCards) { shuffledDeck.Add(card); }
         // Clear all cards on table
         resetCards();
-
-        foreach (var card in gameCards) { shuffledDeck.Add(card); }
-        shuffleDeck();
     }
 
     // Update is called once per frame
