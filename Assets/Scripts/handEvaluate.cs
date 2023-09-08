@@ -68,20 +68,25 @@ public class PokerHandEvaluator : MonoBehaviour
 
         
 
-        //Check for multiple winners
+        //Check for multiple winners -Tiebreak
         if(winnerList.Count > 1)
         {
+            //Cycle through each card, one by one
             for(int i = 0; i < 5; i++ )
             {
+                //If the winner list is down to only one, break loop
                 if (winnerList.Count == 1)
                 {
-                    Debug.Log("Winner Found");
                     break;
                 }
-                //Sort By the i-th card
+                //Sort the winner list by the rank of the i-th card
                 winnerList.Sort((p1, p2) => p2.Hand.HandCards[i].rank.CompareTo(p1.Hand.HandCards[i].rank));
 
+                //Create a variable of the rank of that card
                 var highestCard = winnerList[0].Hand.HandCards[i].rank;
+
+                //Remove all players in the winner list that don't have at least as high as 
+                // that rank of card
 
                 winnerList.RemoveAll(p => p.Hand.HandCards[i].rank < highestCard);
 
