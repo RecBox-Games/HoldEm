@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -219,9 +220,10 @@ public class gameController : MonoBehaviour
         else if (turn == 1) { cardController.revealTurn(); turn++; currentBet = 0; return; }
         else if (turn == 2) { cardController.revealRiver(); turn++; currentBet = 0; return; }
 
-        currentPlayer = turnOrder.Peek();
-        Debug.Log(currentPlayer.getName() + " has won " + potMoney + "$");
-        currentPlayer.payPlayer(potMoney);
+        playerController winner = cardController.roundWinner(turnOrder.ToList());
+
+        Debug.Log(winner.getName() + " has won " + potMoney + "$");
+        winner.payPlayer(potMoney);
 
         rounds++;
         turnOrder.Clear();

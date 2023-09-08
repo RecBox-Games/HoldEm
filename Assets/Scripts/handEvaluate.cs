@@ -313,8 +313,10 @@ public class handEvaluate : MonoBehaviour
 {
     void Start()
     {
-        //Kevin, Start Here. I've defined a list of "Cards" as such. These represent different players 
-        //hands. Somewhere in the game, you will need to combine the hole cards with the community cards for each player
+        //Kevin, Start Here. I've defined a list of "Cards" as such.
+        //These represent different players 
+        //hands. Somewhere in the game, you will need to combine the hole
+        //0cards with the community cards for each player
 
         // Test Case 1: High Card
         var cards1 = new List<Card>

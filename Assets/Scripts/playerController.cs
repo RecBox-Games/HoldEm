@@ -14,6 +14,8 @@ public class playerController : MonoBehaviour
 
     // Game Specific Variables
     private List<string> holeCards = new List<string>(); // this should be a maximum of 2 cards
+    private List<Card> playCards = new List<Card>();
+    private PokerHandResult hand;
     private int money; // Ammount of money a player has to play with
     private int playMoney; // Amount of money the player has played this round
     private bool folded = false;
@@ -60,6 +62,10 @@ public class playerController : MonoBehaviour
 
     public List<string> getHoleCards() {  return holeCards; }
 
+    public List<Card> getPlayCards() { return playCards; }
+
+    public PokerHandResult getHand() {  return hand; }
+
 
     // Player Setters
     public void setName(string name) { username = name;}
@@ -80,7 +86,13 @@ public class playerController : MonoBehaviour
 
     public void payPlayer(int amount) { money += amount; }
 
-    public void holeCardAdd(Material holecard) { holeCards.Add(holecard.name); }
+    public void holeCardAdd(Material holecard, Card card) 
+    { 
+        holeCards.Add(holecard.name);
+        playCards.Add(card);
+    }
+
+    public void setHand(PokerHandResult result) { hand = result; }
 
 
     public int requestFunds(int amount) 
@@ -101,5 +113,5 @@ public class playerController : MonoBehaviour
         return amount;
     }
 
-    public void resetHoleCards() { holeCards.Clear(); }
+    public void resetHoleCards() { holeCards.Clear(); playCards.Clear();  }
 }
