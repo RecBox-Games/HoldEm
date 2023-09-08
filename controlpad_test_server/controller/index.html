@@ -11,7 +11,11 @@
   </head>
   <body>
     <div id ="screen">
+
+      <!-- Border -->
       <div class="border overlay" style="position:absolute"></div>
+      
+      <!-- Card Object in Center -->
       <div id="card" ontouchstart= "foldTimer()" class= "hideables overlay">
         <div class="front">
           <card-t  class="image-left" rank="0" backcolor="#32CD32" backtext="">          </card-t>
@@ -22,10 +26,13 @@
           <card-t id="card2" class="image-right" rank="Jack" suit="Clubs" ></card-t>
         </div> 
       </div>
+
+      <!-- Top Menu Overlay During Play -->
       <div id="topmenu" class="topmenu overlay">
         <div class="innermenu">
           <div class="outerdiv" ontouchstart="document.getElementById('cardRanks').style.display='block'">
-            <svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 640 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M353.8 54.1L330.2 6.3c-3.9-8.3-16.1-8.6-20.4 0L286.2 54.1l-52.3 7.5c-9.3 1.4-13.3 12.9-6.4 19.8l38 37-9 52.1c-1.4 9.3 8.2 16.5 16.8 12.2l46.9-24.8 46.6 24.4c8.6 4.3 18.3-2.9 16.8-12.2l-9-52.1 38-36.6c6.8-6.8 2.9-18.3-6.4-19.8l-52.3-7.5zM256 256c-17.7 0-32 14.3-32 32V480c0 17.7 14.3 32 32 32H384c17.7 0 32-14.3 32-32V288c0-17.7-14.3-32-32-32H256zM32 320c-17.7 0-32 14.3-32 32V480c0 17.7 14.3 32 32 32H160c17.7 0 32-14.3 32-32V352c0-17.7-14.3-32-32-32H32zm416 96v64c0 17.7 14.3 32 32 32H608c17.7 0 32-14.3 32-32V416c0-17.7-14.3-32-32-32H480c-17.7 0-32 14.3-32 32z"/></svg>
+            <svg style="padding:10px;" height="100" width="100" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 640 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+              <path d="M353.8 54.1L330.2 6.3c-3.9-8.3-16.1-8.6-20.4 0L286.2 54.1l-52.3 7.5c-9.3 1.4-13.3 12.9-6.4 19.8l38 37-9 52.1c-1.4 9.3 8.2 16.5 16.8 12.2l46.9-24.8 46.6 24.4c8.6 4.3 18.3-2.9 16.8-12.2l-9-52.1 38-36.6c6.8-6.8 2.9-18.3-6.4-19.8l-52.3-7.5zM256 256c-17.7 0-32 14.3-32 32V480c0 17.7 14.3 32 32 32H384c17.7 0 32-14.3 32-32V288c0-17.7-14.3-32-32-32H256zM32 320c-17.7 0-32 14.3-32 32V480c0 17.7 14.3 32 32 32H160c17.7 0 32-14.3 32-32V352c0-17.7-14.3-32-32-32H32zm416 96v64c0 17.7 14.3 32 32 32H608c17.7 0 32-14.3 32-32V416c0-17.7-14.3-32-32-32H480c-17.7 0-32 14.3-32 32z"/></svg>
           </div>
           <div class="innerdiv">
             <div class="namediv">
@@ -36,11 +43,43 @@
             </div>
           </div>
           <div class="outerdiv" onclick="document.getElementById('playerMenu').style.display='block'" >
-              <svg  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg>
+              <svg style="padding:10px;" height="100" width ="auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                <path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg>
           </div>
         </div>
         <div id="playerStatus" class="statusmenu"></div>
       </div>
+
+      <!-- Play Button for Calling, Checking, etc. -->
+      <div class ="playButton overlay">
+        <div class="third">
+          <div class="arrow topArrow">
+            <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+              <path d="M182.6 137.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-9.2 9.2-11.9 22.9-6.9 34.9s16.6 19.8 29.6 19.8H288c12.9 0 24.6-7.8 29.6-19.8s2.2-25.7-6.9-34.9l-128-128z"/>
+            </svg>
+          </div>
+        </div>
+        <div class="third">
+          <button style="margin: 0">
+            Raise: 30
+          </button>
+        </div>
+        <div class="third">
+          <div class="arrow bottomArrow">
+            <svg xmlns="http://www.w3.org/2000/svg" height="100" width="100" viewBox="0 0 320 512">
+              <path d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z"/></svg>
+          </div> 
+        </div>
+ 
+      </div>
+
+
+ 
+
+    
+        
+
+      <!-- Rank Button Overlay -->
       <div id="cardRanks" class="overlay modal">
         <span onclick="document.getElementById('cardRanks').style.display='none'" class="close">&times;</span>
 
@@ -139,15 +178,22 @@
           </tbody>
       </table>
       </div>
+
+      <!-- Menu Button Overlay -->
       <div id="playerMenu" class="overlay modal">
         <span onclick="document.getElementById('playerMenu').style.display='none'" class="close">&times;</span>
+        <div class="menuButtonContainer">
+          <button class="menuButton">Some other Button</button>
+          <button class="menuButton">Quit</button>
+
+        </div>
       </div>
 
-
-  
+      <!-- Game Canvas -->
       <canvas id="gameCanvas" willReadFrequently="true" class="gameCanvas"></canvas>
+      
+      <!-- Hit Canvas -->
       <canvas id="hitCanvas" willReadFrequently="true" class="hitCanvas"></canvas>
-
 
     </div>
     

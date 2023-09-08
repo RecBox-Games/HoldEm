@@ -47,7 +47,6 @@ window.addEventListener("resize", (event) => {
     screenChange();
 });
 
-console.log("Here");
 
   
 
