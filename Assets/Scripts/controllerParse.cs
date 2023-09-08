@@ -10,7 +10,6 @@ public class controllerParse : MonoBehaviour
 {
 
     [SerializeField] gameController gameController;
-    public static int gvCall = 20;
 
     
 
@@ -67,9 +66,15 @@ public class controllerParse : MonoBehaviour
 
             if (messages[0] == "RequestState") {
             
-                GameState(fromPlayer.getIP(), fromPlayer.getName(),
-                fromPlayer.getMoney().ToString(),gvCall.ToString(), 
-                fromPlayer.isTurn(), fromPlayer.getPlayerNumber());
+                GameState(
+                fromPlayer.getIP(), 
+                fromPlayer.getName(),
+                fromPlayer.getMoney().ToString(),
+                gameController.getCurrentCall().ToString(), 
+                fromPlayer.isTurn(), 
+                fromPlayer.getPlayerNumber(),
+                fromPlayer.getPlayCards()
+                );
             }
             
         }
@@ -81,7 +86,7 @@ public class controllerParse : MonoBehaviour
 
     public void GameState(string ip, string username, 
     string playerMoney, string call, bool isPlayerTurn, 
-    int number){
+    int playerNumber, List<Card> cards){
 
         var stateName = "";
         List<string> variables = new List<string>();
@@ -90,7 +95,7 @@ public class controllerParse : MonoBehaviour
 
         if(!gameController.getGameState())
         {
-            if (number == 1)
+            if (playerNumber == 1)
             {
                 stateName = "JoinedHost:";
             }
@@ -106,10 +111,13 @@ public class controllerParse : MonoBehaviour
             variables.Add(gameController.getCurrentCall().ToString());
 
             //Need to add card variable tie in here
-            variables.Add("Hearts-King");
-            variables.Add("Clubs-Queen");
+            foreach(var card in cards)
+            {
+                variables.Add(card.suit.ToString() + "-" + card.rank.ToString());
+            }
 
-            if((number-1) == gameController.getPlayerTurn()){
+
+            if((playerNumber-1) == gameController.getPlayerTurn()){
                 stateName = "PlayingPlayerTurn:";
             }
 

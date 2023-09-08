@@ -115,3 +115,17 @@ public class playerController : MonoBehaviour
 
     public void resetHoleCards() { holeCards.Clear(); playCards.Clear();  }
 }
+
+public class PlayerHandInfo
+    {
+        public PokerHandResult Hand {get; set;}
+        public int PlayerNumber {get;set;}
+    }
+
+public class PokerHandResult
+    {
+        public string HandDescription { get; set; }
+        public List<Card> HandCards { get; set; }
+        public int HandRank {get; set;}
+        
+    }
