@@ -220,10 +220,16 @@ public class gameController : MonoBehaviour
         else if (turn == 1) { cardController.revealTurn(); turn++; currentBet = 0; return; }
         else if (turn == 2) { cardController.revealRiver(); turn++; currentBet = 0; return; }
 
-        playerController winner = cardController.roundWinner(turnOrder.ToList());
+        List<playerController> winner = cardController.roundWinner(turnOrder.ToList());
 
-        Debug.Log(winner.getName() + " has won " + potMoney + "$");
-        winner.payPlayer(potMoney);
+        foreach (var player in winner) 
+        {
+            int payment = potMoney / winner.Count;
+            Debug.Log(player.getName() + " has won " + payment + "$");
+            player.payPlayer(payment);
+        }
+
+
 
         rounds++;
         turnOrder.Clear();

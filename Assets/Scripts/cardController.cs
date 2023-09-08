@@ -175,9 +175,9 @@ public class cardController : MonoBehaviour
         river.GetComponent<Renderer>().enabled = true;
     }
 
-    public playerController roundWinner(List<playerController> playerList)
+    public List<playerController> roundWinner(List<playerController> playerList)
     {
-        playerController winner = playerList[0];
+        List<playerController> winner = playerList;
 
         if (playerList.Count > 1)
         {
@@ -190,24 +190,32 @@ public class cardController : MonoBehaviour
                 player.setHand(PokerHandEvaluator.FindBestPokerHand(hand));
                 Debug.Log(player.getName() + " " + player.getHand().HandDescription);
             }
-
-            int highCardRank = 10;
+            
+            // This checks the highest rank of hands among all players
+            int highHandRank = 10;
             foreach (var player in playerList)
             {
-                int highestRank = 10;
-                if (player.getHand().HandRank < highestRank)
+                // This is for ties between two players who have the highest hand rank
+                int highCardRank = 10;
+                if (player.getHand().HandRank < highHandRank)
                 {
-                    highestRank = player.getHand().HandRank;
+                    winner.Clear();
+                    highHandRank = player.getHand().HandRank;
                     highCardRank = PokerHandEvaluator.FindBestPokerHand(player.getPlayCards()).HandRank;
-                    winner = player;
-                }
-                else if (player.getHand().HandRank == highestRank)
+                    winner.Add(player);
+                } 
+                else if (player.getHand().HandRank == highHandRank)
                 {
                     int compareCard = PokerHandEvaluator.FindBestPokerHand(player.getPlayCards()).HandRank;
+                    // Check which player has the highest ranked card
+                    // If they have the same ranked card add the player to the winner list
                     if (compareCard < highCardRank)
                     {
-                        winner = player;
-                        highestRank = player.getHand().HandRank;
+                        winner.Clear();
+                        winner.Add(player);
+                    } else
+                    {
+                        winner.Add(player);
                     }
                 }
             }
