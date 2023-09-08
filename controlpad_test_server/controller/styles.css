@@ -73,10 +73,16 @@ canvas {
 }
 
 .close {
-    color: #aaa;
+    color: black;
     float: right;
     font-size: 20vw;
     font-weight: bold;
+    position: sticky;
+    right: 2vw;
+    top: 0;
+    height: 0;
+    fon
+    max-height: 100px;
   }
 
 
@@ -177,6 +183,33 @@ h2 {
     align-items: center;
     display: flex;
     justify-content: center;
+}
+
+table {
+    margin: auto;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    border: 2px solid #ff0000;
+    padding: 10px;
+}
+
+th {
+    background-color: #ff0000;
+    color: #fff;
+}
+
+
+h4 {
+    font-family: Verdana;
+    font-size: 14px;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
 }
 
 

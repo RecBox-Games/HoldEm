@@ -46,9 +46,7 @@ function screenChange() {
 window.addEventListener("resize", (event) => {
     screenChange();
 });
-// screen.orientation.addEventListener("change", (event) => {
-//     ORIENTATION = screen.orientation;
-// });
+
 console.log("Here");
 
   
