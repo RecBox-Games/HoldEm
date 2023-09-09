@@ -25,7 +25,8 @@ public class playerController : MonoBehaviour
     // These are the two cards in hand
     public int handRank { get; set; }
     public string handDescription { get; set; }
-    public List<Card> holeCards= new List<Card>();
+    private List<Card> holeCards = new List<Card>();
+    public List<Card> bestHand { get; set; } = new List<Card>();
 
 
     // Getters

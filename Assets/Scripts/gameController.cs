@@ -220,7 +220,7 @@ public class gameController : MonoBehaviour
         else if (turn == 1) { cardController.revealTurn(); turn++; currentBet = 0; return; }
         else if (turn == 2) { cardController.revealRiver(); turn++; currentBet = 0; return; }
 
-        List<playerController> winner = cardController.roundWinner(turnOrder.ToList());
+        List<playerController> winner = cardController.DetermineWinners(turnOrder.ToList());
 
         foreach (var player in winner) 
         {
@@ -228,8 +228,6 @@ public class gameController : MonoBehaviour
             Debug.Log(player.username + " has won " + payment + "$");
             player.payPlayer(payment);
         }
-
-
 
         rounds++;
         turnOrder.Clear();
@@ -273,10 +271,10 @@ public class gameController : MonoBehaviour
         }
 
         string cards = "Hole Cards:";
-        foreach (var card in currentPlayer.holeCards) { cards = cards + " " + card + ","; }
+        foreach (var card in currentPlayer.getHoleCards()) { cards = cards + " " + card + ","; }
         Debug.Log("It is now " + currentPlayer.username + "\'s turn. \n " + cards);
 
-        // This is for limited play, were only allowing players to bet once per draw.
+        // This is for limited play, we're only allowing players to bet once per draw.
         if (currentPlayer == highestBidder) { newRound(); return; }
 
         if (currentPlayer.tappedOut) { nextTurn(); }
