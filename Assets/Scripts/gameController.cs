@@ -68,7 +68,7 @@ public class gameController : MonoBehaviour
     public string getTurnOrder()
     {
         string order = "";
-        foreach (var player in turnOrder) { order += player.getName() + " "; }
+        foreach (var player in turnOrder) { order += player.money + " "; }
         return order; 
     }
 
@@ -77,8 +77,8 @@ public class gameController : MonoBehaviour
         string finalInfo = "";
         foreach (var player in playerList)
         {
-            finalInfo += player.getName()+ "    " + player.getPlayMoney() + "     " +
-                player.getMoney() + "\n";
+            finalInfo += player.money+ "    " + player.money + "     " +
+                player.money + "\n";
         }
 
         return finalInfo;
@@ -118,10 +118,10 @@ public class gameController : MonoBehaviour
         // Get the playerController and assign anything new to the player
         playerController player = playerObj.GetComponent<playerController>();
         playerList.Add(player);
-        player.setName(playerName);
-        player.setPlayerIP(client);
-        player.setPlayerNumber(playerList.Count);
-        if (playerList.Count == 1) { player.setHost(); }
+        player.username = playerName;
+        player.ID = client;
+        player.playerNumber = playerList.Count;
+        if (playerList.Count == 1) { player.isHost = true; }
 
 
         // This updates a UI with the new player whos playing
@@ -167,8 +167,8 @@ public class gameController : MonoBehaviour
 
         foreach (var player in playerList)
         {
-            player.setMoney(startMoney);
-            controlpads_glue.SendControlpadMessage(player.getIP(), "refresh");
+            player.money = startMoney;
+            controlpads_glue.SendControlpadMessage(player.ID, "refresh");
         }
 
         // Initialize variables
@@ -184,8 +184,8 @@ public class gameController : MonoBehaviour
         // Debug.Log("Tottal Money: " + tottalMoney);
         // Debug.Log("Turn order is: " + getTurnOrder());
         string cards = "Hole Cards:";
-        foreach (var card in currentPlayer.getHoleCards()) { cards = cards + " " + card + ","; }
-        Debug.Log("It is now " + currentPlayer.getName() + "\'s turn. \n " + cards);
+        foreach (var card in currentPlayer.holeCards) { cards = cards + " " + card + ","; }
+        Debug.Log("It is now " + currentPlayer.username + "\'s turn. \n " + cards);
     }
 
     // This function will initialize the turnOrder list but filling it with
@@ -225,7 +225,7 @@ public class gameController : MonoBehaviour
         foreach (var player in winner) 
         {
             int payment = potMoney / winner.Count;
-            Debug.Log(player.getName() + " has won " + payment + "$");
+            Debug.Log(player.username + " has won " + payment + "$");
             player.payPlayer(payment);
         }
 
@@ -239,9 +239,9 @@ public class gameController : MonoBehaviour
         roundRobin.Enqueue(roundRobin.Dequeue());
         foreach (var player in roundRobin) { 
             turnOrder.Enqueue(player); 
-            player.resetPlayMoney();
+            player.betted = 0;
             player.resetHoleCards();
-            if (player.isFolded()) { player.fold(); }
+            if (player.folded) { player.fold(); }
 
         }
 
@@ -259,7 +259,7 @@ public class gameController : MonoBehaviour
     public void nextTurn()
     {
         // Update the to the next player, unless the current player folded then just remove them.
-        if (currentPlayer.isFolded())
+        if (currentPlayer.folded)
             turnOrder.Dequeue();
         else
             turnOrder.Enqueue(turnOrder.Dequeue());
@@ -269,17 +269,17 @@ public class gameController : MonoBehaviour
 
         foreach (var playerController in playerList)
         {
-            controlpads_glue.SendControlpadMessage(playerController.getIP(), "refresh");
+            controlpads_glue.SendControlpadMessage(playerController.ID, "refresh");
         }
 
         string cards = "Hole Cards:";
-        foreach (var card in currentPlayer.getHoleCards()) { cards = cards + " " + card + ","; }
-        Debug.Log("It is now " + currentPlayer.getName() + "\'s turn. \n " + cards);
+        foreach (var card in currentPlayer.holeCards) { cards = cards + " " + card + ","; }
+        Debug.Log("It is now " + currentPlayer.username + "\'s turn. \n " + cards);
 
         // This is for limited play, were only allowing players to bet once per draw.
         if (currentPlayer == highestBidder) { newRound(); return; }
 
-        if (currentPlayer.isTappedOut()) { nextTurn(); }
+        if (currentPlayer.tappedOut) { nextTurn(); }
     }
 
     public void anteUP(string playerName, bool playing)
@@ -299,7 +299,7 @@ public class gameController : MonoBehaviour
         int money = currentPlayer.requestFunds(amount);
         currentBet = money;
         potMoney += money;
-        Debug.Log(currentPlayer.getName() + " has betted " + money + "$.");
+        Debug.Log(currentPlayer.username + " has betted " + money + "$.");
         highestBidder = currentPlayer;
         nextTurn();
     }
@@ -310,10 +310,10 @@ public class gameController : MonoBehaviour
         int money;
         int lastBet = currentBet;
 
-        if (currentPlayer.getPlayMoney() < currentBet)
+        if (currentPlayer.money < currentBet)
         {
             // request funds to call the current bet
-            int callBet = currentPlayer.requestFunds(currentBet - currentPlayer.getPlayMoney());
+            int callBet = currentPlayer.requestFunds(currentBet - currentPlayer.money);
             // requst funds to raise the current bet
             int raiseMoney = currentPlayer.requestFunds(amount);
 
@@ -329,7 +329,7 @@ public class gameController : MonoBehaviour
         potMoney += money;
         highestBidder = currentPlayer;
 
-        Debug.Log(currentPlayer.getName() + " sees the last bet of " + 
+        Debug.Log(currentPlayer.username + " sees the last bet of " + 
             lastBet + " and raises it by " + amount + " putting in a tottal of " + money);
 
         nextTurn();
@@ -342,12 +342,12 @@ public class gameController : MonoBehaviour
         // if (currentPlayer == highestBidder) { newRound(); return; }
 
         int money;
-        if (currentPlayer.getPlayMoney() < currentBet)
-            money = currentPlayer.requestFunds(currentBet - currentPlayer.getPlayMoney());
+        if (currentPlayer.money < currentBet)
+            money = currentPlayer.requestFunds(currentBet - currentPlayer.money);
         else
             money = currentPlayer.requestFunds(currentBet);
         
-        Debug.Log(currentPlayer.getName() + " calls the current bet of " + currentBet);
+        Debug.Log(currentPlayer.username + " calls the current bet of " + currentBet);
         potMoney += money;
         nextTurn();
     }
@@ -356,7 +356,7 @@ public class gameController : MonoBehaviour
     {
         // No limits
         // if (currentPlayer == highestBidder) { highestBidder = turnOrder.Peek();}
-        Debug.Log(currentPlayer.getName() + " has folded this round");
+        Debug.Log(currentPlayer.username + " has folded this round");
         currentPlayer.fold();
         
         // Check if everyone has folded

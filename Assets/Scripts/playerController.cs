@@ -5,96 +5,43 @@ using UnityEngine;
 
 public class playerController : MonoBehaviour
 {
-    // Player specific variables
-    private string ID;
-    private string username;
-    private int playerNumber; // This is the order number that the player joined
+    public string ID { get; set; }
+    public string username { get; set; }
+    // This is the number the player joined
+    public int playerNumber { get; set; } 
     private int turnNumber;
+    public bool isHost { get; set; } = false;
 
+    // Money Variables
+    public int money { get; set; } // Ammount of money a player has to play with
+    public int betted { get; set; } // Amount of money the player has betted
 
     // Game Specific Variables
-    private List<string> holeCards = new List<string>(); // this should be a maximum of 2 cards
-    private List<Card> playCards = new List<Card>();
-    private PokerHandResult hand;
-    private int money; // Ammount of money a player has to play with
-    private int playMoney; // Amount of money the player has played this round
-    private bool folded = false;
-    private bool isPlayerTurn = false;
-    private bool isHost = false;
-    private bool tappedOut = false;
-    private bool gunPoint = false; // The first player to act, after the two blinds
+    public bool folded { get; set; } = false;
+    public bool isPlayerTurn { get; set; } = false;
+    public bool tappedOut { get; set; } = false;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        // Debug.Log(getName() + " Is number: " + playerNumber);
+    // Card Variables
+    // These are the two cards in hand
+    public int handRank { get; set; }
+    public string handDescription { get; set; }
+    public List<Card> holeCards= new List<Card>();
 
 
-    }
+    // Getters
+    public List<Card> getHoleCards() { return holeCards; }
 
 
-    // Player Getters
-    // No Longer Playing this round
-    public bool isFolded() { return folded; }
-
-    // Still playing but has no money
-    public bool isTappedOut() { return tappedOut; }
-
-    public bool isTurn() { return isPlayerTurn; }
-
-    public string getIP() { return ID; }
-
-    public string getName() { return username; }
-
-    public int getMoney() { return money; }
-
-    public int getPlayerNumber() { return playerNumber;}
-
-    public int getTurnNumber() {  return turnNumber;}
-
-    public int getPlayMoney() { return playMoney; }
-
-    public List<string> getHoleCards() {  return holeCards; }
-
-    public List<Card> getPlayCards() { return playCards; }
-
-    public PokerHandResult getHand() {  return hand; }
+    // Setters
+    public void drawCard(Card card) { holeCards.Add(card); }
 
 
-    // Player Setters
-    public void setName(string name) { username = name;}
-
-    public void setPlayerIP(string client) { ID = client; }
-
-    public void setMoney(int money) { this.money = money;}
-
-    public void setPlayerNumber(int num) { playerNumber = num; }
-
-    public void setTurnNumber(int turnNumber) { this.turnNumber = turnNumber; }
-
-    public void setHost() { isHost = true;}
-
-    public void resetPlayMoney() { playMoney = 0; }
+    // Instance Methods
+    public void resetHoleCards() { holeCards.Clear(); }
 
     public void fold() { folded = !folded; }
 
     public void payPlayer(int amount) { money += amount; }
-
-    public void holeCardAdd(Material holecard, Card card) 
-    { 
-        holeCards.Add(holecard.name);
-        playCards.Add(card);
-    }
-
-    public void setHand(PokerHandResult result) { hand = result; }
-
-
     public int requestFunds(int amount) 
     {
         if (amount >= money)
@@ -102,30 +49,16 @@ public class playerController : MonoBehaviour
             Debug.Log(name + " is ALL IN!!!");
             tappedOut = true;
             int finalAmount = money;
-            playMoney += money;
+            betted += money;
 
             money = 0;
             return finalAmount;
         }
 
-        playMoney += amount;
+        betted += amount;
         money -= amount;
         return amount;
     }
-
-    public void resetHoleCards() { holeCards.Clear(); playCards.Clear();  }
 }
 
-public class PlayerHandInfo
-    {
-        public PokerHandResult Hand {get; set;}
-        public int PlayerNumber {get;set;}
-    }
 
-public class PokerHandResult
-    {
-        public string HandDescription { get; set; }
-        public List<Card> HandCards { get; set; }
-        public int HandRank {get; set;}
-        
-    }
