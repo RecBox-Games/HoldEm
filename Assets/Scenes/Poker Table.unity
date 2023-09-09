@@ -2537,111 +2537,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1270601622}
   m_CullTransparentMesh: 1
---- !u!1 &1300498135
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1300498139}
-  - component: {fileID: 1300498138}
-  - component: {fileID: 1300498137}
-  - component: {fileID: 1300498136}
-  m_Layer: 0
-  m_Name: Cube
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!65 &1300498136
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1300498135}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!23 &1300498137
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1300498135}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RayTraceProcedural: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_AdditionalVertexStreams: {fileID: 0}
---- !u!33 &1300498138
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1300498135}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!4 &1300498139
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1300498135}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.5173882, y: -81.18969, z: 21.164524}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1369507850
 GameObject:
   m_ObjectHideFlags: 0
@@ -3622,50 +3517,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1794267799}
   m_CullTransparentMesh: 1
---- !u!1 &1797937347
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1797937348}
-  - component: {fileID: 1797937349}
-  m_Layer: 0
-  m_Name: PokerHandEvaluator
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1797937348
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1797937347}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1797937349
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1797937347}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9f7c08abc30651061bcf31664a542eb3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1852503607
 GameObject:
   m_ObjectHideFlags: 0
@@ -4040,7 +3891,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ad9cd45a79dc814ea42471189c5375c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameCards:
+  cardTextures:
   - {fileID: 2100000, guid: 3a6b207fd2e3d284b83b5a3fed781229, type: 2}
   - {fileID: 2100000, guid: 73e46b1b953f0604cb727b87f3e2a07c, type: 2}
   - {fileID: 2100000, guid: b24384b5aa8c16942af35747a3cb8593, type: 2}
@@ -4071,8 +3922,8 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 3b919056a4a0ea24e9c77f21bc6f68dd, type: 2}
   - {fileID: 2100000, guid: 1ffe4de2d45279a4c8c9f89aa2122623, type: 2}
   - {fileID: 2100000, guid: 4950bd2356e98ce4b82a635b8aff5600, type: 2}
-  - {fileID: 2100000, guid: 292ded1c0a92ca740ac0afe614f9f9f0, type: 2}
   - {fileID: 2100000, guid: c24601bae62e1c34193f25c458b45f5b, type: 2}
+  - {fileID: 0}
   - {fileID: 2100000, guid: f7d84fc049a94d64f922258547ddbb54, type: 2}
   - {fileID: 2100000, guid: bd8fe0656373d5f4bb3a26c85251fe0a, type: 2}
   - {fileID: 2100000, guid: d1613f84abec0f242baf9300319a1281, type: 2}
@@ -4091,9 +3942,9 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 7145f1db368f4ac458af449387f42408, type: 2}
   - {fileID: 2100000, guid: 28ea5c66d76df2f47a083d778d53ab0b, type: 2}
   - {fileID: 2100000, guid: 567c14c384a8eac40b18e01a5d789591, type: 2}
-  - {fileID: 2100000, guid: 3e789edb2b6d293479b7fa7f25a24e81, type: 2}
+  - {fileID: 2100000, guid: afaa5d28a3a6cca4db1980922c81e3ea, type: 2}
   - {fileID: 2100000, guid: 4524b2d66843d2440a628b77f457ced4, type: 2}
-  evaluator: {fileID: 1797937349}
+  gameController: {fileID: 827239352}
   flop1: {fileID: 1222200242}
   flop2: {fileID: 1969651658}
   flop3: {fileID: 1183367042}
@@ -4428,5 +4279,3 @@ SceneRoots:
   - {fileID: 1369507851}
   - {fileID: 1499767958}
   - {fileID: 827239353}
-  - {fileID: 1797937348}
-  - {fileID: 1300498139}

@@ -74,12 +74,12 @@ public class unitTest : MonoBehaviour
     }
 
     public void testMyTottalBet() { 
-        Debug.Log("I\'ve Betted: " + gameController.getCurretPlayer().getPlayMoney()); }
+        Debug.Log("I\'ve Betted: " + gameController.getCurretPlayer().money); }
 
     public void testShowMyCards()
     {
         string final = "Cards:";
-        foreach (var card in gameController.getCurretPlayer().getHoleCards()) { final += " " + card; }
+        foreach (var card in gameController.getCurretPlayer().getHoleCardsDesc()) { final += " " + card; }
         Debug.Log(final);
     }
 
@@ -154,7 +154,7 @@ public class unitTest : MonoBehaviour
 
 
 
-
+        /*
         
 
         //Kevin. This is where you'll follow in somewhat a similar pattern. 
@@ -219,7 +219,7 @@ public class unitTest : MonoBehaviour
 
             Debug.Log("Player " + (player.PlayerNumber + 1).ToString() + " Hand: " + string.Join(", ", player.Hand.HandCards.Select(card => card.rank + " of " + card.suit)));
 
-        }
+        }*/
     }
 
 }

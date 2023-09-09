@@ -68,7 +68,7 @@ public class gameController : MonoBehaviour
     public string getTurnOrder()
     {
         string order = "";
-        foreach (var player in turnOrder) { order += player.money + " "; }
+        foreach (var player in turnOrder) { order += player.username + " "; }
         return order; 
     }
 
@@ -77,7 +77,7 @@ public class gameController : MonoBehaviour
         string finalInfo = "";
         foreach (var player in playerList)
         {
-            finalInfo += player.money+ "    " + player.money + "     " +
+            finalInfo += player.username + "    " + player.betted + "     " +
                 player.money + "\n";
         }
 
@@ -184,8 +184,9 @@ public class gameController : MonoBehaviour
         // Debug.Log("Tottal Money: " + tottalMoney);
         // Debug.Log("Turn order is: " + getTurnOrder());
         string cards = "Hole Cards:";
-        foreach (var card in currentPlayer.holeCards) { cards = cards + " " + card + ","; }
-        Debug.Log("It is now " + currentPlayer.username + "\'s turn. \n " + cards);
+        // foreach (var card in currentPlayer.getHoleCards()) { cards = cards + " " + card + ","; }
+        Debug.Log("It is now " + currentPlayer.username + "\'s turn. \n " + 
+            currentPlayer.getHoleCardsDesc());
     }
 
     // This function will initialize the turnOrder list but filling it with
@@ -271,8 +272,9 @@ public class gameController : MonoBehaviour
         }
 
         string cards = "Hole Cards:";
-        foreach (var card in currentPlayer.getHoleCards()) { cards = cards + " " + card + ","; }
-        Debug.Log("It is now " + currentPlayer.username + "\'s turn. \n " + cards);
+        // foreach (var card in currentPlayer.getHoleCards()) { cards = cards + " " + card + ","; }
+        Debug.Log("It is now " + currentPlayer.username + "\'s turn. \n " + 
+            currentPlayer.getHoleCardsDesc());
 
         // This is for limited play, we're only allowing players to bet once per draw.
         if (currentPlayer == highestBidder) { newRound(); return; }

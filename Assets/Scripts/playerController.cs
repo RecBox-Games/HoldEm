@@ -31,7 +31,15 @@ public class playerController : MonoBehaviour
 
     // Getters
     public List<Card> getHoleCards() { return holeCards; }
-
+    public string getHoleCardsDesc()
+    {
+        string finalString = "";
+        foreach (var card in holeCards)
+        {
+            finalString += card.rank + " of " + card.suit + ", " ;
+        }
+        return finalString;
+    }
 
     // Setters
     public void drawCard(Card card) { holeCards.Add(card); }
@@ -61,5 +69,3 @@ public class playerController : MonoBehaviour
         return amount;
     }
 }
-
-

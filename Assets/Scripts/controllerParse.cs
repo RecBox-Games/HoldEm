@@ -67,13 +67,13 @@ public class controllerParse : MonoBehaviour
             if (messages[0] == "RequestState") {
             
                 GameState(
-                fromPlayer.getIP(), 
-                fromPlayer.getName(),
-                fromPlayer.getMoney().ToString(),
+                fromPlayer.ID, 
+                fromPlayer.username,
+                fromPlayer.money.ToString(),
                 gameController.getCurrentCall().ToString(), 
-                fromPlayer.isTurn(), 
-                fromPlayer.getPlayerNumber(),
-                fromPlayer.getPlayCards()
+                fromPlayer.isPlayerTurn, 
+                fromPlayer.playerNumber,
+                fromPlayer.getHoleCards()
                 );
             }
             
@@ -135,7 +135,7 @@ public class controllerParse : MonoBehaviour
     public playerController grabPlayer(string client) {
         foreach (var player in gameController.getPlayerList()) 
         {
-            string ip = player.getIP();
+            string ip = player.ID;
             //player is recognized
             if(ip == client) {
                 return player;
