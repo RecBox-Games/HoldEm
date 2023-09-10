@@ -418,15 +418,7 @@ ws.onopen = (event) => {
             if (hasSameColor(color,drbl.color)){
                 switch(drbl.msg)
                 {
-                    case "Up":
-                        UpdateMoney(1);
-                        break;
-                    case "Down":
-                        UpdateMoney(-1);
-                        break;
-                    case "PlayerResponse":
-                        sendResponse();
-                        break;
+
                     case "Peek":
                         timer = setTimeout( flipCard, 1000 );
                         break;

@@ -12,6 +12,8 @@ const menuOverlay = document.getElementById('topmenu');
 const nameField = document.getElementById('playerName');
 const moneyField = document.getElementById('playerMoney');
 const statusField = document.getElementById('playerStatus');
+const actionButton = document.getElementById('actionButton');
+const playButton = document.getElementById('playButton');
 // const carddiv = document.getElementById('customCards');
 const card1 = document.getElementById('card1');
 const card2 = document.getElementById('card2');
@@ -21,12 +23,7 @@ let needs_draw = false; //Bool to trigger the draw function
 let SCREEN_HEIGHT; //Height of screen
 let SCREEN_WIDTH; //Width of screen
 let SCREEN_ORIENTATION; //Portrait, Landscape, etc.
-let betBoxX;
-let betBoxY;
-let betBoxW;
-let betBoxH;
-let betBoxIndex;
-let betBoxIndexButton;
+
 let isHeld = false;
 let timer = null;
 let cardFlipped = false;
@@ -556,45 +553,8 @@ function topMenu() {
 }
 
 function drawActions() {
-
-    let triangleOffset = SCREEN_HEIGHT/10;
-    let triangleOutline = borderWidth/2;
-    let triangleBase = SCREEN_WIDTH/3;
-    let triangleHeight = SCREEN_HEIGHT/20;
-    
-    drawBetBox();
-
-    image_drawables.push({
-        type: 'triangle',
-        x: x,
-        y: y + triangleOffset,
-        centeredX: true,
-        centeredY: true,
-        b: triangleBase,
-        h: triangleHeight,
-        color: '#FF0000',
-        rotation: 0,
-        outline: triangleOutline,
-        msg: "Down",
-        track: true
-
-
-    });
-    image_drawables.push({
-        type: 'triangle',
-        x: x,
-        y: y - triangleOffset,
-        centeredX: true,
-        centeredY: true,
-        b: triangleBase,
-        h: triangleHeight,
-        color: '#FF0000',
-        rotation: 180,
-        outline: triangleOutline,
-        msg: "Up",
-        track: true
-
-    });
+    playButton.style.display='flex';
+    updateActionButton();
    drawPeek();
 
 }
@@ -632,41 +592,12 @@ function drawPeek(){
     });
 }
 
-function drawBetBox(){
-    y = 27*SCREEN_HEIGHT/32;
-    x = 11*SCREEN_WIDTH/16;
-    text = action + ": " + formatter.format(playerCall); 
-    autoSize = sizeFont(text,0.4);
-    scale = sizeImage(buttonImage,.5);
-    scaleForButtonY = buttonScale(1.75)
-    betBoxX = x;
-    betBoxY = y;
-    betBoxW = buttonImage.width*scale;
-    betBoxH = buttonImage.height*scaleForButtonY;
-    betBoxIndex = text_drawables.length;
-    betBoxIndexButton = image_drawables.length;
+function updateActionButton(){
+    text = action + ": " + formatter.format(playerCall);
+    actionButton.innerHTML=text;
 
-    text_drawables.push({
-        type: 'text',
-        text: text,
-        font: autoSize,
-        x: x,
-        y: y,
-        centeredX: true,
-        centeredY: true,
-    });
-    image_drawables.push({
-        type: 'image',
-        image: buttonImage,
-        x: x,
-        y: y,
-        centeredX: true,
-        centeredY: true,
-        scaleY: scaleForButtonY,
-        scaleX: scale,
-        track: true,
-        msg: "PlayerResponse"
-    });
+    
+
 }
 
 function flipCard(){
@@ -696,7 +627,7 @@ function UpdateMoney(amount) {
         action = "Raise";
         playerCall = playerCall + amount*betIncrement;
     }
-    wipeBetBox();
+    updateActionButton();
 
 }
 
@@ -767,17 +698,10 @@ function wipeScreen()
     ctx.fillRect(borderWidth, borderWidth, canvas.width, canvas.height);
 }
 
-function wipeBetBox(drbl) {
-    text_drawables.splice(betBoxIndex,1);
-    image_drawables.splice(betBoxIndexButton,1);
-
-    drawBetBox();
-    needs_draw = true;
-
-}
 
 function sendResponse(){
     setState(["state","PlayingWaiting",playerName,(playerMoney-playerCall)]);
+    playButton.style.display="none";
     playerTurn = false;
     let msg = "PlayerResponse:" + action + ":" + playerCall;
     messages.push(msg);

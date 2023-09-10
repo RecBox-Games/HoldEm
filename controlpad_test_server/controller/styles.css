@@ -22,6 +22,10 @@ body {
 
 }
 
+svg {
+    fill: var(--color)
+}
+
 canvas {
     width: 100vw;
     height: calc(100 * var(--vh) - var(--border-offset));
@@ -219,11 +223,11 @@ img {
 /* CSS */
 button {
   align-items: center;
-  background-color: #0A66C2;
+  background-color: var(--color);
   border: 0;
   border-radius: 100px;
   box-sizing: border-box;
-  color: #ffffff;
+  color: white;
   cursor: pointer;
   display: flex;
   font-family: -apple-system, system-ui, system-ui, "Segoe UI", Roboto, "Helvetica Neue", "Fira Sans", Ubuntu, Oxygen, "Oxygen Sans", Cantarell, "Droid Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Lucida Grande", Helvetica, Arial, sans-serif;
@@ -260,9 +264,8 @@ button {
     display:flex;
     flex-direction: column;
     text-align: center;
-    background-color: #32CD32;
     justify-content: center;
-    display: none;
+    display:none;
 
     
 }
