@@ -217,9 +217,9 @@ public class gameController : MonoBehaviour
 
     public void newRound()
     {
-        if (turn == 0) { cardController.revealFlop(); turn++; currentBet = 0; return; }
-        else if (turn == 1) { cardController.revealTurn(); turn++; currentBet = 0; return; }
-        else if (turn == 2) { cardController.revealRiver(); turn++; currentBet = 0; return; }
+        if (turn == 0  && turnOrder.Count > 1) { cardController.revealFlop(); turn++; currentBet = 0; return; }
+        else if (turn == 1 && turnOrder.Count > 1) { cardController.revealTurn(); turn++; currentBet = 0; return; }
+        else if (turn == 2 && turnOrder.Count > 1) { cardController.revealRiver(); turn++; currentBet = 0; return; }
 
         List<playerController> winner = cardController.DetermineWinners(turnOrder.ToList());
 
@@ -251,6 +251,7 @@ public class gameController : MonoBehaviour
         currentBet = 0;
         playerTurn = 0;
         turn = 0;
+        cardController.dealCards(turnOrder.ToList());
 
         Debug.Log("A new round has started!");
     }

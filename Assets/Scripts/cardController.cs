@@ -150,6 +150,7 @@ public class cardController : MonoBehaviour
         {
             foreach (var player in playerList)
             {
+                playTextures.Dequeue();
                 player.drawCard(playDeck.Dequeue());
             }
         }
@@ -236,15 +237,15 @@ public class cardController : MonoBehaviour
                     break;
                 }
                 //Sort the winner list by the rank of the i-th card
-                winnerList.Sort((p1, p2) => p2.getHoleCards()[i].rank.CompareTo(p1.getHoleCards()[i].rank));
+                winnerList.Sort((p1, p2) => p2.bestHand[i].rank.CompareTo(p1.bestHand[i].rank));
 
                 //Create a variable of the rank of that card
-                var highestCard = winnerList[0].getHoleCards()[i].rank;
+                var highestCard = winnerList[0].bestHand[i].rank;
 
                 //Remove all players in the winner list that don't have at least as high as 
                 // that rank of card
 
-                winnerList.RemoveAll(p => p.getHoleCards()[i].rank < highestCard);
+                winnerList.RemoveAll(p => p.bestHand[i].rank < highestCard);
 
             }
         }
