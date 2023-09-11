@@ -258,6 +258,7 @@ public class gameController : MonoBehaviour
 
     public void nextTurn()
     {
+        currentPlayer.isPlayerTurn = false;
         // Update the to the next player, unless the current player folded then just remove them.
         if (currentPlayer.folded)
             turnOrder.Dequeue();
@@ -265,6 +266,7 @@ public class gameController : MonoBehaviour
             turnOrder.Enqueue(turnOrder.Dequeue());
 
         currentPlayer = turnOrder.Peek();
+        currentPlayer.isPlayerTurn = true;
         playerTurn = (playerTurn + 1) % turnOrder.Count;
 
         foreach (var playerController in playerList)
