@@ -56,9 +56,6 @@ public class unitTest : MonoBehaviour
         gameController.startGame(startMoney, ante);
     }
 
-
-    public void testBet() { gameController.bet(this.bet); }
-
     public void testRaise() { gameController.raise(this.raise); }
 
     public void testCall() { gameController.call(); }
@@ -82,6 +79,10 @@ public class unitTest : MonoBehaviour
         foreach (var card in gameController.getCurretPlayer().getHoleCardsDesc()) { final += " " + card; }
         Debug.Log(final);
     }
+
+    public void testNewGame() {
+        gameController.gameState = false;
+        gameController.startGame(); }
 
     public void testHandEvaluator()
     {

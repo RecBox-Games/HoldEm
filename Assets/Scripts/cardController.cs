@@ -107,6 +107,15 @@ public class cardController : MonoBehaviour
         
     }
 
+    public string getCommunityCards()
+    {
+        string final = "";
+        foreach (var card in communityCards)
+            final += card.ToString();
+     
+        return final;
+    }
+
     public void shuffleDeck()
     {
         Debug.Log("Shuffling the Deck!!! Shuffle Shuffle Shuffle");
