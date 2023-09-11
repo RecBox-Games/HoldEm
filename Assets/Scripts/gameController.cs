@@ -211,6 +211,7 @@ public class gameController : MonoBehaviour
         foreach (var player in playerList) { turnOrder.Enqueue(player); }
         foreach (var player in playerList) { roundRobin.Enqueue(player); }
         currentPlayer = turnOrder.Peek();
+        currentPlayer.isPlayerTurn =true;
         highestBidder = currentPlayer;
         playerTurn = 0;
     }
