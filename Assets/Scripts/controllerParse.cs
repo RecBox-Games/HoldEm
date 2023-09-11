@@ -49,7 +49,7 @@ public class controllerParse : MonoBehaviour
                     gameController.call();
                     break;
                 case "Raise":
-                    gameController.raise(amount-gameController.getCurrentCall());
+                    gameController.raise(amount);
                     break;              
             }
         }
@@ -65,12 +65,14 @@ public class controllerParse : MonoBehaviour
 
             if (messages[0] == "RequestState") {
             
+
+            
                 GameState(
                 fromPlayer.ID, 
                 fromPlayer.username,
                 fromPlayer.money.ToString(),
                 gameController.getCurrentCall().ToString(), 
-                fromPlayer.isPlayerTurn, 
+                gameController.getPlayerTurn(), 
                 fromPlayer.playerNumber,
                 fromPlayer.getHoleCards()
                 );
@@ -84,7 +86,7 @@ public class controllerParse : MonoBehaviour
 
 
     public void GameState(string ip, string username, 
-    string playerMoney, string call, bool isPlayerTurn, 
+    string playerMoney, string call, int playerTurn, 
     int playerNumber, List<Card> cards){
 
         var stateName = "";
@@ -115,8 +117,8 @@ public class controllerParse : MonoBehaviour
                 variables.Add(card.suit.ToString() + "-" + card.rank.ToString());
             }
 
-
-            if((playerNumber-1) == gameController.getPlayerTurn()){
+            Debug.Log("playerTurn is:" + playerTurn.ToString());
+            if((playerNumber-1) == playerTurn){
                 stateName = "PlayingPlayerTurn:";
             }
 
