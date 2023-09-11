@@ -72,7 +72,7 @@ public class controllerParse : MonoBehaviour
                 fromPlayer.username,
                 fromPlayer.money.ToString(),
                 gameController.getCurrentCall().ToString(), 
-                gameController.getPlayerTurn(), 
+                fromPlayer.isPlayerTurn(),
                 fromPlayer.playerNumber,
                 fromPlayer.getHoleCards()
                 );
@@ -118,7 +118,7 @@ public class controllerParse : MonoBehaviour
             }
 
             Debug.Log("playerTurn is:" + playerTurn.ToString());
-            if((playerNumber-1) == playerTurn){
+            if(playerTurn){
                 stateName = "PlayingPlayerTurn:";
             }
 
