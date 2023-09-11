@@ -111,7 +111,7 @@ public class cardController : MonoBehaviour
     {
         string final = "";
         foreach (var card in communityCards)
-            final += card.ToString();
+            final += card.rank.ToString() + " of " + card.suit.ToString() + ", ";
      
         return final;
     }
