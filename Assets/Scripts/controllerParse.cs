@@ -61,12 +61,7 @@ public class controllerParse : MonoBehaviour
 
         else {
 
-            if (messages[0] == "RequestState") {
-
-                Debug.Log("betted" + ":" + fromPlayer.betted.ToString());
-            
-
-            
+            if (messages[0] == "RequestState") {   
                 GameState(
                 fromPlayer.ID, 
                 fromPlayer.username,
