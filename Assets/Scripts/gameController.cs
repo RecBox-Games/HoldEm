@@ -269,11 +269,7 @@ public class gameController : MonoBehaviour
         currentPlayer = turnOrder.Peek();
         currentPlayer.isPlayerTurn = true;
         playerTurn = (playerTurn + 1) % turnOrder.Count;
-
-        foreach (var playerController in playerList)
-        {
-            controlpads_glue.SendControlpadMessage(playerController.ID, "refresh");
-        }
+        controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh");
 
         string cards = "Hole Cards:";
         // foreach (var card in currentPlayer.getHoleCards()) { cards = cards + " " + card + ","; }
@@ -289,23 +285,6 @@ public class gameController : MonoBehaviour
     public void anteUP(string playerName, bool playing)
     {
         if (playing) { Debug.Log(playerName + " Is playing this round"); }
-    }
-
-    public void bet(int amount)
-    {
-        if (currentBet > 0)
-        {
-            Debug.Log("You cant bet off a bet, you will instead raise the current bet.");
-            raise(amount);
-            return;
-        }
-
-        int money = currentPlayer.requestFunds(amount);
-        currentBet = money;
-        potMoney += money;
-        Debug.Log(currentPlayer.username + " has betted " + money + "$.");
-        highestBidder = currentPlayer;
-        nextTurn();
     }
 
     // The player wishes to raise the curent bet by amount
