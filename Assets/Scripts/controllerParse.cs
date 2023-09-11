@@ -72,7 +72,7 @@ public class controllerParse : MonoBehaviour
                 fromPlayer.username,
                 fromPlayer.money.ToString(),
                 gameController.getCurrentCall().ToString(), 
-                fromPlayer.isPlayerTurn().ToString(),
+                fromPlayer.isPlayerTurn.ToString(),
                 fromPlayer.playerNumber,
                 fromPlayer.getHoleCards()
                 );
