@@ -9,6 +9,7 @@ public class unitTest : MonoBehaviour
     // Objects to test
     [SerializeField] GameObject controlInterface;
     [SerializeField] GameObject gameInterface;
+    [SerializeField] GameObject cardInterface;
     [SerializeField] int startMoney;
     [SerializeField] int ante;
     [SerializeField] int bet;
@@ -18,6 +19,7 @@ public class unitTest : MonoBehaviour
     // Instance Variables
     private controllerParse controllerParse;
     private gameController gameController;
+    private cardController cardController;
 
 
     // Instance Variables
@@ -28,7 +30,7 @@ public class unitTest : MonoBehaviour
     {
         controllerParse = controlInterface.GetComponent<controllerParse>();
         gameController = gameInterface.GetComponent<gameController>();
-        // testHandEvaluator();
+        cardController = cardInterface.GetComponent<cardController>();
     }
 
     // Update is called once per frame
@@ -56,9 +58,6 @@ public class unitTest : MonoBehaviour
         gameController.startGame(startMoney, ante);
     }
 
-
-    public void testBet() { gameController.bet(this.bet); }
-
     public void testRaise() { gameController.raise(this.raise); }
 
     public void testCall() { gameController.call(); }
@@ -82,6 +81,13 @@ public class unitTest : MonoBehaviour
         foreach (var card in gameController.getCurretPlayer().getHoleCardsDesc()) { final += " " + card; }
         Debug.Log(final);
     }
+
+    public void testNewGame() {
+        gameController.gameState = false;
+        gameController.startGame(); }
+
+    public void testCommunityCards() { 
+        Debug.Log(cardController.getCommunityCards()); }
 
     public void testHandEvaluator()
     {

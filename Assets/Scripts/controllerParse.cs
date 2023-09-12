@@ -89,7 +89,7 @@ public class controllerParse : MonoBehaviour
         variables.Add(username);
 
 
-        if(!gameController.getGameState())
+        if(!gameController.gameState)
         {
             if (playerNumber == 1)
             {

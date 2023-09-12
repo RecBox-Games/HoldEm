@@ -20,7 +20,7 @@ public class gameController : MonoBehaviour
     [SerializeField] int ante;
 
     // Static Variables
-    private static bool gameState = false; // True means a game has started
+    public static bool gameState { get; set; } = false; // True means a game has started
 
     // Instance Variables
     private List<playerController> playerList = new List<playerController>();
@@ -63,7 +63,7 @@ public class gameController : MonoBehaviour
 
     public int getPlayerTurn() { return playerTurn; }
 
-    public bool getGameState() { return gameState; }
+    public int getCurrentCall() { return currentBet; }
 
     public string getTurnOrder()
     {
@@ -168,25 +168,35 @@ public class gameController : MonoBehaviour
         foreach (var player in playerList)
         {
             player.money = startMoney;
+            player.betted = 0;
+            player.isPlayerTurn = false;
+            player.folded = false;
+            player.tappedOut = false;
+            player.handRank = 10;
+            player.getHoleCards().Clear();
+            player.bestHand.Clear();
+            player.handDescription = null;
             controlpads_glue.SendControlpadMessage(player.ID, "refresh");
         }
 
         // Initialize variables
-        gameState = true;
+        cardController.resetCards();
         initializeTurnOrder();
         tottalMoney = startMoney * playerList.Count;
+        cardController.dealCards(turnOrder.ToList());
+        rounds = 1;
+        potMoney = 0;
+        currentBet = 0;
+        playerTurn = 0;
+        turn = 0;
         this.ante = ante;
-        rounds++;
-        cardController.dealCards(playerList);
 
-
-        // Debug.Log("A game of Texas Hold'Em Has begun");
-        // Debug.Log("Tottal Money: " + tottalMoney);
-        // Debug.Log("Turn order is: " + getTurnOrder());
-        string cards = "Hole Cards:";
-        // foreach (var card in currentPlayer.getHoleCards()) { cards = cards + " " + card + ","; }
+        Debug.Log("A new game of Texas Hold'Em Has begun");
+        Debug.Log("Turn order is: " + getTurnOrder());
         Debug.Log("It is now " + currentPlayer.username + "\'s turn. \n " + 
             currentPlayer.getHoleCardsDesc());
+
+        gameState = true;
     }
 
     // This function will initialize the turnOrder list but filling it with
@@ -198,6 +208,8 @@ public class gameController : MonoBehaviour
     // - This also will set the first players turn (currnetPlayer gets initialized here)
     public void initializeTurnOrder()
     {
+        turnOrder.Clear();
+        roundRobin.Clear();
 
         for (int i = 0; i < playerList.Count; i++)
         {
@@ -210,8 +222,9 @@ public class gameController : MonoBehaviour
 
         foreach (var player in playerList) { turnOrder.Enqueue(player); }
         foreach (var player in playerList) { roundRobin.Enqueue(player); }
+
         currentPlayer = turnOrder.Peek();
-        currentPlayer.isPlayerTurn =true;
+        currentPlayer.isPlayerTurn = true;
         highestBidder = currentPlayer;
         playerTurn = 0;
     }
@@ -237,12 +250,11 @@ public class gameController : MonoBehaviour
 
         // Move the first player to the back of the roundRobin then reinstantiate the turnOrder
         roundRobin.Enqueue(roundRobin.Dequeue());
-        foreach (var player in roundRobin) { 
-            turnOrder.Enqueue(player); 
+        foreach (var player in roundRobin.ToList()) {
+            if (player.folded) { player.fold(); }
             player.betted = 0;
             player.resetHoleCards();
-            if (player.folded) { player.fold(); }
-
+            turnOrder.Enqueue(player);
         }
 
         // Reset variables
@@ -293,10 +305,10 @@ public class gameController : MonoBehaviour
         int money;
         int lastBet = currentBet;
 
-        if (currentPlayer.money < currentBet)
+        if (currentPlayer.betted < currentBet)
         {
             // request funds to call the current bet
-            int callBet = currentPlayer.requestFunds(currentBet - currentPlayer.money);
+            int callBet = currentPlayer.requestFunds(currentBet - currentPlayer.betted);
             // requst funds to raise the current bet
             int raiseMoney = currentPlayer.requestFunds(amount);
 
@@ -325,8 +337,8 @@ public class gameController : MonoBehaviour
         // if (currentPlayer == highestBidder) { newRound(); return; }
 
         int money;
-        if (currentPlayer.money < currentBet)
-            money = currentPlayer.requestFunds(currentBet - currentPlayer.money);
+        if (currentPlayer.betted < currentBet)
+            money = currentPlayer.requestFunds(currentBet - currentPlayer.betted);
         else
             money = currentPlayer.requestFunds(currentBet);
         
@@ -347,7 +359,5 @@ public class gameController : MonoBehaviour
 
         nextTurn();
     }
-
-    public int getCurrentCall() { return currentBet; }
 
 }
