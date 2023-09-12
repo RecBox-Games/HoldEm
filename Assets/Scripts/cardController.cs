@@ -1,9 +1,11 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 using UnityEngine.XR;
 
 public class Card
@@ -25,11 +27,14 @@ public class Card
 public class cardController : MonoBehaviour
 {
     [SerializeField] List<Material> cardTextures = new List<Material>();
+    [SerializeField] List<GameObject> tableCards;
     [SerializeField] gameController gameController;
-    [SerializeField] GameObject flop1, flop2, flop3, turn, river;
+    [SerializeField] GameObject deck;
+    [SerializeField] float velocity;
 
     // Instance Variables
     // This is the original deck, and it gets shuffled (always has 52 cards)
+    private List<Vector3> originPos = new List<Vector3>();
     private List<Card> cardDeck = new List<Card> {
     new Card(Card.Suit.Spades, Card.Rank.Ace),
     new Card(Card.Suit.Spades, Card.Rank.Two),
@@ -97,6 +102,7 @@ public class cardController : MonoBehaviour
     void Start()
     {
         foreach (var card in cardTextures) { textureDeck.Add(card); }
+        foreach (var vector in tableCards) { originPos.Add(vector.transform.position); }
         // Clear all cards on table
         resetCards();
     }
@@ -141,11 +147,11 @@ public class cardController : MonoBehaviour
     
     public void resetCards()
     {
-        flop1.GetComponent<Renderer>().enabled = false;
-        flop2.GetComponent<Renderer>().enabled = false;
-        flop3.GetComponent<Renderer>().enabled = false;
-        turn.GetComponent<Renderer>().enabled = false;
-        river.GetComponent<Renderer>().enabled = false;
+        foreach (var card in tableCards)
+        {
+            card.GetComponent<Renderer>().enabled = false;
+            card.transform.position = deck.transform.position + new Vector3(0, .65f, 0);
+        }
 
         playTextures.Clear();
         playDeck.Clear();
@@ -171,15 +177,14 @@ public class cardController : MonoBehaviour
         // Burn a Card to prevent cheating (not sure how you can but tradition ya know)
         playTextures.Dequeue();
         playDeck.Dequeue();
-
-        flop1.GetComponent<Renderer>().material = playTextures.Dequeue();
-        flop2.GetComponent<Renderer>().material = playTextures.Dequeue();
-        flop3.GetComponent<Renderer>().material = playTextures.Dequeue();
   
-        for (int i = 0; i < 3; i++) { communityCards.Add(playDeck.Dequeue()); }
-        flop1.GetComponent<Renderer>().enabled = true;
-        flop2.GetComponent<Renderer>().enabled = true;
-        flop3.GetComponent<Renderer>().enabled = true;
+        for (int i = 0; i < 3; i++) 
+        {
+            tableCards[i].GetComponent<Renderer>().material = playTextures.Dequeue();
+            tableCards[i].GetComponent<Renderer>().enabled = true;
+            StartCoroutine(cardMove(tableCards[i], originPos[i]));
+            communityCards.Add(playDeck.Dequeue()); 
+        }
 
         foreach (var player in gameController.getPlayerList()) { FindBestPokerHand(player); }
     }
@@ -190,9 +195,10 @@ public class cardController : MonoBehaviour
         playTextures.Dequeue();
         playDeck.Dequeue();
 
-        turn.GetComponent<Renderer>().material = playTextures.Dequeue();
+        tableCards[3].GetComponent<Renderer>().material = playTextures.Dequeue();
+        tableCards[3].GetComponent<Renderer>().enabled = true;
+        StartCoroutine(cardMove(tableCards[3], originPos[3]));
         communityCards.Add(playDeck.Dequeue());
-        turn.GetComponent<Renderer>().enabled = true;
         foreach (var player in gameController.getPlayerList()) { FindBestPokerHand(player); }
 
     }
@@ -203,10 +209,25 @@ public class cardController : MonoBehaviour
         playTextures.Dequeue();
         playDeck.Dequeue();
 
-        river.GetComponent<Renderer>().material = playTextures.Dequeue();
+        tableCards[4].GetComponent<Renderer>().material = playTextures.Dequeue();
+        tableCards[4].GetComponent<Renderer>().enabled = true;
+        StartCoroutine(cardMove(tableCards[4], originPos[4]));
         communityCards.Add(playDeck.Dequeue());
-        river.GetComponent<Renderer>().enabled = true;
         foreach (var player in gameController.getPlayerList()) { FindBestPokerHand(player); }
+    }
+
+    IEnumerator cardMove(GameObject card, Vector3 origin)
+    {
+        while (card.transform.position != origin)
+        {
+            card.transform.position = Vector3.MoveTowards(
+                card.transform.position,
+                origin,
+                velocity * Time.deltaTime);
+            yield return null;
+        }
+        card.transform.position = origin;
+        
     }
 
     public static List<playerController> DetermineWinners(List<playerController> playerList)

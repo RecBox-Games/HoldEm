@@ -89,6 +89,14 @@ public class unitTest : MonoBehaviour
     public void testCommunityCards() { 
         Debug.Log(cardController.getCommunityCards()); }
 
+    public void testRevealCards()
+    {
+        cardController.resetCards();
+        cardController.revealFlop();
+        cardController.revealTurn();
+        cardController.revealRiver();
+    }
+
     public void testHandEvaluator()
     {
                 //Kevin, Start Here. I've defined a list of "Cards" as such.
