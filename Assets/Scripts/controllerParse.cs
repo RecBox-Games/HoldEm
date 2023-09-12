@@ -60,13 +60,16 @@ public class controllerParse : MonoBehaviour
         }
 
         else {
+            Debug.Log(gameController.getCurrentCall());
+            Debug.Log(fromPlayer.betted);
+            
 
             if (messages[0] == "RequestState") {   
                 GameState(
                 fromPlayer.ID, 
                 fromPlayer.username,
                 fromPlayer.money.ToString(),
-                gameController.getCurrentCall().ToString(), 
+                (gameController.getCurrentCall() - fromPlayer.betted).ToString(), 
                 fromPlayer.isPlayerTurn,
                 fromPlayer.playerNumber,
                 fromPlayer.getHoleCards()
@@ -104,7 +107,7 @@ public class controllerParse : MonoBehaviour
         else {
 
             variables.Add(playerMoney);
-            variables.Add(gameController.getCurrentCall().ToString());
+            variables.Add(call);
 
             //Need to add card variable tie in here
             foreach(var card in cards)
@@ -112,7 +115,6 @@ public class controllerParse : MonoBehaviour
                 variables.Add(card.suit.ToString() + "-" + card.rank.ToString());
             }
 
-            Debug.Log(playerTurn);
             if(playerTurn){
                 stateName = "PlayingPlayerTurn:";
             }

@@ -593,6 +593,10 @@ function flipCard(){
 
 
 function UpdateMoney(amount) {
+    if(amount > 0)
+    {
+        playChipSound();
+    }
     let attemptedValue = playerCall + amount*betIncrement;
     if (attemptedValue === 0) {
         action = "Check";
@@ -688,11 +692,35 @@ function sendResponse(){
     if(response)
     {
         setState(["state","PlayingWaiting",playerName,(playerMoney-playerCall)]);
+
+        switch (action) {
+            case "Fold":
+                playFoldSound();
+                break;
+            case "Raise":
+                playerCall = playerCall - currentCall;
+            default:
+                playCommitSound();
+        
+        }
         playButton.style.display="none";
         playerTurn = false;
         let msg = "PlayerResponse:" + action + ":" + playerCall;
         messages.push(msg);
     }    
+}
+
+function playChipSound() {
+    var audio = new Audio('./resources/chipAdd.mp3');
+    audio.play();
+}
+function playFoldSound() {
+    var audio = new Audio('./resources/fold.mp3');
+    audio.play();
+}
+function playCommitSound() {
+    var audio = new Audio('./resources/pushChips.mp3');
+    audio.play();
 }
 
 function updateVariables(sections){
@@ -760,8 +788,7 @@ function chipStack(){
                     offsetChip = offsetChip + 20;
                     divideAmount = divideAmount - (chipValues[i])
                 }
-                console.log(divideAmount);
-                console.log(divideAmount);
+  
 
 
             }
