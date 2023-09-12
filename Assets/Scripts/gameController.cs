@@ -19,6 +19,10 @@ public class gameController : MonoBehaviour
     [SerializeField] int startMoney;
     [SerializeField] int ante;
 
+    //Colors
+
+string[] colors = new string[] { "black", "olive", "red", "blue", "green", "yellow", "pink", "purple", "orange", "brown", "teal", "navy", "aqua", "lavender", "gold", "silver", "maroon", "turquoise", "indigo", "beige", "coral", "magenta" };
+
     // Static Variables
     public static bool gameState { get; set; } = false; // True means a game has started
 
@@ -120,6 +124,7 @@ public class gameController : MonoBehaviour
         playerList.Add(player);
         player.username = playerName;
         player.ID = client;
+        player.playerColor = colors[playerList.Count-1];
         player.playerNumber = playerList.Count;
         if (playerList.Count == 1) { player.isHost = true; }
 

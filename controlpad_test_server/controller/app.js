@@ -20,6 +20,7 @@ const actionButton = document.getElementById('actionButton');
 const playButton = document.getElementById('playButton');
 const peekButton = document.getElementById('peekButton');
 const chips = document.getElementById('chipStack');
+const colorPickerForm = document.getElementById('colorPickerForm')
 
 // const carddiv = document.getElementById('customCards');
 const card1 = document.getElementById('card1');
@@ -52,11 +53,19 @@ let playerCall; //The amount the user actually called. Will be higher than curre
 let action; //Will be fold, call, check, or raise. Updates in controller UI
 let playerMoney; //Amount of money the player has
 let cards = [];
+let playerColor;
+
 
 
 //Defined tools and utilities
 
 // Number formatter. Formats to USD
+function getRandomColor() {
+    const r = Math.round(Math.random() * 255);
+    const g = Math.round(Math.random() * 255);
+    const b = Math.round(Math.random() * 255);
+    return `rgb(${r},${g},${b})`;
+}
 
 const formatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -750,6 +759,10 @@ function updateVariables(sections){
                 cardvalues = sections[i].split("-");
                 addCard(cardvalues);
                 break;
+            case 7:
+                playerColor = (sections[i]);
+                document.documentElement.style.setProperty('--color', playerColor);
+
             default:
                 break;
         }
@@ -823,5 +836,21 @@ function addCard(cardarray)
             trigger: 'manual'
           });
     }
+}
+
+colorPickerForm.addEventListener("submit",changeColor)
+function changeColor(event)
+{
+    event.preventDefault();
+    playerColor = event.target.favcolor.value;
+    document.documentElement.style.setProperty('--color', playerColor);
+    sendSetting("playerColor",playerColor);
+    document.getElementById('colorPicker').style.display='none';
+
+}
+
+function sendSetting(setting, variable){
+    let msg = "Setting:" + setting + variable;
+    messages.push(msg);
 }
 

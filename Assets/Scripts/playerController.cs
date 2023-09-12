@@ -12,6 +12,8 @@ public class playerController : MonoBehaviour
     private int turnNumber;
     public bool isHost { get; set; } = false;
 
+    public string playerColor {get; set;}
+
     // Money Variables
     public int money { get; set; } // Ammount of money a player has to play with
     public int betted { get; set; } // Amount of money the player has betted
@@ -74,3 +76,6 @@ public class playerController : MonoBehaviour
         return amount;
     }
 }
+
+
+

@@ -72,7 +72,8 @@ public class controllerParse : MonoBehaviour
                 (gameController.getCurrentCall() - fromPlayer.bettedRound).ToString(), 
                 fromPlayer.isPlayerTurn,
                 fromPlayer.playerNumber,
-                fromPlayer.getHoleCards()
+                fromPlayer.getHoleCards(),
+                fromPlayer.playerColor
                 );
             }
             
@@ -85,7 +86,7 @@ public class controllerParse : MonoBehaviour
 
     public void GameState(string ip, string username, 
     string playerMoney, string call, bool playerTurn, 
-    int playerNumber, List<Card> cards){
+    int playerNumber, List<Card> cards, string color){
 
         var stateName = "";
         List<string> variables = new List<string>();
@@ -122,6 +123,7 @@ public class controllerParse : MonoBehaviour
             else {
                 stateName = "PlayingWaiting:";
             }
+            variables.Add(color);
             
         }
         string variableString = string.Join(":", variables.ToArray());
