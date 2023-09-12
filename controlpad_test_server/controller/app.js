@@ -6,6 +6,10 @@
 let messages = []; //Array to hold messages to send to the controller
 let text_drawables = []; //Array to hold text boxes sent to canvas
 let image_drawables = []; //Array to hold images sent to canvas
+
+const chipValues = [100,25,10,5];
+const chipFiles = ["/resources/chip3.png", "./resources/chip3_green.png","./resources/chip3_blue.png", "./resources/chip3_red.png"];
+
 const hideables = document.getElementsByClassName('hideables');
 const cardElement = document.getElementById('card');
 const menuOverlay = document.getElementById('topmenu');
@@ -14,6 +18,10 @@ const moneyField = document.getElementById('playerMoney');
 const statusField = document.getElementById('playerStatus');
 const actionButton = document.getElementById('actionButton');
 const playButton = document.getElementById('playButton');
+const peekButton = document.getElementById('peekButton');
+const chips = document.getElementById('chipStack');
+const colorPickerForm = document.getElementById('colorPickerForm')
+
 // const carddiv = document.getElementById('customCards');
 const card1 = document.getElementById('card1');
 const card2 = document.getElementById('card2');
@@ -45,11 +53,19 @@ let playerCall; //The amount the user actually called. Will be higher than curre
 let action; //Will be fold, call, check, or raise. Updates in controller UI
 let playerMoney; //Amount of money the player has
 let cards = [];
+let playerColor;
+
 
 
 //Defined tools and utilities
 
 // Number formatter. Formats to USD
+function getRandomColor() {
+    const r = Math.round(Math.random() * 255);
+    const g = Math.round(Math.random() * 255);
+    const b = Math.round(Math.random() * 255);
+    return `rgb(${r},${g},${b})`;
+}
 
 const formatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -191,6 +207,7 @@ function getDrawables() {
     }
     return [];
 }
+
 
 function foldTimer()    {
     if(playerTurn){
@@ -490,7 +507,6 @@ function drawJoinedWaiting() {
 }
 
 function drawPlayingWaiting() {
-    wipeScreen();
     drawCardBack();
     topMenu();
     drawPeek()
@@ -498,11 +514,12 @@ function drawPlayingWaiting() {
 }
 
 function drawPlayingPlayerTurn() {
-
     drawCardBack();
     topMenu();
     drawActions();
     drawStatus();
+    chipStack();
+
 }
 
 function drawGameFinished() {
@@ -559,37 +576,12 @@ function drawActions() {
 
 }
 function drawPeek(){
-    y = 27*SCREEN_HEIGHT/32;
-   
-    x=SCREEN_WIDTH/4;
-    text = "Hold to Peek"; 
-    autoSize = sizeFont(text,0.25);
-    scale = sizeImage(buttonImage,.3);
-    scaleForButtonY = buttonScale(3);
+   peekButton.style.display="flex";
+  
+}
 
-
-
-    text_drawables.push({
-        type: 'text',
-        text: text,
-        font: autoSize,
-        x: x,
-        y: y,
-        centeredX: true,
-        centeredY: true,
-    });
-    image_drawables.push({
-        type: 'image',
-        image: buttonImage,
-        x: x,
-        y: y,
-        centeredX: true,
-        centeredY: true,
-        scaleY: scaleForButtonY,
-        scaleX: scale,
-        track: true,
-        msg: "Peek"
-    });
+function peekButtonTouch(){
+    timer = setTimeout( flipCard, 1000 );
 }
 
 function updateActionButton(){
@@ -610,6 +602,10 @@ function flipCard(){
 
 
 function UpdateMoney(amount) {
+    if(amount > 0)
+    {
+        playChipSound();
+    }
     let attemptedValue = playerCall + amount*betIncrement;
     if (attemptedValue === 0) {
         action = "Check";
@@ -628,6 +624,7 @@ function UpdateMoney(amount) {
         playerCall = playerCall + amount*betIncrement;
     }
     updateActionButton();
+    chipStack();
 
 }
 
@@ -700,12 +697,39 @@ function wipeScreen()
 
 
 function sendResponse(){
-    setState(["state","PlayingWaiting",playerName,(playerMoney-playerCall)]);
-    playButton.style.display="none";
-    playerTurn = false;
-    let msg = "PlayerResponse:" + action + ":" + playerCall;
-    messages.push(msg);
-    
+    let response = confirm(action + " " + playerCall + "?");
+    if(response)
+    {
+        setState(["state","PlayingWaiting",playerName,(playerMoney-playerCall)]);
+
+        switch (action) {
+            case "Fold":
+                playFoldSound();
+                break;
+            case "Raise":
+                playerCall = playerCall - currentCall;
+            default:
+                playCommitSound();
+        
+        }
+        playButton.style.display="none";
+        playerTurn = false;
+        let msg = "PlayerResponse:" + action + ":" + playerCall;
+        messages.push(msg);
+    }    
+}
+
+function playChipSound() {
+    var audio = new Audio('./resources/chipAdd.mp3');
+    audio.play();
+}
+function playFoldSound() {
+    var audio = new Audio('./resources/fold.mp3');
+    audio.play();
+}
+function playCommitSound() {
+    var audio = new Audio('./resources/pushChips.mp3');
+    audio.play();
 }
 
 function updateVariables(sections){
@@ -735,11 +759,65 @@ function updateVariables(sections){
                 cardvalues = sections[i].split("-");
                 addCard(cardvalues);
                 break;
+            case 7:
+                playerColor = (sections[i]);
+                document.documentElement.style.setProperty('--color', playerColor);
+
             default:
                 break;
         }
     }
 }
+
+function chipStack(){
+    chips.replaceChildren();
+    chips.style.display="block";
+
+    let offsetChip = 20;
+    chipArray = [0,0,0,0];
+    let divideAmount = playerCall;
+    let value = 0;
+    for(i=0; i < chipValues.length; i++)
+    {
+        
+        if(divideAmount < 5)
+        {
+            break;
+        }
+        else
+        {
+            value = divideAmount/chipValues[i];
+            if(value >= 1)
+            {
+                value = Math.floor(value);
+                chipArray[i] = value;
+                for(j=0; j<value; j++)
+                {
+                    var chip_img = document.createElement("IMG");
+                    chip_img.setAttribute("src", chipFiles[i]);
+                    chip_img.setAttribute("class", "chip");
+                    chip_img.setAttribute("style", ("bottom: " + offsetChip.toString() + "px"));
+                    document.getElementById("chipStack").appendChild(chip_img);
+                    offsetChip = offsetChip + 20;
+                    divideAmount = divideAmount - (chipValues[i])
+                }
+  
+
+
+            }
+
+            
+
+        }
+
+    }
+    
+
+
+}
+
+
+
 
 function addCard(cardarray)
 {
@@ -758,5 +836,21 @@ function addCard(cardarray)
             trigger: 'manual'
           });
     }
+}
+
+colorPickerForm.addEventListener("submit",changeColor)
+function changeColor(event)
+{
+    event.preventDefault();
+    playerColor = event.target.favcolor.value;
+    document.documentElement.style.setProperty('--color', playerColor);
+    sendSetting("playerColor",playerColor);
+    document.getElementById('colorPicker').style.display='none';
+
+}
+
+function sendSetting(setting, variable){
+    let msg = "Setting:" + setting + variable;
+    messages.push(msg);
 }
 

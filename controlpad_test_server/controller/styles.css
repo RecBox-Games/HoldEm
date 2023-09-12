@@ -253,11 +253,8 @@ button {
   
 }
 
-.playButton {
-    bottom: calc(var(--border-width) + 10px);
-    right: calc(var(--border-width) + 10px);
-    width: calc(50vw - 20px);
-    height: calc(25 * var(--vh));
+.playButton, .peekButton {
+    
     position: fixed;
     z-index: 2;
     overflow: hidden;
@@ -266,8 +263,22 @@ button {
     text-align: center;
     justify-content: center;
     display:none;
+}
 
-    
+.playButton {
+    bottom: calc(var(--border-width) + 10px);
+    right: calc(var(--border-width) + 10px);
+    width: calc(50vw - 20px);
+    height: calc(25 * var(--vh));
+
+}
+
+.peekButton {
+    bottom: calc(var(--border-width) + 10px);
+    left: calc(var(--border-width) + 10px);
+    width: calc(50vw - 20px);
+    height: calc(25 * var(--vh));
+
 }
 .arrow {
 
@@ -279,7 +290,7 @@ button {
     overflow: hidden;
 }
 
-.third {
+.third, .half {
     height: 33%;
     min-width: 100%;
     position:relative;
@@ -290,5 +301,19 @@ button {
     overflow: hidden;
 }
 
+.third {
+    height: 33%;
+}
+
+.half {
+    height: 50%;
+}
+
+.chip {
+    position: fixed;
+    bottom: 20px;
+    left: calc(25vw + var(--border-width));
+    transform: translate(-50%,0);
+}
 
 

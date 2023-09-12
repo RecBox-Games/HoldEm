@@ -420,7 +420,6 @@ ws.onopen = (event) => {
                 {
 
                     case "Peek":
-                        timer = setTimeout( flipCard, 1000 );
                         break;
                     default:
                         messages.push(drbl.msg);

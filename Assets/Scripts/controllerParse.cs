@@ -60,16 +60,20 @@ public class controllerParse : MonoBehaviour
         }
 
         else {
+            Debug.Log(gameController.getCurrentCall());
+            Debug.Log(fromPlayer.betted);
+            
 
             if (messages[0] == "RequestState") {   
                 GameState(
                 fromPlayer.ID, 
                 fromPlayer.username,
                 fromPlayer.money.ToString(),
-                gameController.getCurrentCall().ToString(), 
+                (gameController.getCurrentCall() - fromPlayer.bettedRound).ToString(), 
                 fromPlayer.isPlayerTurn,
                 fromPlayer.playerNumber,
-                fromPlayer.getHoleCards()
+                fromPlayer.getHoleCards(),
+                fromPlayer.playerColor
                 );
             }
             
@@ -82,7 +86,7 @@ public class controllerParse : MonoBehaviour
 
     public void GameState(string ip, string username, 
     string playerMoney, string call, bool playerTurn, 
-    int playerNumber, List<Card> cards){
+    int playerNumber, List<Card> cards, string color){
 
         var stateName = "";
         List<string> variables = new List<string>();
@@ -104,7 +108,7 @@ public class controllerParse : MonoBehaviour
         else {
 
             variables.Add(playerMoney);
-            variables.Add(gameController.getCurrentCall().ToString());
+            variables.Add(call);
 
             //Need to add card variable tie in here
             foreach(var card in cards)
@@ -112,7 +116,6 @@ public class controllerParse : MonoBehaviour
                 variables.Add(card.suit.ToString() + "-" + card.rank.ToString());
             }
 
-            Debug.Log(playerTurn);
             if(playerTurn){
                 stateName = "PlayingPlayerTurn:";
             }
@@ -120,6 +123,7 @@ public class controllerParse : MonoBehaviour
             else {
                 stateName = "PlayingWaiting:";
             }
+            variables.Add(color);
             
         }
         string variableString = string.Join(":", variables.ToArray());

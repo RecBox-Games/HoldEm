@@ -72,6 +72,17 @@
  
       </div>
 
+      <!-- Peek Button -->
+      <div id="peekButton" class="overlay peekButton">
+        <div class="half">
+          <button ontouchstart="peekButtonTouch()">Hold To Peek</button>
+        </div>
+        <div class = "half">
+          <div id="chipStack" class="chipStack hideables ">
+          </div>
+        </div>
+      </div>
+
       <!-- Rank Button Overlay -->
       <div id="cardRanks" class="overlay modal">
         <span onclick="document.getElementById('cardRanks').style.display='none'" class="close">&times;</span>
@@ -176,10 +187,21 @@
       <div id="playerMenu" class="overlay modal">
         <span onclick="document.getElementById('playerMenu').style.display='none'" class="close">&times;</span>
         <div class="menuButtonContainer">
-          <button class="menuButton">Some other Button</button>
+          <button ontouchstart="document.getElementById('colorPicker').style.display='block'" class="menuButton">Select a New Color</button>
           <button class="menuButton">Quit</button>
 
+
         </div>
+      </div>
+
+      <!-- Color Selector -->
+      <div id="colorPicker" class="overlay modal">
+        <span onclick="document.getElementById('colorPicker').style.display='none'" class="close">&times;</span>
+        <form id="colorPickerForm">
+          <label for="favcolor">Select your favorite color:</label>
+          <input type="color" id="favcolor" name="favcolor" value="#ff0000"><br><br>
+          <button type="submit">Submit</button>
+        </form>
       </div>
 
       <!-- Game Canvas -->
@@ -191,8 +213,11 @@
     </div>
     
 
+
+
     <script src="app.js"></script>
     <script src="index.js"></script>
 
   </body>
+  
 </html>
