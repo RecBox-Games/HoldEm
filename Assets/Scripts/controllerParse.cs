@@ -69,7 +69,7 @@ public class controllerParse : MonoBehaviour
                 fromPlayer.ID, 
                 fromPlayer.username,
                 fromPlayer.money.ToString(),
-                (gameController.getCurrentCall() - fromPlayer.betted).ToString(), 
+                (gameController.getCurrentCall() - fromPlayer.bettedRound).ToString(), 
                 fromPlayer.isPlayerTurn,
                 fromPlayer.playerNumber,
                 fromPlayer.getHoleCards()

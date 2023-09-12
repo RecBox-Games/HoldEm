@@ -169,6 +169,7 @@ public class gameController : MonoBehaviour
         {
             player.money = startMoney;
             player.betted = 0;
+            player.bettedRound =0;
             player.isPlayerTurn = false;
             player.folded = false;
             player.tappedOut = false;
@@ -231,9 +232,9 @@ public class gameController : MonoBehaviour
 
     public void newRound()
     {
-        if (turn == 0  && turnOrder.Count > 1) { cardController.revealFlop(); turn++; currentBet = 0; return; }
-        else if (turn == 1 && turnOrder.Count > 1) { cardController.revealTurn(); turn++; currentBet = 0; return; }
-        else if (turn == 2 && turnOrder.Count > 1) { cardController.revealRiver(); turn++; currentBet = 0; return; }
+        if (turn == 0  && turnOrder.Count > 1) { cardController.revealFlop(); turn++; resetBetRound(); currentBet = 0; return; }
+        else if (turn == 1 && turnOrder.Count > 1) { cardController.revealTurn(); turn++; resetBetRound(); currentBet = 0; return; }
+        else if (turn == 2 && turnOrder.Count > 1) { cardController.revealRiver(); turn++; resetBetRound(); currentBet = 0; return; }
 
         List<playerController> winner = cardController.DetermineWinners(turnOrder.ToList());
 
@@ -253,6 +254,7 @@ public class gameController : MonoBehaviour
         foreach (var player in roundRobin.ToList()) {
             if (player.folded) { player.fold(); }
             player.betted = 0;
+            player.bettedRound =0;
             player.resetHoleCards();
             turnOrder.Enqueue(player);
         }
@@ -358,6 +360,14 @@ public class gameController : MonoBehaviour
         if (turnOrder.Count == 1) { newRound(); return; }
 
         nextTurn();
+    }
+
+    public void resetBetRound()
+    {
+        foreach(var player in playerList)
+        {
+            player.bettedRound = 0;
+        }
     }
 
 }

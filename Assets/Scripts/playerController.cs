@@ -16,6 +16,9 @@ public class playerController : MonoBehaviour
     public int money { get; set; } // Ammount of money a player has to play with
     public int betted { get; set; } // Amount of money the player has betted
 
+    public int bettedRound { get; set; } // Amount of money the player has betted
+
+
     // Game Specific Variables
     public bool folded { get; set; } = false;
     public bool isPlayerTurn { get; set; } = false;
@@ -59,12 +62,14 @@ public class playerController : MonoBehaviour
             tappedOut = true;
             int finalAmount = money;
             betted += money;
+            bettedRound += money;
 
             money = 0;
             return finalAmount;
         }
 
         betted += amount;
+        bettedRound += amount;
         money -= amount;
         return amount;
     }
