@@ -72,6 +72,17 @@
  
       </div>
 
+      <!-- Peek Button -->
+      <div id="peekButton" class="overlay peekButton">
+        <div class="half">
+          <button ontouchstart="peekButtonTouch()">Hold To Peek</button>
+        </div>
+        <div class = "half">
+          <div id="chipStack" class="chipStack hideables ">
+          </div>
+        </div>
+      </div>
+
       <!-- Rank Button Overlay -->
       <div id="cardRanks" class="overlay modal">
         <span onclick="document.getElementById('cardRanks').style.display='none'" class="close">&times;</span>
