@@ -8,6 +8,7 @@
     <script src="jquery.flip.min.js"></script>
     <script src="elements.cardmeister.min.js"></script>
     <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="./resources/logo.png">
   </head>
   <body>
     <div id ="screen">
@@ -187,6 +188,7 @@
       <div id="playerMenu" class="overlay modal">
         <span onclick="document.getElementById('playerMenu').style.display='none'" class="close">&times;</span>
         <div class="menuButtonContainer">
+          <button id ="soundButton" ontouchstart="toggleSound()">Sound On</button>
           <button ontouchstart="document.getElementById('colorPicker').style.display='block'" class="menuButton">Select a New Color</button>
           <button class="menuButton">Quit</button>
 

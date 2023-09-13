@@ -20,7 +20,8 @@ const actionButton = document.getElementById('actionButton');
 const playButton = document.getElementById('playButton');
 const peekButton = document.getElementById('peekButton');
 const chips = document.getElementById('chipStack');
-const colorPickerForm = document.getElementById('colorPickerForm')
+const colorPickerForm = document.getElementById('colorPickerForm');
+const soundButton = document.getElementById('soundButton');
 
 // const carddiv = document.getElementById('customCards');
 const card1 = document.getElementById('card1');
@@ -37,6 +38,8 @@ let timer = null;
 let cardFlipped = false;
 let foldHold = false;
 let foldHoldStartY;
+
+let soundSetting;
 
 
 // ---- Game Specific Variables ----
@@ -178,18 +181,20 @@ function handleMessage(message) {
     console.log('got ' + message);
     sections = message.split(":");
 
-    //If state function recieved, change the state of the game
-    if (sections[0] == "state"){
-        setState(sections); 
+    switch (sections[0]) {
+        case "state":
+            setState(sections); 
+            break;
+        case "refresh":
+            stateRequest();
+            break;
+        case "setting":
+            updateSettings(sections);
+            break;
     }
 
-    //If a refresh message is recieved, the game is trying 
-    // to update the controller's UI. Perform a state request.
 
-    if(sections[0] == "refresh")
-    {
-        stateRequest();
-    }    
+
 }
 
 // Specify the list of messages to be sent to the console
@@ -732,16 +737,27 @@ function sendResponse(){
 }
 
 function playChipSound() {
-    var audio = new Audio('./resources/chipAdd.mp3');
-    audio.play();
+    if(soundSetting)
+    {
+        var audio = new Audio('./resources/chipAdd.mp3');
+        audio.play();
+
+    }
+
 }
 function playFoldSound() {
-    var audio = new Audio('./resources/fold.mp3');
-    audio.play();
+    if(soundSetting)
+    {
+        var audio = new Audio('./resources/fold.mp3');
+        audio.play();
+    }
 }
 function playCommitSound() {
-    var audio = new Audio('./resources/pushChips.mp3');
-    audio.play();
+    if(soundSetting)
+    {
+        var audio = new Audio('./resources/pushChips.mp3');
+        audio.play();
+    }
 }
 
 function updateVariables(sections){
@@ -861,8 +877,29 @@ function changeColor(event)
 
 }
 
+function toggleSound() {
+    soundSetting = !soundSetting;
+    if(soundSetting)
+    {
+        soundButton.innerHTML="Sound On";
+
+    }
+    else {
+        soundButton.innerHTML="Sound Off";
+    }
+    sendSetting('soundOn',soundSetting);
+}
+
 function sendSetting(setting, variable){
-    let msg = "Setting:" + setting + variable;
+    let msg = "Setting:" + setting + ":" + variable;
     messages.push(msg);
+}
+
+function updateSettings(sections) {
+    switch (sections[1]) {
+        case "soundOn":
+            soundSetting = sections[2];
+            break;
+    }
 }
 

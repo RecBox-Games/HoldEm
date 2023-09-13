@@ -33,6 +33,11 @@ public class playerController : MonoBehaviour
     private List<Card> holeCards = new List<Card>();
     public List<Card> bestHand { get; set; } = new List<Card>();
 
+    //Bonus Settings
+
+    public List<Setting> CustomSettings {get; set;} = new List<Setting>();
+
+
 
     // Getters
     public List<Card> getHoleCards() { return holeCards; }
@@ -74,6 +79,17 @@ public class playerController : MonoBehaviour
         bettedRound += amount;
         money -= amount;
         return amount;
+    }
+}
+
+public class Setting {
+    public string name;
+
+    public string value;
+    public Setting(string name, string value)
+    {
+        this.name = name;
+        this.value = value;
     }
 }
 

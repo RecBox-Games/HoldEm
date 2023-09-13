@@ -58,11 +58,28 @@ public class controllerParse : MonoBehaviour
                         break;              
                 }
                 break;
+            case "Setting":
+                switch (messages[1])
+                {
+                    case "playerColor":
+                        fromPlayer.playerColor = messages[2];
+                        break;
+                    default:
+                        Setting newSetting = new Setting(messages[1], messages[2]);
+
+                        fromPlayer.CustomSettings.Add(newSetting);
+                        break;
+
+
+
+
+                }
+                break;
                 
             //Normal State Request
             case "RequestState":
-
                 GameState(client);
+                UpdateSettings(client);
                 break;
 
         }
@@ -117,9 +134,19 @@ public class controllerParse : MonoBehaviour
         string variableString = string.Join(":", variables.ToArray());
 
         controlpads_glue.SendControlpadMessage(player.ID, "state:" + stateName + variableString);
+        
+       
 
     }
 
+    public void UpdateSettings(string client){
+        var player = grabPlayer(client);
+        foreach (var setting in player.CustomSettings)
+        {
+            controlpads_glue.SendControlpadMessage(player.ID, "setting:" + setting.name + ":" + setting.value);
+
+        }
+    }
     public playerController grabPlayer(string client) {
         foreach (var player in gameController.getPlayerList()) 
         {
