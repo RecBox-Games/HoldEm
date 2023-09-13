@@ -21,7 +21,7 @@ public class gameController : MonoBehaviour
 
     //Colors
 
-string[] colors = new string[] { "black", "olive", "red", "blue", "green", "yellow", "pink", "purple", "orange", "brown", "teal", "navy", "aqua", "lavender", "gold", "silver", "maroon", "turquoise", "indigo", "beige", "coral", "magenta" };
+string[] colors = new string[] { "black", "red", "blue", "green", "yellow", "pink", "purple", "orange", "brown", "teal", "navy", "aqua", "lavender", "gold", "silver", "maroon", "turquoise", "indigo", "beige", "coral", "magenta", "olive"};
 
     // Static Variables
     public static bool gameState { get; set; } = false; // True means a game has started

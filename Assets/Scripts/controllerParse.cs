@@ -26,32 +26,6 @@ public class controllerParse : MonoBehaviour
 
         var fromPlayer = grabPlayer(client);
 
-        // This message should come in like "StartGame:Money:Ante"
-        // Money = amount host player sets
-        if (messages[0] == "StartGame")
-        {
-            gameController.startGame(int.Parse(messages[1]));
-        }
-        
-        if (messages[0] == "PlayerResponse")
-        {
-            string action = messages[1];
-            int amount = int.Parse(messages[2]);
-            switch (action)
-            {
-                case "Fold":
-                    gameController.fold();
-                    break;
-                case "Call":
-                case "Check":
-                    gameController.call();
-                    break;
-                case "Raise":
-                    gameController.raise(amount);
-                    break;              
-            }
-        }
-
         if (fromPlayer is null)
         {
             Debug.Log("Sent:ReadyToJoin");
@@ -59,43 +33,55 @@ public class controllerParse : MonoBehaviour
 
         }
 
-        else {
-            Debug.Log(gameController.getCurrentCall());
-            Debug.Log(fromPlayer.betted);
-            
 
-            if (messages[0] == "RequestState") {   
-                GameState(
-                fromPlayer.ID, 
-                fromPlayer.username,
-                fromPlayer.money.ToString(),
-                (gameController.getCurrentCall() - fromPlayer.bettedRound).ToString(), 
-                fromPlayer.isPlayerTurn,
-                fromPlayer.playerNumber,
-                fromPlayer.getHoleCards(),
-                fromPlayer.playerColor
-                );
-            }
-            
+        switch (messages[0])
+        {
+            //Special Game State Requests
+            case "StartGame":
+                gameController.startGame(int.Parse(messages[1]));
+                break;
+
+            case "PlayerResponse":
+                string action = messages[1];
+                int amount = int.Parse(messages[2]);
+                switch (action)
+                {
+                    case "Fold":
+                        gameController.fold();
+                        break;
+                    case "Call":
+                    case "Check":
+                        gameController.call();
+                        break;
+                    case "Raise":
+                        gameController.raise(amount);
+                        break;              
+                }
+                break;
+                
+            //Normal State Request
+            case "RequestState":
+
+                GameState(client);
+                break;
+
         }
-
-        
 
     }
 
 
-    public void GameState(string ip, string username, 
-    string playerMoney, string call, bool playerTurn, 
-    int playerNumber, List<Card> cards, string color){
+    public void GameState(string client){
+        var player = grabPlayer(client);
+
 
         var stateName = "";
         List<string> variables = new List<string>();
-        variables.Add(username);
+        variables.Add(player.username);
 
 
         if(!gameController.gameState)
         {
-            if (playerNumber == 1)
+            if (player.playerNumber == 1)
             {
                 stateName = "JoinedHost:";
             }
@@ -105,30 +91,33 @@ public class controllerParse : MonoBehaviour
             
         }
 
+        
+
         else {
 
-            variables.Add(playerMoney);
-            variables.Add(call);
+            variables.Add(player.money.ToString());
+            variables.Add((gameController.getCurrentCall()-player.bettedRound).ToString());
 
             //Need to add card variable tie in here
-            foreach(var card in cards)
+            foreach(var card in player.getHoleCards())
             {
                 variables.Add(card.suit.ToString() + "-" + card.rank.ToString());
             }
+            Debug.Log(player.isPlayerTurn);
 
-            if(playerTurn){
+            if(player.isPlayerTurn){
                 stateName = "PlayingPlayerTurn:";
             }
 
             else {
                 stateName = "PlayingWaiting:";
             }
-            variables.Add(color);
+            variables.Add(player.playerColor);
             
         }
         string variableString = string.Join(":", variables.ToArray());
 
-        controlpads_glue.SendControlpadMessage(ip, "state:" + stateName + variableString);
+        controlpads_glue.SendControlpadMessage(player.ID, "state:" + stateName + variableString);
 
     }
 

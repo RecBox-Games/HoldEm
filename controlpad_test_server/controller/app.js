@@ -1,7 +1,7 @@
 // -------- GameNite Controller App --------
 
 // ---- Globals ----
-
+console.log("Hello There");
 // ---- UI Setup ----
 let messages = []; //Array to hold messages to send to the controller
 let text_drawables = []; //Array to hold text boxes sent to canvas
@@ -697,22 +697,34 @@ function wipeScreen()
 
 
 function sendResponse(){
-    let response = confirm(action + " " + playerCall + "?");
+    let message = "";
+    switch (action) {
+        case "Fold":
+            message = "Fold this round?";
+            break;
+        case "Raise":
+            message = action + " " + playerCall + "?";
+        default:
+            playCommitSound();
+    
+    }
+    let response = confirm(message);
     if(response)
     {
-        setState(["state","PlayingWaiting",playerName,(playerMoney-playerCall)]);
 
         switch (action) {
             case "Fold":
                 playFoldSound();
+                setState(["state","JoinedWaiting",playerName,playerMoney]);
                 break;
             case "Raise":
                 playerCall = playerCall - currentCall;
             default:
                 playCommitSound();
+                setState(["state","PlayingWaiting",playerName,(playerMoney-playerCall)]);
+
         
         }
-        playButton.style.display="none";
         playerTurn = false;
         let msg = "PlayerResponse:" + action + ":" + playerCall;
         messages.push(msg);
