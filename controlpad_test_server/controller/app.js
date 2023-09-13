@@ -721,7 +721,7 @@ function sendResponse(){
                 playerCall = playerCall - currentCall;
             default:
                 playCommitSound();
-                setState(["state","PlayingWaiting",playerName,(playerMoney-playerCall)]);
+                setState(["state","PlayingWaiting",playerName,(playerMoney-playerCall-currentCall)]);
 
         
         }

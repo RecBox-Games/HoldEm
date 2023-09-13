@@ -30,7 +30,7 @@ public class controllerParse : MonoBehaviour
         {
             Debug.Log("Sent:ReadyToJoin");
             controlpads_glue.SendControlpadMessage(client, "state:ReadyToJoin");
-
+            return;
         }
 
 
@@ -103,7 +103,6 @@ public class controllerParse : MonoBehaviour
             {
                 variables.Add(card.suit.ToString() + "-" + card.rank.ToString());
             }
-            Debug.Log(player.isPlayerTurn);
 
             if(player.isPlayerTurn){
                 stateName = "PlayingPlayerTurn:";
