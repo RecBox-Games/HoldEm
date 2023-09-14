@@ -26,6 +26,8 @@ svg {
     fill: var(--color)
 }
 
+
+
 canvas {
     width: 100vw;
     height: calc(100 * var(--vh) - var(--border-offset));

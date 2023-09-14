@@ -69,6 +69,10 @@ public class controllerParse : MonoBehaviour
                         break;
                 }
                 break;
+
+            case "AvailableColors":
+                listColors(client);
+                break;
                 
             //Normal State Request
             case "RequestState":
@@ -140,6 +144,34 @@ public class controllerParse : MonoBehaviour
             controlpads_glue.SendControlpadMessage(player.ID, "setting:" + setting.name + ":" + setting.value);
 
         }
+    }
+
+    public void listColors(string client){
+        List<string> playerColors = new List<string>();
+        playerColors.Add("colors");
+        foreach (var color in gameController.colors)
+        {
+            bool colorFound = false;
+
+
+            foreach (var player in gameController.getPlayerList())
+            {
+                if (player.playerColor == color){
+                    colorFound = true;
+                    break;
+                }
+            }
+            if(!colorFound)
+            {
+                playerColors.Add(color);
+            }
+            
+        }
+
+        controlpads_glue.SendControlpadMessage(client,string.Join(":", playerColors));
+
+
+
     }
     public playerController grabPlayer(string client) {
         foreach (var player in gameController.getPlayerList()) 

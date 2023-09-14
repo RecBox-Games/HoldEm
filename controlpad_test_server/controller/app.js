@@ -20,8 +20,9 @@ const actionButton = document.getElementById('actionButton');
 const playButton = document.getElementById('playButton');
 const peekButton = document.getElementById('peekButton');
 const chips = document.getElementById('chipStack');
-const colorPickerForm = document.getElementById('colorPickerForm');
+const colorPickerForm = document.getElementById('colorPicker');
 const soundButton = document.getElementById('soundButton');
+const cardBacks = document.getElementsByClassName('cardBack');
 
 // const carddiv = document.getElementById('customCards');
 const card1 = document.getElementById('card1');
@@ -191,10 +192,21 @@ function handleMessage(message) {
         case "setting":
             updateSettings(sections);
             break;
+        case "colors":
+            updateAvailableColors(sections);
     }
 
 
 
+}
+
+function updateAvailableColors(sections){
+    for( i=1; i<sections.length; i++)
+    {
+        var colorOption = document.createElement("OPTION");
+        colorOption.setAttribute("value", sections[i]);
+        document.getElementById("presets").appendChild(colorOption);
+    }
 }
 
 // Specify the list of messages to be sent to the console
@@ -789,12 +801,23 @@ function updateVariables(sections){
                 break;
             case 7:
                 playerColor = (sections[i]);
-                document.documentElement.style.setProperty('--color', playerColor);
+                updateColor();
+
+
 
             default:
                 break;
         }
     }
+}
+
+function updateColor() {
+    document.documentElement.style.setProperty('--color', playerColor);
+    colorPickerForm.value=playerColor;
+    for(card of cardBacks) {
+        card.backcolor = playerColor; 
+    }
+    
 }
 
 function chipStack(){
@@ -865,15 +888,23 @@ function addCard(cardarray)
           });
     }
 }
+colorPickerForm.addEventListener("change",changeColor,false);
 
-colorPickerForm.addEventListener("submit",changeColor)
+colorPickerForm.addEventListener("change",changeColor,false);
+function openPlayerMenu()
+{
+    document.getElementById('playerMenu').style.display='block';
+    messages.push("AvailableColors");
+
+
+}
 function changeColor(event)
 {
     event.preventDefault();
-    playerColor = event.target.favcolor.value;
-    document.documentElement.style.setProperty('--color', playerColor);
+    playerColor = event.target.value;
+    updateColor();
     sendSetting("playerColor",playerColor);
-    document.getElementById('colorPicker').style.display='none';
+
 
 }
 

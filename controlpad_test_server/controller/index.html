@@ -19,8 +19,8 @@
       <!-- Card Object in Center -->
       <div id="card" ontouchstart= "foldTimer()" class= "hideables overlay">
         <div class="front">
-          <card-t  class="image-left" rank="0" backcolor="#32CD32" backtext="">          </card-t>
-          <card-t class="image-right" rank="0" backcolor="#32CD32" backtext=""></card-t>
+          <card-t class="cardBack image-left" rank="0" backcolor="#32CD32" backtext="">          </card-t>
+          <card-t class="cardBack image-right" rank="0" backcolor="#32CD32" backtext=""></card-t>
         </div> 
         <div id = "customCards" class="back">
           <card-t id="card1" class="image-left" rank="Queen" suit="Hearts" ></card-t>
@@ -43,7 +43,7 @@
               <h2 id="playerMoney"></h2>
             </div>
           </div>
-          <div class="outerdiv" onclick="document.getElementById('playerMenu').style.display='block'" >
+          <div class="outerdiv" onclick="openPlayerMenu()" >
               <svg style="padding:10px;" height="100" width ="100" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
                 <path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg>
           </div>
@@ -189,21 +189,37 @@
         <span onclick="document.getElementById('playerMenu').style.display='none'" class="close">&times;</span>
         <div class="menuButtonContainer">
           <button id ="soundButton" ontouchstart="toggleSound()">Sound On</button>
-          <button ontouchstart="document.getElementById('colorPicker').style.display='block'" class="menuButton">Select a New Color</button>
+          <button  class="menuButton">
+            <p>Select Color: </p>
+            <input class ="colorPicker" type="color" list="presets" id="colorPicker" name="favcolor" >
+            <datalist id="presets">
+              <option value="#000000">Black</option>
+          <option value="#FF0000">Red</option>
+          <option value="#008000">Green</option>
+          <option value="#FFFF00">Yellow</option>
+          <option value="#FFC0CB">Pink</option>
+          <option value="#800080">Purple</option>
+          <option value="#FFA500">Orange</option>
+          <option value="#A52A2A">Brown</option>
+          <option value="#008080">Teal</option>
+          <option value="#000080">Navy</option>
+          <option value="#00FFFF">Aqua</option>
+          <option value="#E6E6FA">Lavender</option>
+          <option value="#FFD700">Gold</option>
+          <option value="#C0C0C0">Silver</option>
+          <option value="#800000">Maroon</option>
+          <option value="#40E0D0">Turquoise</option>
+          <option value="#4B0082">Indigo</option>
+          <option value="#F5F5DC">Beige</option>
+          <option value="#FF6F61">Coral</option>
+          <option value="#FF00FF">Magenta</option>
+          <option value="#808000">Olive</option>
+            </datalist>
+          </button>
           <button class="menuButton">Quit</button>
 
 
         </div>
-      </div>
-
-      <!-- Color Selector -->
-      <div id="colorPicker" class="overlay modal">
-        <span onclick="document.getElementById('colorPicker').style.display='none'" class="close">&times;</span>
-        <form id="colorPickerForm">
-          <label for="favcolor">Select your favorite color:</label>
-          <input type="color" id="favcolor" name="favcolor" value="#ff0000"><br><br>
-          <button type="submit">Submit</button>
-        </form>
       </div>
 
       <!-- Game Canvas -->
