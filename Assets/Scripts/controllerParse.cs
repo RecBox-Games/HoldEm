@@ -65,14 +65,10 @@ public class controllerParse : MonoBehaviour
                         fromPlayer.playerColor = messages[2];
                         break;
                     default:
-                        Setting newSetting = new Setting(messages[1], messages[2]);
-
-                        fromPlayer.CustomSettings.Add(newSetting);
+                        Setting sound = new Setting(messages[1], messages[2]);
+                        fromPlayer.CustomSettings.RemoveAll(s => s.name == messages[1]);
+                        fromPlayer.CustomSettings.Add(sound);
                         break;
-
-
-
-
                 }
                 break;
                 

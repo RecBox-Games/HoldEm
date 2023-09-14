@@ -39,7 +39,7 @@ let cardFlipped = false;
 let foldHold = false;
 let foldHoldStartY;
 
-let soundSetting;
+let soundSetting = true;
 
 
 // ---- Game Specific Variables ----
@@ -879,6 +879,11 @@ function changeColor(event)
 
 function toggleSound() {
     soundSetting = !soundSetting;
+    updateSound();
+    sendSetting('soundOn',soundSetting);
+}
+
+function updateSound() {
     if(soundSetting)
     {
         soundButton.innerHTML="Sound On";
@@ -887,7 +892,7 @@ function toggleSound() {
     else {
         soundButton.innerHTML="Sound Off";
     }
-    sendSetting('soundOn',soundSetting);
+
 }
 
 function sendSetting(setting, variable){
@@ -898,7 +903,18 @@ function sendSetting(setting, variable){
 function updateSettings(sections) {
     switch (sections[1]) {
         case "soundOn":
-            soundSetting = sections[2];
+            let value = sections[2];
+            if(value == "false")
+            {
+                value = !!!value;
+                
+            }
+            else{
+                value = !!value;
+            }
+            console.log(value);
+            soundSetting = value;
+            updateSound();
             break;
     }
 }
