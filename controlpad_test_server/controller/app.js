@@ -59,6 +59,31 @@ let playerMoney; //Amount of money the player has
 let cards = [];
 let playerColor;
 
+const colorHexList = {
+    "black": "#000000",
+    "red": "#FF0000",
+    "blue": "#0000FF",
+    "green": "#008000",
+    "yellow": "#FFFF00",
+    "pink": "#FFC0CB",
+    "purple": "#800080",
+    "orange": "#FFA500",
+    "brown": "#A52A2A",
+    "teal": "#008080",
+    "navy": "#000080",
+    "aqua": "#00FFFF",
+    "lavender": "#E6E6FA",
+    "gold": "#FFD700",
+    "silver": "#C0C0C0",
+    "maroon": "#800000",
+    "turquoise": "#40E0D0",
+    "indigo": "#4B0082",
+    "beige": "#F5F5DC",
+    "coral": "#FF6F61",
+    "magenta": "#FF00FF",
+    "olive": "#808000"
+  };
+
 
 
 //Defined tools and utilities
@@ -201,13 +226,23 @@ function handleMessage(message) {
 }
 
 function updateAvailableColors(sections){
+    colorPickerForm.replaceChildren();
+    var placeholderOption = document.createElement("OPTION");
+        placeholderOption.innerHTML="New Color";
+        placeholderOption.disabled = true;
+        placeholderOption.selected = true;
+        colorPickerForm.appendChild(placeholderOption);
+
     for( i=1; i<sections.length; i++)
     {
+        let color=sections[i];
         var colorOption = document.createElement("OPTION");
-        colorOption.setAttribute("value", sections[i]);
-        document.getElementById("presets").appendChild(colorOption);
+        colorOption.setAttribute("value", color);
+        colorOption.innerHTML=color[0].toUpperCase() + color.substring(1);
+        colorPickerForm.appendChild(colorOption);
     }
 }
+
 
 // Specify the list of messages to be sent to the console
 function outgoingMessages() {
@@ -708,7 +743,7 @@ function wipeScreen()
     for (let element of hideables){
         element.style.display = 'none';
     }
-    ctx.fillStyle = "#808080";
+    ctx.fillStyle = pattern;
     ctx.fillRect(borderWidth, borderWidth, canvas.width, canvas.height);
 }
 
@@ -814,6 +849,7 @@ function updateVariables(sections){
 function updateColor() {
     document.documentElement.style.setProperty('--color', playerColor);
     colorPickerForm.value=playerColor;
+
     for(card of cardBacks) {
         card.backcolor = playerColor; 
     }
@@ -852,7 +888,6 @@ function chipStack(){
                     offsetChip = offsetChip + 20;
                     divideAmount = divideAmount - (chipValues[i])
                 }
-  
 
 
             }
@@ -902,10 +937,10 @@ function changeColor(event)
 {
     event.preventDefault();
     playerColor = event.target.value;
+    
     updateColor();
-    sendSetting("playerColor",playerColor);
-
-
+    console.log();
+    sendSetting("playerColor",event.target.value);
 }
 
 function toggleSound() {

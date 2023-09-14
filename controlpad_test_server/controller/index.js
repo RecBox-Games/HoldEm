@@ -15,6 +15,16 @@ const borderWidth = 10;
 
 const hitCanvas = document.getElementById('hitCanvas');
 const hitCtx = hitCanvas.getContext('2d');
+
+let pattern;
+const img = new Image();
+img.src = "./resources/background.png";
+// Only use the image after it's loaded
+img.onload = () => {
+  pattern = ctx.createPattern(img, "repeat");
+
+};
+
 var vh;
 
 var touch_recognized = false
@@ -32,7 +42,8 @@ function updateScreenHeightandWidth() {
     hitCanvas.width = SCREEN_WIDTH;
     hitCanvas.height = SCREEN_HEIGHT;
 
-    ctx.fillStyle = "#808080";
+
+    ctx.fillStyle = pattern;
     ctx.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     ctx.fillStyle = "#000000";
 }
@@ -355,7 +366,7 @@ ws.onopen = (event) => {
         }
         let drbls = getDrawables();
             if (drbls.length > 0) {
-                ctx.fillStyle = "#808080";
+                ctx.fillStyle = pattern;
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 trackedDrbls = [];
                 for (drbl of drbls) {

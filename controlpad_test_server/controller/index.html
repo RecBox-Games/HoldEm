@@ -186,36 +186,24 @@
 
       <!-- Menu Button Overlay -->
       <div id="playerMenu" class="overlay modal">
+        <h2 class="menuTitle">Options</h2>
         <span onclick="document.getElementById('playerMenu').style.display='none'" class="close">&times;</span>
         <div class="menuButtonContainer">
-          <button id ="soundButton" ontouchstart="toggleSound()">Sound On</button>
+          <button class="menuButton" id ="soundButton" ontouchstart="toggleSound()">Sound On</button>
           <button  class="menuButton">
-            <p>Select Color: </p>
-            <input class ="colorPicker" type="color" list="presets" id="colorPicker" name="favcolor" >
-            <datalist id="presets">
-              <option value="#000000">Black</option>
-          <option value="#FF0000">Red</option>
-          <option value="#008000">Green</option>
-          <option value="#FFFF00">Yellow</option>
-          <option value="#FFC0CB">Pink</option>
-          <option value="#800080">Purple</option>
-          <option value="#FFA500">Orange</option>
-          <option value="#A52A2A">Brown</option>
-          <option value="#008080">Teal</option>
-          <option value="#000080">Navy</option>
-          <option value="#00FFFF">Aqua</option>
-          <option value="#E6E6FA">Lavender</option>
-          <option value="#FFD700">Gold</option>
-          <option value="#C0C0C0">Silver</option>
-          <option value="#800000">Maroon</option>
-          <option value="#40E0D0">Turquoise</option>
-          <option value="#4B0082">Indigo</option>
-          <option value="#F5F5DC">Beige</option>
-          <option value="#FF6F61">Coral</option>
-          <option value="#FF00FF">Magenta</option>
-          <option value="#808000">Olive</option>
-            </datalist>
+            <select class ="colorPicker" id="colorPicker" name="favcolor" >
+            <select>
           </button>
+          <button class="menuButton" id="nameChange">
+            Name Change
+          </button>   
+          <button class="menuButton" id="addFunds">
+            Add Funds
+          </button>
+          <button class="menuButton" id="autoSitOut">
+            Auto Sit Out
+          </button>
+     
           <button class="menuButton">Quit</button>
 
 

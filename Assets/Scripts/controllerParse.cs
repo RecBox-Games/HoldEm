@@ -157,12 +157,20 @@ public class controllerParse : MonoBehaviour
             foreach (var player in gameController.getPlayerList())
             {
                 if (player.playerColor == color){
+                    Debug.Log(player.playerColor);
+                    Debug.Log(color);
                     colorFound = true;
                     break;
+                }
+                else {
+                    Debug.Log("Didnt find" + player.playerColor);
+
+
                 }
             }
             if(!colorFound)
             {
+                Debug.Log("Added" + color);
                 playerColors.Add(color);
             }
             

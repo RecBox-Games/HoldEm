@@ -10,6 +10,10 @@
 /* Overlay visuals are always z-index-2 or 3*/
 /* Modal visuals are always z-index-4*/
 
+select {
+
+
+}
 
 body {
     touch-action: none;
@@ -78,7 +82,7 @@ canvas {
     display: none;
 }
 
-.close {
+.close, .menuTitle {
     color: black;
     float: right;
     font-size: 20vw;
@@ -90,7 +94,12 @@ canvas {
     max-height: 100px;
   }
 
-
+  .menuTitle {
+    float:left;
+    left: 2vw;
+    font-size: 10vw;
+    top: calc(2.5 * var(--vh))
+  }
 
 .front, .back {
     display:flex;
@@ -223,7 +232,7 @@ img {
     flex-direction: column;
 }
 /* CSS */
-button {
+button, option, select {
   align-items: center;
   background-color: var(--color);
   border: 0;
@@ -237,7 +246,8 @@ button {
   font-weight: 600;
   justify-content: center;
   line-height: 20px;
-  max-width: 480px;
+  max-width: 75vw;
+  width: 75vw;
   min-height: 40px;
   min-width: 0px;
   overflow: hidden;
@@ -254,6 +264,14 @@ button {
   margin-bottom: 20px;
   
 }
+
+select {
+    min-height: 0;
+    padding: 0;
+    margin: 0;
+
+}
+
 
 .playButton, .peekButton {
     
