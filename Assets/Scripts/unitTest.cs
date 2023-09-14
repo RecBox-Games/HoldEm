@@ -92,6 +92,12 @@ public class unitTest : MonoBehaviour
     public void testRevealCards()
     {
         cardController.resetCards();
+        StartCoroutine(pauseReveal(3));
+    }
+
+    IEnumerator pauseReveal(int seconds) 
+    {
+        yield return new WaitForSeconds(seconds);
         cardController.revealFlop();
         cardController.revealTurn();
         cardController.revealRiver();

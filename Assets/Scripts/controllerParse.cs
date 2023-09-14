@@ -7,10 +7,8 @@ using UnityEngine.UI;
 
 public class controllerParse : MonoBehaviour
 {
-
     [SerializeField] gameController gameController;
 
-    
 
     public void messageParse(string client, string msg)
     {

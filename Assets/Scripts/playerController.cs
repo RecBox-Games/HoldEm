@@ -34,9 +34,7 @@ public class playerController : MonoBehaviour
     public List<Card> bestHand { get; set; } = new List<Card>();
 
     //Bonus Settings
-
     public List<Setting> CustomSettings {get; set;} = new List<Setting>();
-
 
 
     // Getters

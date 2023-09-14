@@ -7,6 +7,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.XR;
+using static UnityEngine.UI.Image;
 
 public class Card
 {
@@ -147,10 +148,11 @@ public class cardController : MonoBehaviour
     
     public void resetCards()
     {
+        Vector3 deckBottom = deck.transform.position - new Vector3(0, .60f, 0);
         foreach (var card in tableCards)
         {
-            card.GetComponent<Renderer>().enabled = false;
-            card.transform.position = deck.transform.position + new Vector3(0, .65f, 0);
+            // card.GetComponent<Renderer>().enabled = false;
+            StartCoroutine(cardMove(card, deckBottom));
         }
 
         playTextures.Clear();
@@ -226,9 +228,22 @@ public class cardController : MonoBehaviour
                 velocity * Time.deltaTime);
             yield return null;
         }
-        card.transform.position = origin;
-        
+        card.transform.position = origin;  
     }
+    /*
+    IEnumerator reDeckCards(GameObject card)
+    {
+        
+        while (card.transform.position != deckBottom)
+        {
+            card.transform.position = Vector3.MoveTowards(
+                card.transform.position,
+                deckBottom,
+                velocity * Time.deltaTime);
+            yield return null;
+        }
+        card.transform.position = deck.transform.position + new Vector3(0, .65f, 0);
+    } */
 
     public static List<playerController> DetermineWinners(List<playerController> playerList)
     {

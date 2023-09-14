@@ -15,6 +15,7 @@ public class gameController : MonoBehaviour
     [SerializeField] GameObject moneyUI;
     [SerializeField] GameObject turnOrderUI;
     [SerializeField] cardController cardController;
+    [SerializeField] SceneLoader sceneLoader;
     [SerializeField] int maxPlayers;
     [SerializeField] int startMoney;
     [SerializeField] int ante;
@@ -249,6 +250,8 @@ string[] colors = new string[] { "black", "red", "blue", "green", "yellow", "pin
             Debug.Log(player.username + " has won " + payment + "$");
             player.payPlayer(payment);
         }
+
+        // sceneLoader.loadScene(1);
 
         rounds++;
         turnOrder.Clear();
