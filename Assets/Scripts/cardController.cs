@@ -103,7 +103,12 @@ public class cardController : MonoBehaviour
     void Start()
     {
         foreach (var card in cardTextures) { textureDeck.Add(card); }
-        foreach (var vector in tableCards) { originPos.Add(vector.transform.position); }
+        foreach (var card in tableCards) 
+        { 
+            originPos.Add(card.transform.position);
+            card.transform.position = deck.transform.position;
+        
+        }
         // Clear all cards on table
         resetCards();
     }

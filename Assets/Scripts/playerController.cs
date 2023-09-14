@@ -3,6 +3,18 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
+public class Setting
+{
+    public string name;
+
+    public string value;
+    public Setting(string name, string value)
+    {
+        this.name = name;
+        this.value = value;
+    }
+}
+
 public class playerController : MonoBehaviour
 {
     public string ID { get; set; }
@@ -77,17 +89,6 @@ public class playerController : MonoBehaviour
         bettedRound += amount;
         money -= amount;
         return amount;
-    }
-}
-
-public class Setting {
-    public string name;
-
-    public string value;
-    public Setting(string name, string value)
-    {
-        this.name = name;
-        this.value = value;
     }
 }
 

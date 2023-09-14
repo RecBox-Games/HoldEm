@@ -18,6 +18,6 @@ public class UIcontroller : MonoBehaviour
 
     public void updateUI()
     {
-
+        
     }
 }
