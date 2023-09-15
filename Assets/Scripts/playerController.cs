@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -19,12 +20,10 @@ public class playerController : MonoBehaviour
 {
     public string ID { get; set; }
     public string username { get; set; }
-    // This is the number the player joined
-    public int playerNumber { get; set; } 
-    private int turnNumber;
+    public int playerNumber { get; set; } // This is the number the player joined
     public bool isHost { get; set; } = false;
-
     public string playerColor {get; set;}
+    
 
     // Money Variables
     public int money { get; set; } // Ammount of money a player has to play with
@@ -49,6 +48,11 @@ public class playerController : MonoBehaviour
     public List<Setting> CustomSettings {get; set;} = new List<Setting>();
 
 
+    private void Start()
+    {
+        gameObject.transform.Find("Nameplate").GetComponent<TextMeshPro>().text = username;
+    }
+
     // Getters
     public List<Card> getHoleCards() { return holeCards; }
     public string getHoleCardsDesc()
@@ -71,6 +75,7 @@ public class playerController : MonoBehaviour
     public void fold() { folded = !folded; }
 
     public void payPlayer(int amount) { money += amount; }
+
     public int requestFunds(int amount) 
     {
         if (amount >= money)

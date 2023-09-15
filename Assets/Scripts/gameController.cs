@@ -21,8 +21,7 @@ public class gameController : MonoBehaviour
     [SerializeField] int ante;
 
     //Colors
-
-public string[] colors = new string[] { "black", "red", "blue", "green", "yellow", "pink", "purple", "orange", "brown", "teal", "navy", "aqua", "lavender", "gold", "silver", "maroon", "turquoise", "indigo", "beige", "coral", "magenta", "olive"};
+    public string[] colors = new string[] { "black", "red", "blue", "green", "yellow", "pink", "purple", "orange", "brown", "teal", "navy", "aqua", "lavender", "gold", "silver", "maroon", "turquoise", "indigo", "beige", "coral", "magenta", "olive"};
 
     // Static Variables
     public static bool gameState { get; set; } = false; // True means a game has started
@@ -117,7 +116,7 @@ public string[] colors = new string[] { "black", "red", "blue", "green", "yellow
         // Debug.Log("Player " + playerName + " Added");
 
         // Create a new Player object from the Player prefab and name it the new players name
-        Object playerObj = Instantiate((playerPrefab), new Vector3(0, 0, 10), Quaternion.identity);
+        Object playerObj = Instantiate((playerPrefab), new Vector3(0, 6, -23), Quaternion.identity);
         playerObj.name = playerName;
 
         // Get the playerController and assign anything new to the player
