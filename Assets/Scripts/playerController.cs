@@ -18,6 +18,8 @@ public class Setting
 
 public class playerController : MonoBehaviour
 {
+
+    [SerializeField] float velocity;
     public string ID { get; set; }
     public string username { get; set; }
     public int playerNumber { get; set; } // This is the number the player joined
@@ -94,6 +96,28 @@ public class playerController : MonoBehaviour
         bettedRound += amount;
         money -= amount;
         return amount;
+    }
+
+    public void enterFrame() { StartCoroutine(movePlayer(new Vector3(0, 6, -23))); }
+
+    public void exitFrame() { StartCoroutine(movePlayer(new Vector3(-30, 6, -23))); }
+
+
+    private IEnumerator movePlayer(Vector3 vector)
+    {
+        while (transform.position != vector)
+        {
+            transform.position = Vector3.MoveTowards(
+                transform.position,
+                vector,
+                velocity * Time.deltaTime);    
+            yield return null;
+        }
+
+        if (transform.position == new Vector3(-30, 6, -23))
+        {
+            transform.position = new Vector3(30, 6, -23);
+        }
     }
 }
 

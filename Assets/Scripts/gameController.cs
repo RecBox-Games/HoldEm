@@ -116,7 +116,7 @@ public class gameController : MonoBehaviour
         // Debug.Log("Player " + playerName + " Added");
 
         // Create a new Player object from the Player prefab and name it the new players name
-        Object playerObj = Instantiate((playerPrefab), new Vector3(0, 6, -23), Quaternion.identity);
+        Object playerObj = Instantiate((playerPrefab), new Vector3(30, 6, -23), Quaternion.identity);
         playerObj.name = playerName;
 
         // Get the playerController and assign anything new to the player
@@ -196,6 +196,7 @@ public class gameController : MonoBehaviour
         playerTurn = 0;
         turn = 0;
         this.ante = ante;
+        currentPlayer.enterFrame();
 
         Debug.Log("A new game of Texas Hold'Em Has begun");
         Debug.Log("Turn order is: " + getTurnOrder());
@@ -242,7 +243,7 @@ public class gameController : MonoBehaviour
         else if (turn == 2 && turnOrder.Count > 1) { cardController.revealRiver(); turn++; resetBetRound(); currentBet = 0; return; }
 
         List<playerController> winner = cardController.DetermineWinners(turnOrder.ToList());
-
+        currentPlayer.exitFrame();
         foreach (var player in winner) 
         {
             int payment = potMoney / winner.Count;
@@ -274,13 +275,16 @@ public class gameController : MonoBehaviour
         playerTurn = 0;
         turn = 0;
         cardController.dealCards(turnOrder.ToList());
+        currentPlayer.enterFrame();
 
         Debug.Log("A new round has started!");
     }
 
     public void nextTurn()
     {
+        currentPlayer.exitFrame();
         currentPlayer.isPlayerTurn = false;
+     
         // Update the to the next player, unless the current player folded then just remove them.
         if (currentPlayer.folded)
             turnOrder.Dequeue();
@@ -289,6 +293,7 @@ public class gameController : MonoBehaviour
 
         currentPlayer = turnOrder.Peek();
         currentPlayer.isPlayerTurn = true;
+        currentPlayer.enterFrame();
         playerTurn = (playerTurn + 1) % turnOrder.Count;
         controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh");
 
