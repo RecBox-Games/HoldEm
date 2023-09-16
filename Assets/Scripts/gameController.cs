@@ -238,18 +238,16 @@ public class gameController : MonoBehaviour
 
         currentPlayer = turnOrder.Dequeue();
         currentPlayer.isPlayerTurn = true;
+        currentPlayer.blind = true;
         highestBidder = currentPlayer;
         playerTurn = 0;
     }
 
     public void newRound()
     {
-        if (turn == 0  && turnOrder.Count > 1) { cardController.revealFlop(); turn++; resetBetRound(); currentBet = 0; return; }
-        else if (turn == 1 && turnOrder.Count > 1) { cardController.revealTurn(); turn++; resetBetRound(); currentBet = 0; return; }
-        else if (turn == 2 && turnOrder.Count > 1) { cardController.revealRiver(); turn++; resetBetRound(); currentBet = 0; return; }
-
-        List<playerController> winner = cardController.DetermineWinners(turnOrder.ToList());
         currentPlayer.exitFrame();
+        List<playerController> winner = cardController.DetermineWinners(turnOrder.ToList());
+        
         foreach (var player in winner) 
         {
             int payment = potMoney / winner.Count;
@@ -257,13 +255,12 @@ public class gameController : MonoBehaviour
             player.payPlayer(payment);
         }
 
-        // sceneLoader.loadScene(1);
-
         rounds++;
         turnOrder.Clear();
         cardController.resetCards();
 
-        // Move the first player to the back of the roundRobin then reinstantiate the turnOrder
+        // Move the first player to the back of the roundRobin
+        // then reinstantiate the turnOrder
         roundRobin.Enqueue(roundRobin.Dequeue());
         trackPlayers = roundRobin.ToList();
         foreach (var player in roundRobin.ToList()) {
@@ -273,7 +270,7 @@ public class gameController : MonoBehaviour
             player.resetHoleCards();
             turnOrder.Enqueue(player);
         }
-        while (turnOrder.Peek() != trackPlayers[0]) { turnOrder.Enqueue(turnOrder.Dequeue()); }
+        
         // Reset variables
         currentPlayer = turnOrder.Dequeue();
         highestBidder = currentPlayer;
@@ -291,7 +288,7 @@ public class gameController : MonoBehaviour
     {
         currentPlayer.exitFrame();
         currentPlayer.isPlayerTurn = false;
-        // while (turnOrder.Peek() != trackPlayers[0]) { turnOrder.Enqueue(turnOrder.Dequeue()); }
+        
         // Update to the next player
         // If the current player folded do nothing, they arnt in the order anymore
         // Add the current player back into the turn order
@@ -300,20 +297,52 @@ public class gameController : MonoBehaviour
 
         currentPlayer = turnOrder.Dequeue();
         currentPlayer.isPlayerTurn = true;
-        currentPlayer.enterFrame();
+        
         playerTurn = (playerTurn + 1) % (turnOrder.Count + 1);
         controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh");
 
-        // foreach (var card in currentPlayer.getHoleCards()) { cards = cards + " " + card + ","; }
         Debug.Log("It is now " + currentPlayer.username + "\'s turn. \n " + 
             currentPlayer.getHoleCardsDesc());
-
+        
         // This is for limited play, we're only allowing players to bet once per draw.
-        if (currentPlayer == highestBidder) { 
-            newRound(); 
+        if (currentPlayer == highestBidder) {
+            turn++;
+            currentBet = 0;
+            resetBetRound();
+
+            Debug.Log(currentPlayer.blind);
+
+            if (!currentPlayer.blind)
+            {
+                turnOrder.Clear();
+                foreach (var player in trackPlayers) { turnOrder.Enqueue(player); }
+                currentPlayer = turnOrder.Dequeue();
+            }
+
+            if (turn == 1 && turnOrder.Count > 1)
+            {
+                cardController.revealFlop();
+                currentPlayer.enterFrame();
+                return;
+            }
+            else if (turn == 2 && turnOrder.Count > 1)
+            {
+                cardController.revealTurn();
+                currentPlayer.enterFrame();
+                return;
+            }
+            else if (turn == 3 && turnOrder.Count > 1)
+            {
+                cardController.revealRiver();
+                currentPlayer.enterFrame();
+                return;
+            }
+
+            newRound();
             return; }
 
-        if (currentPlayer.tappedOut) { nextTurn(); }
+        if (currentPlayer.tappedOut) { nextTurn(); return; }
+        currentPlayer.enterFrame();
     }
 
     public void anteUP(string playerName, bool playing)
@@ -376,6 +405,9 @@ public class gameController : MonoBehaviour
         Debug.Log(currentPlayer.username + " has folded this round");
         currentPlayer.fold();
         trackPlayers.Remove(currentPlayer);
+
+        if (currentPlayer.blind) { trackPlayers[0].blind = true; }
+
         // Check if everyone has folded
         if (turnOrder.Count == 1) { newRound(); return; }
 
