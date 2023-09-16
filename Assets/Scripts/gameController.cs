@@ -33,6 +33,7 @@ public class gameController : MonoBehaviour
 
     // Instance Variables
     private List<playerController> playerList = new List<playerController>();
+    private List<playerController> trackPlayers = new List<playerController>();
     private Queue<playerController> turnOrder = new Queue<playerController>();
     private Queue<playerController> roundRobin = new Queue<playerController>();
     private playerController currentPlayer;
@@ -43,7 +44,6 @@ public class gameController : MonoBehaviour
     private int tottalMoney = 0;
     private int playerTurn = 0;
     private int currentBet = 0;
-    private bool increasingAnte = false;
 
 
     // Start is called before the first frame update
@@ -58,7 +58,7 @@ public class gameController : MonoBehaviour
         if (gameState)
         {
             turnOrderUI.GetComponent<UnityEngine.UI.Text>().text = getTurnOrder() + "\n";
-            moneyUI.GetComponent<UnityEngine.UI.Text>().text = potMoney.ToString();
+            moneyUI.GetComponent<UnityEngine.UI.Text>().text = "Pot: " + potMoney.ToString();
             playerUI.GetComponent<UnityEngine.UI.Text>().text = getPlayerMoneyInfo();
 
         }
@@ -194,7 +194,8 @@ public class gameController : MonoBehaviour
         cardController.resetCards();
         initializeTurnOrder();
         tottalMoney = startMoney * playerList.Count;
-        cardController.dealCards(turnOrder.ToList());
+        cardController.dealCards(roundRobin.ToList());
+        trackPlayers = roundRobin.ToList();
         rounds = 1;
         potMoney = 0;
         currentBet = 0;
@@ -235,7 +236,7 @@ public class gameController : MonoBehaviour
         foreach (var player in playerList) { turnOrder.Enqueue(player); }
         foreach (var player in playerList) { roundRobin.Enqueue(player); }
 
-        currentPlayer = turnOrder.Peek();
+        currentPlayer = turnOrder.Dequeue();
         currentPlayer.isPlayerTurn = true;
         highestBidder = currentPlayer;
         playerTurn = 0;
@@ -264,6 +265,7 @@ public class gameController : MonoBehaviour
 
         // Move the first player to the back of the roundRobin then reinstantiate the turnOrder
         roundRobin.Enqueue(roundRobin.Dequeue());
+        trackPlayers = roundRobin.ToList();
         foreach (var player in roundRobin.ToList()) {
             if (player.folded) { player.fold(); }
             player.betted = 0;
@@ -271,15 +273,15 @@ public class gameController : MonoBehaviour
             player.resetHoleCards();
             turnOrder.Enqueue(player);
         }
-
+        while (turnOrder.Peek() != trackPlayers[0]) { turnOrder.Enqueue(turnOrder.Dequeue()); }
         // Reset variables
-        currentPlayer = turnOrder.Peek();
+        currentPlayer = turnOrder.Dequeue();
         highestBidder = currentPlayer;
         potMoney = 0;
         currentBet = 0;
         playerTurn = 0;
         turn = 0;
-        cardController.dealCards(turnOrder.ToList());
+        cardController.dealCards(roundRobin.ToList());
         currentPlayer.enterFrame();
 
         Debug.Log("A new round has started!");
@@ -289,26 +291,27 @@ public class gameController : MonoBehaviour
     {
         currentPlayer.exitFrame();
         currentPlayer.isPlayerTurn = false;
-     
-        // Update the to the next player, unless the current player folded then just remove them.
-        if (currentPlayer.folded)
-            turnOrder.Dequeue();
-        else
-            turnOrder.Enqueue(turnOrder.Dequeue());
+        // while (turnOrder.Peek() != trackPlayers[0]) { turnOrder.Enqueue(turnOrder.Dequeue()); }
+        // Update to the next player
+        // If the current player folded do nothing, they arnt in the order anymore
+        // Add the current player back into the turn order
+        if (!currentPlayer.folded)
+            turnOrder.Enqueue(currentPlayer);
 
-        currentPlayer = turnOrder.Peek();
+        currentPlayer = turnOrder.Dequeue();
         currentPlayer.isPlayerTurn = true;
         currentPlayer.enterFrame();
-        playerTurn = (playerTurn + 1) % turnOrder.Count;
+        playerTurn = (playerTurn + 1) % (turnOrder.Count + 1);
         controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh");
 
-        string cards = "Hole Cards:";
         // foreach (var card in currentPlayer.getHoleCards()) { cards = cards + " " + card + ","; }
         Debug.Log("It is now " + currentPlayer.username + "\'s turn. \n " + 
             currentPlayer.getHoleCardsDesc());
 
         // This is for limited play, we're only allowing players to bet once per draw.
-        if (currentPlayer == highestBidder) { newRound(); return; }
+        if (currentPlayer == highestBidder) { 
+            newRound(); 
+            return; }
 
         if (currentPlayer.tappedOut) { nextTurn(); }
     }
@@ -372,7 +375,7 @@ public class gameController : MonoBehaviour
         // if (currentPlayer == highestBidder) { highestBidder = turnOrder.Peek();}
         Debug.Log(currentPlayer.username + " has folded this round");
         currentPlayer.fold();
-        
+        trackPlayers.Remove(currentPlayer);
         // Check if everyone has folded
         if (turnOrder.Count == 1) { newRound(); return; }
 

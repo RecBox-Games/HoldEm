@@ -32,6 +32,7 @@ public class playerController : MonoBehaviour
     public int betted { get; set; } // Amount of money the player has betted
 
     public int bettedRound { get; set; } // Amount of money the player has betted
+    public bool blind { get; set; }
 
 
     // Game Specific Variables
@@ -53,6 +54,12 @@ public class playerController : MonoBehaviour
     private void Start()
     {
         gameObject.transform.Find("Nameplate").GetComponent<TextMeshPro>().text = username;
+    }
+
+    private void Update()
+    {
+        gameObject.transform.Find("Money").GetComponent<TextMeshPro>().text =
+            "Betted: $" + betted + "\nMoney: $" + money;
     }
 
     // Getters
