@@ -45,7 +45,7 @@ public class gameController : MonoBehaviour
     private int playerTurn = 0;
     private int currentBet = 0;
 
-    private bool isPregame = true;
+    private bool isPregame = false;
 
 
     // Start is called before the first frame update
