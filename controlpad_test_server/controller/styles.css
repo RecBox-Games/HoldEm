@@ -145,6 +145,7 @@ canvas {
     display: none;
     flex-direction: column;
     overflow: hidden;
+    position: absolute;
 
 }
 .innermenu {
@@ -256,7 +257,6 @@ button, option, select {
   padding-right: 20px;
   text-align: center;
   touch-action: manipulation;
-  transition: background-color 0.167s cubic-bezier(0.4, 0, 0.2, 1) 0s, box-shadow 0.167s cubic-bezier(0.4, 0, 0.2, 1) 0s, color 0.167s cubic-bezier(0.4, 0, 0.2, 1) 0s;
   user-select: none;
   -webkit-user-select: none;
   vertical-align: middle;
@@ -300,6 +300,26 @@ select {
     height: calc(25 * var(--vh));
 
 }
+
+.gameForm {
+    width:75vw;
+    height: fit-content;
+    background-color: white;
+    position: absolute;
+    top: calc(30 * var(--vh));
+    left: 50%;
+    transform: translate(-50%);
+    padding: 20px;
+    text-align: center;
+    border-radius: 50px;
+    display: none;
+
+
+    
+
+}
+
+
 .arrow {
 
     height: 100%;
