@@ -31,6 +31,7 @@ public class gameController : MonoBehaviour
 
     // Static Variables
     public static bool gameState { get; set; } = false; // True means a game has started
+    public static bool blindPlay { get; set; } = false;
 
     // Instance Variables
     private List<playerController> playerList = new List<playerController>();
@@ -45,7 +46,7 @@ public class gameController : MonoBehaviour
     private int tottalMoney = 0;
     private int playerTurn = 0;
     private int currentBet = 0;
-
+    private int turnBet = 0;
     private bool isPregame = false;
 
 
@@ -168,6 +169,8 @@ public class gameController : MonoBehaviour
       */
     private void startNewGame(int startMoney, int ante)
     {
+        this.ante = ante;
+
         if (gameState)
         {
             Debug.Log("There is already a game playing." +
@@ -207,8 +210,8 @@ public class gameController : MonoBehaviour
         currentBet = 0;
         playerTurn = 0;
         turn = 0;
-        this.ante = ante;
-        currentPlayer.enterFrame();
+
+        playBlinds();
 
         Debug.Log("A new game of Texas Hold'Em Has begun");
         Debug.Log("Turn order is: " + getTurnOrder());
@@ -216,6 +219,23 @@ public class gameController : MonoBehaviour
             currentPlayer.getHoleCardsDesc());
 
         gameState = true;
+        currentPlayer.enterFrame();
+    }
+
+    private void playBlinds()
+    {
+        if (blindPlay)
+        {
+            currentPlayer.blind = true;
+            potMoney += currentPlayer.requestFunds(ante / 2);
+            potMoney += turnOrder.Peek().requestFunds(ante);
+            currentBet += ante;
+            turnBet += ante;
+            highestBidder = turnOrder.Peek();
+            turnOrder.Enqueue(currentPlayer);
+            turnOrder.Enqueue(turnOrder.Dequeue());
+            currentPlayer = turnOrder.Dequeue();
+        }
     }
 
     // This function will initialize the turnOrder list but filling it with
@@ -243,9 +263,9 @@ public class gameController : MonoBehaviour
         foreach (var player in playerList) { roundRobin.Enqueue(player); }
 
         currentPlayer = turnOrder.Dequeue();
-        currentPlayer.isPlayerTurn = true;
-        currentPlayer.blind = true;
         highestBidder = currentPlayer;
+
+        currentPlayer.isPlayerTurn = true;
         playerTurn = 0;
     }
 
@@ -282,11 +302,14 @@ public class gameController : MonoBehaviour
         highestBidder = currentPlayer;
         potMoney = 0;
         currentBet = 0;
+        turnBet = 0;
         playerTurn = 0;
         turn = 0;
+
+        playBlinds();
+
         cardController.dealCards(roundRobin.ToList());
         currentPlayer.enterFrame();
-
         Debug.Log("A new round has started!");
     }
 
@@ -314,7 +337,7 @@ public class gameController : MonoBehaviour
         if (currentPlayer == highestBidder)
         {
             turn++;
-            // currentBet = 0;
+            turnBet = 0;
             resetBetRound();
             currentPlayer.isPlayerTurn = false;
 
@@ -379,10 +402,12 @@ public class gameController : MonoBehaviour
 
             money = callBet + raiseMoney;
             currentBet += raiseMoney;
+            turnBet += raiseMoney;
         } else
         {
             money = currentPlayer.requestFunds(amount);
             currentBet += money;
+            turnBet += money;
         }
 
         // Increment the amount in the pot and then set the current player as the highest bidder
@@ -405,7 +430,8 @@ public class gameController : MonoBehaviour
         if (currentPlayer.betted < currentBet)
             money = currentPlayer.requestFunds(currentBet - currentPlayer.betted);
         else
-            money = currentPlayer.requestFunds(currentBet);
+            money = currentPlayer.requestFunds(turnBet);
+            
         
         Debug.Log(currentPlayer.username + " calls the current bet of " + currentBet);
         potMoney += money;

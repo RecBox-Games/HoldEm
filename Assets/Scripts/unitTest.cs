@@ -103,6 +103,8 @@ public class unitTest : MonoBehaviour
         cardController.revealRiver();
     }
 
+    public void testBlindPlay() { gameController.blindPlay = true; }
+
     public void testHandEvaluator()
     {
                 //Kevin, Start Here. I've defined a list of "Cards" as such.
