@@ -93,21 +93,15 @@ public class controllerParse : MonoBehaviour
         List<string> variables = new List<string>();
         variables.Add(player.username);
 
-
+        if (player.playerNumber == 1)
+        {
+            player.isHost = true;
+            controlpads_glue.SendControlpadMessage(player.ID,"host");
+        }
         if(!gameController.gameState)
         {
-            if (player.playerNumber == 1)
-            {
-                stateName = "JoinedHost:";
-            }
-            else {
-                stateName = "JoinedWaitingToStart:";
-            }
-            
+            stateName = "JoinedWaitingToStart:";  
         }
-
-        
-
         else {
 
             variables.Add(player.money.ToString());
@@ -158,27 +152,20 @@ public class controllerParse : MonoBehaviour
         List<string> playerColors = new List<string>();
         playerColors.Add("colors");
         foreach (var color in gameController.colors)
+
+        
         {
+            Debug.Log(color);
             bool colorFound = false;
-
-
             foreach (var player in gameController.getPlayerList())
             {
                 if (player.playerColor == color){
-                    Debug.Log(player.playerColor);
-                    Debug.Log(color);
                     colorFound = true;
                     break;
-                }
-                else {
-                    Debug.Log("Didnt find" + player.playerColor);
-
-
                 }
             }
             if(!colorFound)
             {
-                Debug.Log("Added" + color);
                 playerColors.Add(color);
             }
             

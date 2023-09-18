@@ -23,10 +23,10 @@ public class gameController : MonoBehaviour
 
     //Colors
     public string[] colors = new string[] 
-    { "Aqua", "BLue", "Bronze", "Brown", "Coral", 
+    { "Aqua", "Blue", "Bronze", "Brown", "Coral", 
         "Gold", "Green", "Indigo", "Lavender", "Magenta", 
-        "Marron", "Navy", "Olive", "Orange", "Pink", 
-        "Purple", "Red", "Silver", "Teal", "Terquoise", 
+        "Maroon", "Navy", "Olive", "Orange", "Pink", 
+        "Purple", "Red", "Silver", "Teal", "Tourquoise", 
         "White", "Yellow"};
 
     // Static Variables

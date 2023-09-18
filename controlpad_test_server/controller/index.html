@@ -213,21 +213,78 @@
 
       <!-- Top informational messages used for guiding the user through extra screens -->
 
-      <div id="infoMessageBlock" class="overlay infoMessage hideables">
+      <div id="infoMessageBlock" class="overlay infoMessage ">
         <h2 id="infoMessage">Ante Up or Sit Out?</h2>
 
       </div>
+
+      <!-- StartGameForm -->
+      <div id="gameFormContainer" class="gameForm overlay hideables">
+        <h1 style="margin-top: 0;">Game Settings</h1>
+        <form id="gameForm" class="form" onsubmit="startGame(event)">
+          <label for="starting-money">Starting Money per Player:</label>
+          <select id="starting-money" name="starting-money">
+              <option value="100">$100</option>
+              <option value="1000">$1,000</option>
+              <option value="2500">$2,500</option>
+              <option value="5000">$5,000</option>
+          </select>
+          <br><br>
+          
+          <label>Game Type:</label>
+          <input type="radio" id="ante" name="game-type" value="ante" checked>
+          <label for="ante">Ante</label>
+          <input type="radio" id="blinds" name="game-type" value="blinds">
+          <label for="blinds">Blinds</label>
+          <br><br>
+          
+          <div id="ante-controls">
+              <label for="ante-amount">Ante Amount:</label>
+              <select id="ante-amount" name="ante-amount">
+                  <option value="5">$5</option>
+                  <option value="10">$10</option>
+                  <option value="25">$25</option>
+                  <option value="50">$50</option>
+              </select>
+              <br><br>
+          </div>
+          
+          <div id="blind-controls" style="display: none;">
+              <label for="big-blind">Big Blind:</label>
+              <br>
+              <select id="big-blind" name="big-blind">
+                  <option value="10">$10</option>
+                  <option value="20">$20</option>
+                  <option value="50">$50</option>
+                  <option value="100">$100</option>
+              </select>
+              <br>
+              <label for="small-blind">Small Blind:</label>
+              <br>
+              <select id="small-blind" name="small-blind">
+                  <option value="5">$5</option>
+                  <option value="10">$10</option>
+                  <option value="25">$25</option>
+                  <option value="50">$50</option>
+              </select>
+              <br>
+          </div>
+          
+          <button type="submit">Start Game</button>
+        </form>
+      </div>
+
       <!-- Ante Menu Popup -->
-      <div id ="anteMenu" class="overlay anteMenu hideables ">
+      <div id ="anteMenu" class="overlay anteMenu  ">
         <div class="half" >
-          <button ontouchdown="messages.push('Sitting Out')" style="background-color: white; ">
+          <button ontouchstart="playingRound(0)" style="background-color: white; ">
             <svg style="padding: 20px;"height="100" width="100" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
               <path d="M248 48V256h48V58.7c23.9 13.8 40 39.7 40 69.3V256h48V128C384 57.3 326.7 0 256 0H192C121.3 0 64 57.3 64 128V256h48V128c0-29.6 16.1-55.5 40-69.3V256h48V48h48zM48 288c-12.1 0-23.2 6.8-28.6 17.7l-16 32c-5 9.9-4.4 21.7 1.4 31.1S20.9 384 32 384l0 96c0 17.7 14.3 32 32 32s32-14.3 32-32V384H352v96c0 17.7 14.3 32 32 32s32-14.3 32-32V384c11.1 0 21.4-5.7 27.2-15.2s6.4-21.2 1.4-31.1l-16-32C423.2 294.8 412.1 288 400 288H48z"></path>
             </svg>
           </button>
             </div>
         <div class="half">
-          <button ontouchdown="messages.push('Play')" style="background-color: white;">
+          <button ontouchstart="playingRound(1)" style="background-color: white;">
             <svg style="padding: 20px"height="100" width="100" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 296.477 296.477" xml:space="preserve">
               <g>
               <path d="M244.63,35.621c-21.771-18.635-47.382-29.855-73.767-33.902C121.871-5.797,70.223,11.421,35.622,51.847

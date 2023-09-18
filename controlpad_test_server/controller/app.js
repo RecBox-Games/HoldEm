@@ -1,7 +1,6 @@
 // -------- GameNite Controller App --------
 
 // ---- Globals ----
-console.log("Hello There");
 // ---- UI Setup ----
 let messages = []; //Array to hold messages to send to the controller
 let text_drawables = []; //Array to hold text boxes sent to canvas
@@ -28,6 +27,29 @@ const soundButton = document.getElementById('soundButton');
 const cardBacks = document.getElementsByClassName('cardBack');
 const anteMenu = document.getElementById('anteMenu');
 
+const gameTypeRadio = document.querySelectorAll('input[name="game-type"]');
+const anteControls = document.getElementById('ante-controls');
+const blindControls = document.getElementById('blind-controls');
+const gameForm = document.getElementById('gameForm');
+const gameFormContainer = document.getElementById('gameFormContainer');
+
+gameTypeRadio.forEach((radio) => {
+    radio.addEventListener('change', () => {
+        if (radio.value === 'ante') {
+            anteControls.style.display = 'block';
+            blindControls.style.display = 'none';
+        } else {
+            anteControls.style.display = 'none';
+            blindControls.style.display = 'block';
+        }
+    });
+});
+
+gameForm.addEventListener("submit",startGame,false);
+
+
+
+
 // const carddiv = document.getElementById('customCards');
 const card1 = document.getElementById('card1');
 const card2 = document.getElementById('card2');
@@ -43,6 +65,7 @@ let timer = null;
 let cardFlipped = false;
 let foldHold = false;
 let foldHoldStartY;
+let isHost = false;
 
 let soundSetting = true;
 
@@ -63,30 +86,7 @@ let playerMoney; //Amount of money the player has
 let cards = [];
 let playerColor;
 
-const colorHexList = {
-    "black": "#000000",
-    "red": "#FF0000",
-    "blue": "#0000FF",
-    "green": "#008000",
-    "yellow": "#FFFF00",
-    "pink": "#FFC0CB",
-    "purple": "#800080",
-    "orange": "#FFA500",
-    "brown": "#A52A2A",
-    "teal": "#008080",
-    "navy": "#000080",
-    "aqua": "#00FFFF",
-    "lavender": "#E6E6FA",
-    "gold": "#FFD700",
-    "silver": "#C0C0C0",
-    "maroon": "#800000",
-    "turquoise": "#40E0D0",
-    "indigo": "#4B0082",
-    "beige": "#F5F5DC",
-    "coral": "#FF6F61",
-    "magenta": "#FF00FF",
-    "olive": "#808000"
-  };
+
 
 
 
@@ -212,6 +212,7 @@ function handleMessage(message) {
     sections = message.split(":");
 
     switch (sections[0]) {
+        
         case "state":
             setState(sections); 
             break;
@@ -223,6 +224,9 @@ function handleMessage(message) {
             break;
         case "colors":
             updateAvailableColors(sections);
+        case "host":
+            isHost=true;
+        
     }
 
 
@@ -237,7 +241,7 @@ function updateAvailableColors(sections){
         placeholderOption.selected = true;
         colorPickerForm.appendChild(placeholderOption);
 
-    for( i=1; i<sections.length; i++)
+    for( i=1; i < sections.length; i++)
     {
         let color=sections[i];
         var colorOption = document.createElement("OPTION");
@@ -275,7 +279,6 @@ function foldTimer()    {
 }
 
 function fold() {
-    console.log("fold");
 //     action = "Fold";
 //     playerCall = 0;
 //     sendResponse();
@@ -486,16 +489,14 @@ function drawScreen(sections) {
         case "JoinedPregame":
             drawPregame();
             break;
+        //Waiting till next hand
         case "JoinedWaiting":
             drawJoinedWaiting();
             break;
         case "PlayingWaiting":
-            playerStatus = "Waiting for your Turn";
             drawPlayingWaiting();
             break;
         case "PlayingPlayerTurn":
-            playerTurn=true;
-            playerStatus = "It's Your Turn!";
             drawPlayingPlayerTurn();
             break;
         case "GameFinished":
@@ -537,12 +538,25 @@ function drawReadyToJoin() {
 }
 
 function drawJoinedWaitingToStart() {
-    waitingScreen("Waiting on Host");
+    if(isHost)
+    {
+        playerStatus = "You're the Host. Start Game When Ready!";
+        gameFormContainer.style.display = 'block';
+    }
+    else
+    {
+        playerStatus = "Waiting on Host To Start";
+
+    }
+    topMenu();
+    drawStatus();
 
 }
 
 function drawJoinedHost() {
-    waitingScreen("Start Game");
+    playerStatus = "You are the host. Start game when ready!";
+    topMenu();
+    drawStatus();
 
     scale = sizeImage(buttonImage,.5);
 
@@ -561,7 +575,9 @@ function drawJoinedHost() {
 }
 
 function drawJoinedWaiting() {
-  waitingScreen("Waiting for next hand...");
+    playerStatus = "Waiting for the next round to begin";
+    topMenu();
+    drawStatus();
 
 }
 
@@ -572,6 +588,7 @@ function drawPregame() {
 }
 
 function drawPlayingWaiting() {
+    playerStatus = "Waiting for your Turn";
     drawCardBack();
     topMenu();
     drawPeek()
@@ -579,6 +596,8 @@ function drawPlayingWaiting() {
 }
 
 function drawPlayingPlayerTurn() {
+    playerTurn=true;
+    playerStatus = "It's Your Turn!";
     drawCardBack();
     topMenu();
     drawActions();
@@ -588,7 +607,11 @@ function drawPlayingPlayerTurn() {
 }
 
 function drawGameFinished() {
-    waitingScreen("Game Finished");
+    playerStatus = "It's Your Turn!";
+    topMenu();
+    drawStatus();
+
+
     
 }
 
@@ -600,33 +623,7 @@ function drawCardBack() {
     cardElement.style.display='flex';
 }
 
-// Draws the waiting screen when a user needs to wait before an action
 
-function waitingScreen(waitingText) {
-    text = 'Welcome ' + playerName + '!';
-    autoSize = sizeFont(text, 0.75)
-
-    text_drawables.push({
-        type: 'text',
-        text: text,
-        font: autoSize,
-        x: SCREEN_WIDTH/2,
-        y: SCREEN_HEIGHT/8,
-        centeredX: true,
-        centeredY: true,
-    });
-    text = waitingText;
-    autoSize = sizeFont(text, 0.75)
-    text_drawables.push({
-        type: 'text',
-            text: text,
-            font: autoSize,
-        x: SCREEN_WIDTH/2,
-        y: SCREEN_HEIGHT/2,
-        centeredX: true,
-        centeredY: true,
-    });
-}
 
 //Draw top menu
 function topMenu() {
@@ -660,6 +657,24 @@ function updateActionButton(){
 function flipCard(){
     $("#card").flip(true);
     cardFlipped = true;
+
+}
+
+function playingRound(value){
+    if (value == 1){
+        playerStatus="Waiting for the hand to begin";
+        messages.push("playingRound:Playing");
+
+    }
+    if (value == 0){
+        messages.push("playingRound:Sitting");
+        playerStatus="Sitting Out this Round";
+    }
+
+    setState(["state","JoinedWaiting"]);
+
+
+
 
 }
 
@@ -938,7 +953,6 @@ function addCard(cardarray)
 }
 colorPickerForm.addEventListener("change",changeColor,false);
 
-colorPickerForm.addEventListener("change",changeColor,false);
 function openPlayerMenu()
 {
     document.getElementById('playerMenu').style.display='block';
@@ -946,13 +960,45 @@ function openPlayerMenu()
 
 
 }
+
+function startGame(event)
+{
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+
+        
+        const startingMoney = document.getElementById('starting-money').value;
+        const gameType = document.querySelector('input[name="game-type"]:checked').value;
+        let anteAmount = null;
+        let bigBlind = null;
+        let smallBlind = null;
+        msg=null;
+        
+        if (gameType === 'ante') {
+            anteAmount = document.getElementById('ante-amount').value;
+            msg = ["StartGame",startingMoney,gameType,anteAmount];
+            
+        } else {
+            bigBlind = document.getElementById('big-blind').value;
+            smallBlind = document.getElementById('small-blind').value;
+            msg = ["StartGame",startingMoney,gameType,bigBlind,smallBlind];
+
+        }
+
+        
+        // Output the values (you can modify this to do something useful with the values)
+        messages.push(msg.join(":"));
+    
+
+}
+
 function changeColor(event)
 {
     event.preventDefault();
     playerColor = event.target.value;
     
     updateColor();
-    console.log();
     sendSetting("playerColor",event.target.value);
 }
 
@@ -991,7 +1037,6 @@ function updateSettings(sections) {
             else{
                 value = !!value;
             }
-            console.log(value);
             soundSetting = value;
             updateSound();
             break;
