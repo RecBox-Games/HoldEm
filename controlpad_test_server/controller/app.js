@@ -7,6 +7,9 @@ let messages = []; //Array to hold messages to send to the controller
 let text_drawables = []; //Array to hold text boxes sent to canvas
 let image_drawables = []; //Array to hold images sent to canvas
 
+
+
+
 const chipValues = [100,25,10,5];
 const chipFiles = ["/resources/chip3.png", "./resources/chip3_green.png","./resources/chip3_blue.png", "./resources/chip3_red.png"];
 
@@ -23,6 +26,7 @@ const chips = document.getElementById('chipStack');
 const colorPickerForm = document.getElementById('colorPicker');
 const soundButton = document.getElementById('soundButton');
 const cardBacks = document.getElementsByClassName('cardBack');
+const anteMenu = document.getElementById('anteMenu');
 
 // const carddiv = document.getElementById('customCards');
 const card1 = document.getElementById('card1');
@@ -479,6 +483,9 @@ function drawScreen(sections) {
         case "JoinedHost":
             drawJoinedHost();
             break;
+        case "JoinedPregame":
+            drawPregame();
+            break;
         case "JoinedWaiting":
             drawJoinedWaiting();
             break;
@@ -555,6 +562,12 @@ function drawJoinedHost() {
 
 function drawJoinedWaiting() {
   waitingScreen("Waiting for next hand...");
+
+}
+
+function drawPregame() {
+    anteMenu.style.display = "block";
+
 
 }
 

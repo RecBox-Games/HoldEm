@@ -112,21 +112,29 @@ public class controllerParse : MonoBehaviour
 
             variables.Add(player.money.ToString());
             variables.Add((gameController.getCurrentCall()-player.bettedRound).ToString());
-
+            
             //Need to add card variable tie in here
             foreach(var card in player.getHoleCards())
             {
                 variables.Add(card.suit.ToString() + "-" + card.rank.ToString());
             }
 
-            if(player.isPlayerTurn){
+            variables.Add(player.playerColor);
+
+            if(gameController.PreGame())
+            {
+                stateName = "PlayingPregame";
+
+            }
+            else if (player.isPlayerTurn){
                 stateName = "PlayingPlayerTurn:";
             }
 
             else {
                 stateName = "PlayingWaiting:";
             }
-            variables.Add(player.playerColor);
+
+
             
         }
         string variableString = string.Join(":", variables.ToArray());

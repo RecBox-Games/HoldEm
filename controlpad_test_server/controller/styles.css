@@ -321,6 +321,33 @@ select {
     overflow: hidden;
 }
 
+.anteMenu {
+    height: calc(50 * var(--vh));
+    width: 75vw;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, 50%);
+    position: absolute;
+    display: none;
+    
+}
+
+.infoMessage {
+    height: calc(15 * var(--vh));
+    width: 75vw;
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, 50%);
+    position: absolute;
+    text-align: center;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+    display: none;
+}
+
+
 .third {
     height: 33%;
 }
