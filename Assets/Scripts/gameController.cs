@@ -10,6 +10,7 @@ using UnityEngine.UIElements;
 public class gameController : MonoBehaviour
 {
     // Default Varaiables
+    [SerializeField] List<Material> colorList = new List<Material>();
     [SerializeField] GameObject playerPrefab;
     [SerializeField] GameObject playerUI;
     [SerializeField] GameObject moneyUI;
@@ -134,6 +135,7 @@ public class gameController : MonoBehaviour
         player.username = playerName;
         player.ID = client;
         player.playerColor = colors[playerList.Count-1];
+        Debug.Log(player.playerColor);
         player.playerNumber = playerList.Count;
         if (playerList.Count == 1) { player.isHost = true; }
 
@@ -301,49 +303,57 @@ public class gameController : MonoBehaviour
 
         currentPlayer = turnOrder.Dequeue();
         currentPlayer.isPlayerTurn = true;
-        
+
         playerTurn = (playerTurn + 1) % (turnOrder.Count + 1);
         controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh");
 
         Debug.Log("It is now " + currentPlayer.username + "\'s turn. \n " + 
             currentPlayer.getHoleCardsDesc());
-        
-        // This is for limited play, we're only allowing players to bet once per draw.
-        if (currentPlayer == highestBidder) {
-            turn++;
-            currentBet = 0;
-            resetBetRound();
 
-            Debug.Log(currentPlayer.blind);
+        // This is for limited play, we're only allowing players to bet once per draw.
+        if (currentPlayer == highestBidder)
+        {
+            turn++;
+            // currentBet = 0;
+            resetBetRound();
+            currentPlayer.isPlayerTurn = false;
 
             if (!currentPlayer.blind)
             {
                 turnOrder.Clear();
                 foreach (var player in trackPlayers) { turnOrder.Enqueue(player); }
                 currentPlayer = turnOrder.Dequeue();
+                currentPlayer.isPlayerTurn = true;
             }
 
             if (turn == 1 && turnOrder.Count > 1)
             {
                 cardController.revealFlop();
+                if (currentPlayer.tappedOut) { nextTurn(); return; }
                 currentPlayer.enterFrame();
                 return;
             }
             else if (turn == 2 && turnOrder.Count > 1)
             {
                 cardController.revealTurn();
+                if (currentPlayer.tappedOut) { nextTurn(); return; }
                 currentPlayer.enterFrame();
                 return;
             }
             else if (turn == 3 && turnOrder.Count > 1)
             {
                 cardController.revealRiver();
+                if (currentPlayer.tappedOut) { nextTurn(); return; }
                 currentPlayer.enterFrame();
                 return;
             }
+            else
+            {
+                newRound();
+                return;
+            }
+        }
 
-            newRound();
-            return; }
 
         if (currentPlayer.tappedOut) { nextTurn(); return; }
         currentPlayer.enterFrame();

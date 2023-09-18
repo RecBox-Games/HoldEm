@@ -18,7 +18,6 @@ public class Setting
 
 public class playerController : MonoBehaviour
 {
-
     [SerializeField] float velocity;
     public string ID { get; set; }
     public string username { get; set; }
@@ -84,6 +83,8 @@ public class playerController : MonoBehaviour
     public void fold() { folded = !folded; }
 
     public void payPlayer(int amount) { money += amount; }
+
+    public void setColor(Material color) { gameObject.GetComponent<Renderer>().material = color; }
 
     public int requestFunds(int amount) 
     {
