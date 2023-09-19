@@ -549,6 +549,8 @@ function drawJoinedWaitingToStart() {
 
     }
     topMenu();
+    moneyField.style.display="none";
+
     drawStatus();
 
 }
@@ -591,6 +593,7 @@ function drawPlayingWaiting() {
     playerStatus = "Waiting for your Turn";
     drawCardBack();
     topMenu();
+    moneyField.style.display="none";
     drawPeek()
     drawStatus();    
 }
@@ -795,13 +798,13 @@ function sendResponse(){
         switch (action) {
             case "Fold":
                 playFoldSound();
-                setState(["state","JoinedWaiting",playerName,playerMoney]);
+                setState(["state","JoinedWaiting",playerName,playerColor,playerMoney]);
                 break;
             case "Raise":
                 playerCall = playerCall - currentCall;
             default:
                 playCommitSound();
-                setState(["state","PlayingWaiting",playerName,(playerMoney-playerCall-currentCall)]);
+                setState(["state","PlayingWaiting",playerName,playerColor,(playerMoney-playerCall-currentCall)]);
 
         
         }
@@ -844,10 +847,13 @@ function updateVariables(sections){
                 nameField.innerHTML = playerName;
                 break;
             case 3:
+                    playerColor = (sections[i]);
+                    updateColor();
+            case 4:
                 playerMoney = parseInt(sections[i]);
                 moneyField.innerHTML = formatter.format(playerMoney);
                 break;
-            case 4:
+            case 5:
                 currentCall = parseInt(sections[i]);
                 playerCall = currentCall;
                 if (parseInt(currentCall) > 0){
@@ -857,14 +863,12 @@ function updateVariables(sections){
                     action = "Check";
                 }
                 break;
-            case 5:
             case 6:
+            case 7:
                 cardvalues = sections[i].split("-");
                 addCard(cardvalues);
                 break;
-            case 7:
-                playerColor = (sections[i]);
-                updateColor();
+
 
 
 

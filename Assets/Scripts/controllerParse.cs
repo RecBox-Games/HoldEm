@@ -92,6 +92,8 @@ public class controllerParse : MonoBehaviour
         var stateName = "";
         List<string> variables = new List<string>();
         variables.Add(player.username);
+        variables.Add(player.playerColor);
+
 
         if (player.playerNumber == 1)
         {
@@ -106,6 +108,7 @@ public class controllerParse : MonoBehaviour
 
             variables.Add(player.money.ToString());
             variables.Add((gameController.getCurrentCall()-player.bettedRound).ToString());
+
             
             //Need to add card variable tie in here
             foreach(var card in player.getHoleCards())
@@ -113,7 +116,6 @@ public class controllerParse : MonoBehaviour
                 variables.Add(card.suit.ToString() + "-" + card.rank.ToString());
             }
 
-            variables.Add(player.playerColor);
 
             if(gameController.PreGame())
             {
@@ -155,7 +157,6 @@ public class controllerParse : MonoBehaviour
 
         
         {
-            Debug.Log(color);
             bool colorFound = false;
             foreach (var player in gameController.getPlayerList())
             {

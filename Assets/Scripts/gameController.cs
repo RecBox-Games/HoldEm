@@ -22,12 +22,8 @@ public class gameController : MonoBehaviour
     [SerializeField] int ante;
 
     //Colors
-    public string[] colors = new string[] 
-    { "Aqua", "Blue", "Bronze", "Brown", "Coral", 
-        "Gold", "Green", "Indigo", "Lavender", "Magenta", 
-        "Maroon", "Navy", "Olive", "Orange", "Pink", 
-        "Purple", "Red", "Silver", "Teal", "Tourquoise", 
-        "White", "Yellow"};
+    public static string[] colors = new string[] 
+    { "Blue", "Green", "Red", "Purple", "Pink", "Orange", "Yellow", "Brown", "Teal", "Lavender", "Indigo", "Maroon", "Aqua", "Coral", "Gold", "Silver", "Lime", "Olive", "Navy", "Turquoise", "Tan"};
 
     // Static Variables
     public static bool gameState { get; set; } = false; // True means a game has started
