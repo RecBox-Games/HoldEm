@@ -60,7 +60,15 @@ public class controllerParse : MonoBehaviour
                 switch (messages[1])
                 {
                     case "playerColor":
-                        fromPlayer.playerColor = messages[2];
+                        string plyclrs = listColors();
+                        if (plyclrs.Contains(messages[2]))
+                        {
+                            fromPlayer.playerColor = messages[2];
+                        }
+                        else
+                        {
+                            controlpads_glue.SendControlpadMessage(client,"alert:Please select a different color. That color has already been selected.");
+                        }
                         break;
                     default:
                         Setting sound = new Setting(messages[1], messages[2]);
@@ -71,7 +79,9 @@ public class controllerParse : MonoBehaviour
                 break;
 
             case "AvailableColors":
-                listColors(client);
+                string playerColors = listColors();
+                controlpads_glue.SendControlpadMessage(client,string.Join(":", playerColors));
+
                 break;
                 
             //Normal State Request
@@ -150,7 +160,7 @@ public class controllerParse : MonoBehaviour
         }
     }
 
-    public void listColors(string client){
+    public string listColors(){
         List<string> playerColors = new List<string>();
         playerColors.Add("colors");
         foreach (var color in gameController.colors)
@@ -172,7 +182,7 @@ public class controllerParse : MonoBehaviour
             
         }
 
-        controlpads_glue.SendControlpadMessage(client,string.Join(":", playerColors));
+        return string.Join(":", playerColors);
 
 
 

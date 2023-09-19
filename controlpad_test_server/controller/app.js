@@ -224,8 +224,13 @@ function handleMessage(message) {
             break;
         case "colors":
             updateAvailableColors(sections);
+            break;
         case "host":
             isHost=true;
+            break;
+        case "alert":
+            alert(sections[1]);
+            break;
         
     }
 
