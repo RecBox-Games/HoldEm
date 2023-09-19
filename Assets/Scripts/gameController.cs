@@ -29,6 +29,7 @@ public class gameController : MonoBehaviour
     public static bool gameState { get; set; } = false; // True means a game has started
     public static bool blindPlay { get; set; } = false;
 
+
     // Instance Variables
     private List<playerController> playerList = new List<playerController>();
     private List<playerController> trackPlayers = new List<playerController>();
@@ -75,6 +76,8 @@ public class gameController : MonoBehaviour
     public bool PreGame() {return isPregame;}
 
     public int getCurrentCall() { return currentBet; }
+
+    public int getAnte() {return ante;}
 
     public string getTurnOrder()
     {

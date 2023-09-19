@@ -36,7 +36,27 @@ public class controllerParse : MonoBehaviour
         {
             //Special Game State Requests
             case "StartGame":
-                gameController.startGame(int.Parse(messages[1]));
+
+                int startMoney = int.Parse(messages[1]);
+                int ante = int.Parse(messages[3]);
+
+                if(messages[2]=="blinds")
+                {
+                    gameController.blindPlay = true;
+                }
+                gameController.startGame(startMoney,ante);
+                // if(messages[2] == "ante")
+                // {
+                //     int ante = int.Parse(messages[3]);
+                //     gameController.startGame(startMoney,ante);  
+                // }
+                // else 
+                // {
+                //     gameController.bigBlind = int.Parse(messages[4]);
+                //     gameController.smallBlind = int.Parse(messages[5]);
+                //     gameController.blindPlay = true;
+                //     gameController.startGame(startMoney);
+                // }
                 break;
 
             case "PlayerResponse":
@@ -52,8 +72,9 @@ public class controllerParse : MonoBehaviour
                         gameController.call();
                         break;
                     case "Raise":
+                    case "All In":
                         gameController.raise(amount);
-                        break;              
+                        break;
                 }
                 break;
             case "Setting":
@@ -139,6 +160,8 @@ public class controllerParse : MonoBehaviour
             else {
                 stateName = "PlayingWaiting:";
             }
+
+            variables.Add(gameController.getAnte().ToString());
 
 
             

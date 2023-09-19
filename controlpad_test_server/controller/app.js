@@ -32,6 +32,8 @@ const anteControls = document.getElementById('ante-controls');
 const blindControls = document.getElementById('blind-controls');
 const gameForm = document.getElementById('gameForm');
 const gameFormContainer = document.getElementById('gameFormContainer');
+const upArrow = document.getElementById("Up");
+const downArrow = document.getElementById("Down");
 
 gameTypeRadio.forEach((radio) => {
     radio.addEventListener('change', () => {
@@ -73,7 +75,7 @@ let soundSetting = true;
 // ---- Game Specific Variables ----
 
 let currentCall; //The amount requested for the user to call
-let betIncrement = 5; //Sets the bet increment for the user
+let betIncrement; //Sets the bet increment for the user
 let controlpadState; //State of the player that is pulled from the game
 
 // ---- Player Specific Variables ----
@@ -554,8 +556,6 @@ function drawJoinedWaitingToStart() {
 
     }
     topMenu();
-    moneyField.style.display="none";
-
     drawStatus();
 
 }
@@ -564,21 +564,6 @@ function drawJoinedHost() {
     playerStatus = "You are the host. Start game when ready!";
     topMenu();
     drawStatus();
-
-    scale = sizeImage(buttonImage,.5);
-
-    image_drawables.push({
-        type: 'image',
-        image: buttonImage,
-        x: SCREEN_WIDTH/2,
-        y: SCREEN_HEIGHT/2,
-        centeredX: true,
-        centeredY: true,
-        scaleY: buttonScale(2),
-        scaleX: scale,
-        track: true,
-        msg: "StartGame:1000"
-    });
 }
 
 function drawJoinedWaiting() {
@@ -598,12 +583,12 @@ function drawPlayingWaiting() {
     playerStatus = "Waiting for your Turn";
     drawCardBack();
     topMenu();
-    moneyField.style.display="none";
     drawPeek()
     drawStatus();    
 }
 
 function drawPlayingPlayerTurn() {
+    UpdateMoney(0);
     playerTurn=true;
     playerStatus = "It's Your Turn!";
     drawCardBack();
@@ -690,26 +675,55 @@ function playingRound(value){
 
 
 function UpdateMoney(amount) {
+    if(playerMoney <= currentCall)
+    {
+        playerCall = playerMoney;
+        action = "All In";
+    }
+    else if (currentCall > 0){
+        action = "Call";
+    }
+    else {
+        action = "Check";
+    }
+
+    let attemptedValue = playerCall + amount*betIncrement;
+
     if(amount > 0)
     {
         playChipSound();
     }
-    let attemptedValue = playerCall + amount*betIncrement;
-    if (attemptedValue === 0) {
+    if(attemptedValue >= playerMoney)
+    {
+        action = "All In"
+        playerCall = playerMoney;
+        upArrow.style.display = "none";
+        if(attemptedValue <= currentCall)
+        {
+            downArrow.style.display="none";
+        }
+    }
+    else if (attemptedValue === 0) {
         action = "Check";
         playerCall = currentCall;
-
+        upArrow.style.display = "flex";
     }
     
     else if (attemptedValue === currentCall)
     {
         action = "Call";
         playerCall = currentCall;
+        upArrow.style.display = "flex";
+        downArrow.style.display = "none";
+
         
     }
     else if (attemptedValue > currentCall) {
         action = "Raise";
         playerCall = playerCall + amount*betIncrement;
+        downArrow.style.display = "flex";
+        upArrow.style.display = "flex";
+
     }
     updateActionButton();
     chipStack();
@@ -790,11 +804,9 @@ function sendResponse(){
         case "Fold":
             message = "Fold this round?";
             break;
-        case "Raise":
-            message = action + " " + playerCall + "?";
         default:
-            playCommitSound();
-    
+            message = action + " " + playerCall + "?";
+            break;    
     }
     let response = confirm(message);
     if(response)
@@ -805,9 +817,8 @@ function sendResponse(){
                 playFoldSound();
                 setState(["state","JoinedWaiting",playerName,playerColor,playerMoney]);
                 break;
-            case "Raise":
-                playerCall = playerCall - currentCall;
             default:
+                playerCall = playerCall - currentCall;
                 playCommitSound();
                 setState(["state","PlayingWaiting",playerName,playerColor,(playerMoney-playerCall-currentCall)]);
 
@@ -854,29 +865,22 @@ function updateVariables(sections){
             case 3:
                     playerColor = (sections[i]);
                     updateColor();
+                    break;
             case 4:
                 playerMoney = parseInt(sections[i]);
-                moneyField.innerHTML = formatter.format(playerMoney);
+                moneyField.innerHTML = formatter.format(playerMoney) || "";
                 break;
             case 5:
                 currentCall = parseInt(sections[i]);
                 playerCall = currentCall;
-                if (parseInt(currentCall) > 0){
-                    action = "Call";
-                }
-                else {
-                    action = "Check";
-                }
                 break;
             case 6:
             case 7:
                 cardvalues = sections[i].split("-");
                 addCard(cardvalues);
                 break;
-
-
-
-
+            case 8:
+                betIncrement = parseInt(sections[i]);
             default:
                 break;
         }
