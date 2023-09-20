@@ -31,7 +31,7 @@ public class playerController : MonoBehaviour
     public int betted { get; set; } // Amount of money the player has betted
 
     public int bettedRound { get; set; } // Amount of money the player has betted
-    public bool blind { get; set; }
+    public bool underTheGun { get; set; } = false;
 
 
     // Game Specific Variables
@@ -58,7 +58,7 @@ public class playerController : MonoBehaviour
     private void Update()
     {
         gameObject.transform.Find("Money").GetComponent<TextMeshPro>().text =
-            "Betted: $" + betted + "\nMoney: $" + money;
+            "Bet: $" + betted + "\nMoney: $" + money;
     }
 
     // Getters
@@ -120,11 +120,6 @@ public class playerController : MonoBehaviour
                 vector,
                 velocity * Time.deltaTime);    
             yield return null;
-        }
-
-        if (transform.position == new Vector3(-30, 6, -23))
-        {
-            transform.position = new Vector3(30, 6, -23);
         }
     }
 }
