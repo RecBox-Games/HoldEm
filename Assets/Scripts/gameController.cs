@@ -290,6 +290,9 @@ public class gameController : MonoBehaviour
         if (blindPlay)
             playBlinds();
 
+        if (antePlay)
+            anteUP();
+
         currentPlayer = playerList[playerTurn];
         currentPlayer.underTheGun = true;
         currentPlayer.enterFrame();
