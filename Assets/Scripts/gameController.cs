@@ -42,7 +42,6 @@ public class gameController : MonoBehaviour
     private int currentBet = 0;     // Resets every round
     private int revealBet = 0;      // Resets every reveal
     private int playerTurn = 0;     // Increments each player turn
-    private int underTheGun = 0;    // Increments once per round
     private bool isPregame = false;
 
 
@@ -134,7 +133,7 @@ public class gameController : MonoBehaviour
         player.username = playerName;
         player.ID = client;
         player.playerColor = colors[playerList.Count-1];
-        Debug.Log(player.playerColor);
+        // Debug.Log(player.playerColor);
         player.playerNumber = playerList.Count;
         if (playerList.Count == 1) { player.isHost = true; }
 
@@ -203,47 +202,47 @@ public class gameController : MonoBehaviour
         cardController.dealCards(playerList);
 
         // Reset & Initialize Game Variables
-        reveal = 1;
-        rounds = 1;
+        reveal = 0;
+        rounds = 0;
         potMoney = 0;
         currentBet = 0;
         playerTurn = 0;
-        currentPlayer = playerList[playerTurn];
-        currentPlayer.underTheGun = true;
         tottalMoney = startMoney * playerList.Count;
 
+        // Initialize the first player
         if (blindPlay)
             playBlinds();
 
-        Debug.Log("A new game of Texas Hold'Em Has begun");
-        Debug.Log("Turn order is: " + getTurnOrder());
+        currentPlayer = playerList[playerTurn];
+        currentPlayer.underTheGun = true;
+        currentPlayer.enterFrame();
+        highestBidder = currentPlayer;
+        controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh");
+
+        Debug.Log("---------------------- A new game of Texas Hold'Em Has begun ----------------------");
         Debug.Log("It is now " + currentPlayer.username + "\'s turn. \n " + 
             currentPlayer.getHoleCardsDesc());
 
         gameState = true;
-        currentPlayer.enterFrame();
     }
 
     private void playBlinds()
     {
-        potMoney += currentPlayer.requestFunds(ante / 2);
+        potMoney += playerList[playerTurn].requestFunds(ante / 2);
         playerTurn++;
-        currentPlayer = playerList[playerTurn];
-        int money = currentPlayer.requestFunds(ante);
-        potMoney += money;
-        currentBet += money;
+        potMoney += playerList[playerTurn].requestFunds(ante);
         playerTurn++;
-        currentPlayer = playerList[playerTurn];
-        highestBidder = currentPlayer;
-        currentPlayer.underTheGun = true;
     }
 
 
     private void newRound()
     {
-        // Reset Player Objects to the right
-        foreach (var player in playerList) {
-            player.transform.position = new Vector3(-30, 6, -23); }
+        // Reset Player Objects to the right position and make sure they arnt folded
+        foreach (var player in playerList) 
+        {
+            player.transform.position = new Vector3(-30, 6, -23);
+            player.folded = false;
+        }
 
         // Reset and Deal Cards
         cardController.resetCards();
@@ -255,76 +254,85 @@ public class gameController : MonoBehaviour
         potMoney = 0;
         revealBet = 0;
         currentBet = 0;
-        playerTurn = 0;
-        underTheGun = (underTheGun + 1) % playerList.Count;
-        currentPlayer = playerList[underTheGun];
-        tottalMoney = startMoney * playerList.Count;
+        playerTurn = rounds % playerList.Count;
 
+        // Initialize first player of the next round
+        if (blindPlay)
+            playBlinds();
 
+        currentPlayer = playerList[playerTurn];
+        currentPlayer.underTheGun = true;
         currentPlayer.enterFrame();
-        Debug.Log("A new round has started!");
+        highestBidder = currentPlayer;
+        controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh");
+
+        Debug.Log("---------------------- A new round has started! ----------------------");
+        Debug.Log("It is now " + currentPlayer.username + "\'s turn. \n " +
+            currentPlayer.getHoleCardsDesc());
     }
 
     public void nextTurn()
     {
-        // End the current players turn
-        currentPlayer.exitFrame();
-        currentPlayer.isPlayerTurn = false;
+        Debug.Log("Highest Bidder: " + highestBidder.username);
 
-        // Update to the next players turn
+        // Make sure the previous playrs turn ends
+        currentPlayer.isPlayerTurn = false;
+        currentPlayer.exitFrame();
+
+        // Update to the next player
         playerTurn = (playerTurn + 1) % playerList.Count;
         currentPlayer = playerList[playerTurn];
-        currentPlayer.isPlayerTurn = true;
 
-        // Check if the current player has folded
-        if (currentPlayer.folded) 
+        // If the next player is folded or they cant bet anymore just skip their turn
+        if (currentPlayer.folded || currentPlayer.tappedOut) 
         {
             nextTurn();
             return;
         }
 
-        // Check if betting is over
+        // Check if everyone has folded except the current player.
+        int i = 0;
+        foreach (var player in playerList) { if (player.folded) { i++; } }
+        if (i == playerList.Count - 1)
+        {
+            newRound();
+            return;
+        }
+
+        // Check if a round of betting has commenced
         if (currentPlayer == highestBidder)
+        {
             newBetRound();
+            return;
+        }
 
-        controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh");
-
-        Debug.Log("It is now " + currentPlayer.username + "\'s turn. \n " + 
-            currentPlayer.getHoleCardsDesc());
-
-        if (currentPlayer.tappedOut) { nextTurn(); return; }
         currentPlayer.enterFrame();
+        controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh");
     }
 
     private void newBetRound()
-    {   
-        while (!currentPlayer.underTheGun)
-        {
-            playerTurn = (playerTurn + 1) % playerList.Count;
-            currentPlayer = playerList[playerTurn];
-        }
-
+    {
         revealCards();
-        revealBet = 0;
-        resetBetRound();
+        Debug.Log("I made it");
+        // Reset the turn order till we get to the player who betted first
+        playerTurn = (rounds % playerList.Count) - 1;
+        highestBidder = playerList[playerTurn + 1];
+        Debug.Log("I made it");
+        nextTurn();
     }
 
     private void revealCards()
     {
-        if (reveal == 1)
+        Debug.Log("---------------------- Revealing Card(s) ----------------------");
+        if (reveal == 0)
             cardController.revealFlop();
-        else if (reveal == 2)
+        else if (reveal == 1)
             cardController.revealTurn();
-        else if (reveal == 3)
+        else if (reveal == 2)
             cardController.revealRiver();
-        else
-            newRound();
+        else {
+            newRound(); return; }
         reveal++;
-    }
-
-    public void anteUP(string playerName, bool playing)
-    {
-        if (playing) { Debug.Log(playerName + " Is playing this round"); }
     }
 
     // The player wishes to raise the curent bet by amount
@@ -377,12 +385,17 @@ public class gameController : MonoBehaviour
 
     public void fold()
     {
-        Debug.Log(currentPlayer.username + " has folded this round");
         currentPlayer.fold();
 
+        if (currentPlayer == highestBidder)
+            for (int i = playerList.Count - 1; i > 0; i--) 
+                if (!playerList[i].folded)
+                {
+                    highestBidder = playerList[i];
+                    break;
+                }
 
-
-
+        Debug.Log(currentPlayer.username + " has folded.");
         nextTurn();
     }
 

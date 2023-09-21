@@ -180,7 +180,6 @@ public class cardController : MonoBehaviour
 
     public void revealFlop()
     {
-        Debug.Log("Revealing the Flop!!");
         // Burn a Card to prevent cheating (not sure how you can but tradition ya know)
         playTextures.Dequeue();
         playDeck.Dequeue();
