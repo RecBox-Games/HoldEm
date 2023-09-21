@@ -194,10 +194,6 @@ public class gameController : MonoBehaviour
             controlpads_glue.SendControlpadMessage(player.ID, "refresh:2");
         }
 
-        // Reset and Deal Cards
-        cardController.resetCards();
-        cardController.dealCards(playerList);
-
         // Reset & Initialize Game Variables
         reveal = 0;
         rounds = 0;
@@ -207,11 +203,15 @@ public class gameController : MonoBehaviour
         tottalMoney = startMoney * playerList.Count;
 
         // Initialize the first player
+        // Reset and Deal Cards
+        cardController.resetCards();
         if (blindPlay)
             playBlinds();
 
         if (antePlay)
             anteUP();
+        else
+            cardController.dealCards(playerList);
 
         currentPlayer = playerList[playerTurn];
         currentPlayer.isPlayerTurn = true;
@@ -241,11 +241,18 @@ public class gameController : MonoBehaviour
 
     private void anteUP()
     {
+        var playing = new List<playerController>();
         foreach (var player in playerList)
             if (!player.playRound)
                 player.fold();
             else
+            {
                 potMoney += player.requestFunds(ante);
+                playing.Add(player);
+            }
+                
+
+        cardController.dealCards(playing);
     }
 
 
@@ -274,9 +281,8 @@ public class gameController : MonoBehaviour
             player.resetPlayer();
         }
 
-        // Reset and Deal Cards
-        cardController.resetCards();
-        cardController.dealCards(playerList);
+
+        
 
         // Update Game Variables
         rounds++;
@@ -287,11 +293,15 @@ public class gameController : MonoBehaviour
         playerTurn = rounds % playerList.Count;
 
         // Initialize first player of the next round
+        // Reset and Deal Cards
+        cardController.resetCards();
         if (blindPlay)
             playBlinds();
 
         if (antePlay)
             anteUP();
+        else
+            cardController.dealCards(playerList);
 
         currentPlayer = playerList[playerTurn];
         currentPlayer.underTheGun = true;
