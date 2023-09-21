@@ -14,7 +14,6 @@ public class gameController : MonoBehaviour
     [SerializeField] GameObject playerPrefab;
     [SerializeField] GameObject playerUI;
     [SerializeField] GameObject moneyUI;
-    [SerializeField] GameObject turnOrderUI;
     [SerializeField] cardController cardController;
     [SerializeField] SceneLoader sceneLoader;
     [SerializeField] int maxPlayers;
@@ -56,10 +55,8 @@ public class gameController : MonoBehaviour
     {
         if (gameState)
         {
-            turnOrderUI.GetComponent<UnityEngine.UI.Text>().text = getTurnOrder() + "\n";
             moneyUI.GetComponent<UnityEngine.UI.Text>().text = "Pot: " + potMoney.ToString();
             playerUI.GetComponent<UnityEngine.UI.Text>().text = getPlayerMoneyInfo();
-
         }
     }
 
@@ -213,6 +210,9 @@ public class gameController : MonoBehaviour
         if (blindPlay)
             playBlinds();
 
+        if (antePlay)
+            anteUP();
+
         currentPlayer = playerList[playerTurn];
         currentPlayer.isPlayerTurn = true;
         currentPlayer.underTheGun = true;
@@ -237,6 +237,15 @@ public class gameController : MonoBehaviour
         playerTurn++;
         currentBet = ante;
         revealBet = ante;
+    }
+
+    private void anteUP()
+    {
+        foreach (var player in playerList)
+            if (!player.playRound)
+                player.fold();
+            else
+                potMoney += player.requestFunds(ante);
     }
 
 

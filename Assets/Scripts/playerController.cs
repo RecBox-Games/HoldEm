@@ -29,12 +29,12 @@ public class playerController : MonoBehaviour
     // Money Variables
     public int money { get; set; } // Ammount of money a player has to play with
     public int betted { get; set; } // Amount of money the player has betted
-
     public int bettedRound { get; set; } // Amount of money the player has betted
     public bool underTheGun { get; set; } = false;
 
 
     // Game Specific Variables
+    public bool playRound { get; set; } // Only used if antePlay is true
     public bool folded { get; set; } = false;
     public bool isPlayerTurn { get; set; } = false;
     public bool tappedOut { get; set; } = false;
