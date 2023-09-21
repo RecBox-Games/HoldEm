@@ -194,7 +194,7 @@ public class gameController : MonoBehaviour
             player.getHoleCards().Clear();
             player.bestHand.Clear();
             player.handDescription = null;
-            controlpads_glue.SendControlpadMessage(player.ID, "refresh");
+            controlpads_glue.SendControlpadMessage(player.ID, "refresh:2");
         }
 
         // Reset and Deal Cards
@@ -214,10 +214,11 @@ public class gameController : MonoBehaviour
             playBlinds();
 
         currentPlayer = playerList[playerTurn];
+        currentPlayer.isPlayerTurn = true;
         currentPlayer.underTheGun = true;
         currentPlayer.enterFrame();
         highestBidder = currentPlayer;
-        controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh");
+        controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh:3");
 
         Debug.Log("---------------------- A new game of Texas Hold'Em Has begun ----------------------");
         Debug.Log("It is now " + currentPlayer.username + "\'s turn. \n " + 
@@ -264,7 +265,7 @@ public class gameController : MonoBehaviour
         currentPlayer.underTheGun = true;
         currentPlayer.enterFrame();
         highestBidder = currentPlayer;
-        controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh");
+        controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh:4");
 
         Debug.Log("---------------------- A new round has started! ----------------------");
         Debug.Log("It is now " + currentPlayer.username + "\'s turn. \n " +
@@ -292,7 +293,13 @@ public class gameController : MonoBehaviour
 
         // Check if everyone has folded except the current player.
         int i = 0;
-        foreach (var player in playerList) { if (player.folded) { i++; } }
+        foreach (var player in playerList) 
+        { 
+            if (player.folded)
+            { 
+                i++; 
+            } 
+        }
         if (i == playerList.Count - 1)
         {
             newRound();
@@ -302,12 +309,13 @@ public class gameController : MonoBehaviour
         // Check if a round of betting has commenced
         if (currentPlayer == highestBidder)
         {
+            Debug.Log("Current player = highest bidder");
             newBetRound();
             return;
         }
-
+        currentPlayer.isPlayerTurn = true;
         currentPlayer.enterFrame();
-        controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh");
+        controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh:1");
     }
 
     private void newBetRound()

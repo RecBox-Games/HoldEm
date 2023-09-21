@@ -9,7 +9,7 @@ public class controllerParse : MonoBehaviour
 {
     [SerializeField] gameController gameController;
 
-
+    public List<string> clientsSent = new List<string>();
     public void messageParse(string client, string msg)
     {
         // Parse msg by
@@ -19,6 +19,7 @@ public class controllerParse : MonoBehaviour
         {
             string playerName = messages[1];
             gameController.newPlayer(playerName, client);
+
             messageParse(client,"RequestState");
         }
 
@@ -26,9 +27,18 @@ public class controllerParse : MonoBehaviour
 
         if (fromPlayer is null)
         {
-            Debug.Log("Sent:ReadyToJoin");
-            controlpads_glue.SendControlpadMessage(client, "state:ReadyToJoin");
-            return;
+            if (clientsSent.Contains(client))
+            {
+                Debug.Log("Found in Client List");
+                return;
+            }
+            else
+            {
+                clientsSent.Add(client);
+                controlpads_glue.SendControlpadMessage(client, "state:ReadyToJoin");
+                return;
+
+            }
         }
 
 
