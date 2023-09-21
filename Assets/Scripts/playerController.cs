@@ -122,6 +122,17 @@ public class playerController : MonoBehaviour
             yield return null;
         }
     }
+
+    public void resetPlayer()
+    {
+        resetPosition();
+        folded = false;
+        betted = 0;
+        bettedRound = 0;
+        resetHoleCards();
+    }
+
+    public void resetPosition() { transform.position = new Vector3(30, 6, -23); }
 }
 
 

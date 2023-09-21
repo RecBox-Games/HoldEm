@@ -217,7 +217,8 @@ public class gameController : MonoBehaviour
         currentPlayer.isPlayerTurn = true;
         currentPlayer.underTheGun = true;
         currentPlayer.enterFrame();
-        highestBidder = currentPlayer;
+        if (!blindPlay) 
+            highestBidder = currentPlayer;
         controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh:3");
 
         Debug.Log("---------------------- A new game of Texas Hold'Em Has begun ----------------------");
@@ -232,17 +233,36 @@ public class gameController : MonoBehaviour
         potMoney += playerList[playerTurn].requestFunds(ante / 2);
         playerTurn++;
         potMoney += playerList[playerTurn].requestFunds(ante);
+        highestBidder = playerList[playerTurn];
         playerTurn++;
+        currentBet = ante;
+        revealBet = ante;
     }
 
 
     private void newRound()
     {
+        // Parse the players for only the players who havent folded
+        List<playerController> remainingPlayers = new List<playerController>();
+        foreach (var player in playerList) 
+        { 
+            if (!player.folded)
+                remainingPlayers.Add(player); 
+        }
+
+        // Determine the winners and then give them their share of the pot
+        List<playerController> winner = cardController.DetermineWinners(remainingPlayers);
+        foreach (var player in winner)
+        {
+            int payment = potMoney / winner.Count;
+            Debug.Log(player.username + " has won " + payment + "$");
+            player.payPlayer(payment);
+        }
+
         // Reset Player Objects to the right position and make sure they arnt folded
         foreach (var player in playerList) 
         {
-            player.transform.position = new Vector3(-30, 6, -23);
-            player.folded = false;
+            player.resetPlayer();
         }
 
         // Reset and Deal Cards
@@ -274,8 +294,6 @@ public class gameController : MonoBehaviour
 
     public void nextTurn()
     {
-        Debug.Log("Highest Bidder: " + highestBidder.username);
-
         // Make sure the previous playrs turn ends
         currentPlayer.isPlayerTurn = false;
         currentPlayer.exitFrame();
@@ -298,7 +316,7 @@ public class gameController : MonoBehaviour
             if (player.folded)
             { 
                 i++; 
-            } 
+            }
         }
         if (i == playerList.Count - 1)
         {
@@ -309,24 +327,26 @@ public class gameController : MonoBehaviour
         // Check if a round of betting has commenced
         if (currentPlayer == highestBidder)
         {
-            Debug.Log("Current player = highest bidder");
             newBetRound();
-            return;
         }
         currentPlayer.isPlayerTurn = true;
         currentPlayer.enterFrame();
+        Debug.Log("It is now " + currentPlayer.username + "\'s turn. \n " +
+            currentPlayer.getHoleCardsDesc());
         controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh:1");
     }
 
     private void newBetRound()
     {
         revealCards();
-        Debug.Log("I made it");
+        foreach (var player in playerList) { player.transform.position = new Vector3(30, 6, -23); }
+
         // Reset the turn order till we get to the player who betted first
-        playerTurn = (rounds % playerList.Count) - 1;
-        highestBidder = playerList[playerTurn + 1];
-        Debug.Log("I made it");
-        nextTurn();
+        playerTurn = rounds % playerList.Count;
+        currentPlayer = playerList[playerTurn];
+        highestBidder = currentPlayer;
+        revealBet = 0;
+
     }
 
     private void revealCards()

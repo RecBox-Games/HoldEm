@@ -262,13 +262,6 @@ public class cardController : MonoBehaviour
 
         foreach (var playerHand in playerList)
         {
-            Debug.Log(playerHand.username.ToString() + " " + playerHand.handDescription.ToString());
-            foreach(var card in playerHand.bestHand )
-            {
-                Debug.Log(card.rank.ToString() + " of " + card.suit.ToString());
-
-            }
-        
             if (playerHand.handRank == winningRank)
             {
                 winnerList.Add(playerHand);
@@ -286,9 +279,6 @@ public class cardController : MonoBehaviour
                 break;
             }
         }
-
-
-
 
         //Check for multiple winners -Tiebreak
         if (winnerList.Count > 1)
