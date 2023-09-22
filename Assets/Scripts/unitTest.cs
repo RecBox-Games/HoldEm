@@ -66,12 +66,6 @@ public class unitTest : MonoBehaviour
 
     public void testTurnOrder() { Debug.Log(gameController.getTurnOrder()); }
 
-    public void testEndTurn()
-    {
-        gameController.nextTurn();
-        Debug.Log("It is currently " + gameController.getCurretPlayer() + "\'s turn");
-    }
-
     public void testMyTottalBet() { 
         Debug.Log("I\'ve Betted: " + gameController.getCurretPlayer().money); }
 

@@ -166,7 +166,7 @@ public class gameController : MonoBehaviour
       * - Turns the instance variable gameState to true.
       * - Assumes that all players who are playing are joined.
       */
-    private async Task startNewGame(int startMoney, int ante)
+    private async void startNewGame(int startMoney, int ante)
     {
         this.ante = ante;
 
@@ -223,7 +223,7 @@ public class gameController : MonoBehaviour
 
         currentPlayer = playerList[playerTurn];
         currentPlayer.underTheGun = true;
-        currentPlayer.enterFrame();
+        StartCoroutine(currentPlayer.enterFrame()); 
         if (!blindPlay) 
             highestBidder = currentPlayer;
         controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh:3");
@@ -256,7 +256,7 @@ public class gameController : MonoBehaviour
             {
                 Debug.Log("Waiting on" + player.username);
                 //Wait 10 seconds, slow poll
-                await Task.Delay(1000);
+                await Task.Delay(10000);
                 
             } while (!player.pregameResponded);
         }
@@ -289,7 +289,7 @@ public class gameController : MonoBehaviour
     }
 
 
-    private void newRound()
+    private async void newRound()
     {
         // Parse the players for only the players who havent folded
         List<playerController> remainingPlayers = new List<playerController>();
@@ -332,13 +332,13 @@ public class gameController : MonoBehaviour
             playBlinds();
 
         if (antePlay)
-            anteUP();
+            await anteUP();
         else
             cardController.dealCards(playerList);
 
         currentPlayer = playerList[playerTurn];
         currentPlayer.underTheGun = true;
-        currentPlayer.enterFrame();
+        StartCoroutine(currentPlayer.enterFrame());
         highestBidder = currentPlayer;
         controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh:4");
 
@@ -347,10 +347,10 @@ public class gameController : MonoBehaviour
             currentPlayer.getHoleCardsDesc());
     }
 
-    public void nextTurn()
+    private void nextTurn()
     {
         // Make sure the previous playrs turn ends
-        currentPlayer.exitFrame();
+        StartCoroutine(currentPlayer.exitFrame());
 
         // Update to the next player
         playerTurn = (playerTurn + 1) % playerList.Count;
@@ -383,7 +383,7 @@ public class gameController : MonoBehaviour
         {
             newBetRound();
         }
-        currentPlayer.enterFrame();
+        StartCoroutine(currentPlayer.enterFrame());
         Debug.Log("It is now " + currentPlayer.username + "\'s turn. \n " +
             currentPlayer.getHoleCardsDesc());
         controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh:1");
