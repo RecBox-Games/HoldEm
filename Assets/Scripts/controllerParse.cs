@@ -186,6 +186,10 @@ public class controllerParse : MonoBehaviour
                 }
 
             }
+            else if (player.folded)
+            {
+                stateName = "PlayingFolded:";
+            }
             else if (gameController.getCurretPlayer().ID == client){
                 stateName = "PlayingPlayerTurn:";
             }

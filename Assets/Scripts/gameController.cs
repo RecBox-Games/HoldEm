@@ -248,22 +248,23 @@ public class gameController : MonoBehaviour
     private async Task anteUP()
     {
         isPregame = true;
+        refreshPlayers("Time to Ante Up!");
        
         foreach (var player in playerList)
         {
             do
             {
-                Debug.Log("Waiting");
+                Debug.Log("Waiting on" + player.username);
                 //Wait 10 seconds, slow poll
                 await Task.Delay(1000);
                 
             } while (!player.pregameResponded);
         }
-        Debug.Log("Through Ante");
 
         isPregame = false;
         foreach (var player in playerList)
         {
+            player.pregameResponded = false;
             controlpads_glue.SendControlpadMessage(player.ID, "refresh:Anteing is finished"); 
         }
 
@@ -283,6 +284,8 @@ public class gameController : MonoBehaviour
                 
 
         cardController.dealCards(playing);
+        resetBetRound();
+
     }
 
 
@@ -482,6 +485,14 @@ public class gameController : MonoBehaviour
         foreach(var player in playerList)
         {
             player.bettedRound = 0;
+        }
+    }
+
+    public void refreshPlayers(string extra)
+    {
+        foreach(var player in playerList)
+        {
+            controlpads_glue.SendControlpadMessage(player.ID, "refresh:" + extra);
         }
     }
 

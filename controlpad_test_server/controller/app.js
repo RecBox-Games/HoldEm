@@ -500,6 +500,9 @@ function drawScreen(sections) {
         case "JoinedWaiting":
             drawJoinedWaiting();
             break;
+        case "PlayingFolded":
+            drawPlayingFolded();
+            break;
         case "PlayingWaiting":
             drawPlayingWaiting();
             break;
@@ -580,6 +583,13 @@ function drawPregame() {
     anteMenu.style.display = "block";
 
 
+}
+
+function drawPlayingFolded()
+{
+    playerStatus = "Sitting Out this Round";
+    topMenu();
+    drawStatus();
 }
 
 function drawPlayingWaiting() {
