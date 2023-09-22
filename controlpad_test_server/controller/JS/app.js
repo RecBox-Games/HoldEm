@@ -1,16 +1,26 @@
 // -------- GameNite Controller App --------
 
 // ---- Globals ----
-// ---- UI Setup ----
-let messages = []; //Array to hold messages to send to the controller
-let text_drawables = []; //Array to hold text boxes sent to canvas
-let image_drawables = []; //Array to hold images sent to canvas
-
-
-
 
 const chipValues = [100,25,10,5];
 const chipFiles = ["/resources/chip3.png", "./resources/chip3_green.png","./resources/chip3_blue.png", "./resources/chip3_red.png"];
+
+// ---- Canvas Settings ----
+let messages = []; //Array to hold messages to send to the controller
+let text_drawables = []; //Array to hold text boxes sent to canvas
+let image_drawables = []; //Array to hold images sent to canvas
+let needs_draw = false; //Bool to trigger the draw function
+let SCREEN_HEIGHT; //Height of screen
+let SCREEN_WIDTH; //Width of screen
+let SCREEN_ORIENTATION; //Portrait, Landscape, etc.
+
+// ---- Controller Mechanics ----
+let timer = null; //Timer to track flipping card
+let cardFlipped = false; //Whether or not the card is flipped
+let foldHold = false; //Bool to access the validity of the fold drag
+let foldHoldStartY; //Starting y index of the fold drag function
+
+// ---- HTML Elements ----
 
 const hideables = document.getElementsByClassName('hideables');
 const cardElement = document.getElementById('card');
@@ -26,7 +36,6 @@ const colorPickerForm = document.getElementById('colorPicker');
 const soundButton = document.getElementById('soundButton');
 const cardBacks = document.getElementsByClassName('cardBack');
 const anteMenu = document.getElementById('anteMenu');
-
 const gameTypeRadio = document.querySelectorAll('input[name="game-type"]');
 const anteControls = document.getElementById('ante-controls');
 const blindControls = document.getElementById('blind-controls');
@@ -34,7 +43,14 @@ const gameForm = document.getElementById('gameForm');
 const gameFormContainer = document.getElementById('gameFormContainer');
 const upArrow = document.getElementById("Up");
 const downArrow = document.getElementById("Down");
+const card1 = document.getElementById('card1');
+const card2 = document.getElementById('card2');
 
+
+// ---- Assets ----
+var cardHands = new Image();
+
+// ---- Listeners ----
 gameTypeRadio.forEach((radio) => {
     radio.addEventListener('change', () => {
         if (radio.value === 'ante') {
@@ -49,59 +65,27 @@ gameTypeRadio.forEach((radio) => {
 
 gameForm.addEventListener("submit",startGame,false);
 
+colorPickerForm.addEventListener("change",changeColor,false);
 
-
-
-// const carddiv = document.getElementById('customCards');
-const card1 = document.getElementById('card1');
-const card2 = document.getElementById('card2');
-
-
-let needs_draw = false; //Bool to trigger the draw function
-let SCREEN_HEIGHT; //Height of screen
-let SCREEN_WIDTH; //Width of screen
-let SCREEN_ORIENTATION; //Portrait, Landscape, etc.
-
-let isHeld = false;
-let timer = null;
-let cardFlipped = false;
-let foldHold = false;
-let foldHoldStartY;
-let isHost = false;
-
-let soundSetting = true;
-
-
-// ---- Game Specific Variables ----
-
+// ---- Poker Game Specific Variables ----
 let currentCall; //The amount requested for the user to call
 let betIncrement; //Sets the bet increment for the user
-let controlpadState; //State of the player that is pulled from the game
+let cards = []; //Array of cards
+let action; //Will be fold, call, check, or raise. Updates in controller UI
+let playerCall; //The amount the user actually called. Will be higher than currentCall for a raise
+let playerMoney; //Amount of money the player has
+let playerTurn; //Bool of whether or not it is the player's turn 
 
 // ---- Player Specific Variables ----
-
 let playerName = null; //Name of the player
-let playerTurn; //Bool of whether or not it is the player's turn 
-let playerCall; //The amount the user actually called. Will be higher than currentCall for a raise
-let action; //Will be fold, call, check, or raise. Updates in controller UI
-let playerMoney; //Amount of money the player has
-let cards = [];
+let controlpadState; //State of the player that is pulled from the game
 let playerColor;
+let isHost = false;
+let soundSetting = true;
 
-
-
-
-
-//Defined tools and utilities
+// ---- Defined tools that need to be up here
 
 // Number formatter. Formats to USD
-function getRandomColor() {
-    const r = Math.round(Math.random() * 255);
-    const g = Math.round(Math.random() * 255);
-    const b = Math.round(Math.random() * 255);
-    return `rgb(${r},${g},${b})`;
-}
-
 const formatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
@@ -110,38 +94,9 @@ const formatter = new Intl.NumberFormat('en-US', {
   });
 
 
-// Name Generator. Will pick a random adjective and a random name
 
-const adjList = [
-    'Zany', 'Whimsical', 'Bubbly', 'Playful', 'Lively', 
-    'Quirky', 'Cheeky', 'Vibrant', 'Jovial', 'Energetic', 
-    'Spirited', 'Carefree', 'Groovy', 'Eclectic', 
-    'Spontaneous', 'Lighthearted', 'Hilarious', 'Dynamic', 
-    'Frolicsome', 'Witty', 'Radiant', 'Wacky', 'Festive', 
-    'Silly', 'Mischievous', 'Animated', 'Exuberant', 'Sprightly',
-    'Unpredictable', 'Merry', 'Buoyant', 'Fanciful', 
-    'Unconventional', 'Chucklesome', 'Bouncy', 'Joyful', 
-    'Effervescent', 'Amusing', 'Breezy', 'Giggly', 
-    'Frisky', 'Spunky', 'Jaunty', 'Droll', 'Zesty', 
-    'Dynamic', 'Peculiar', 'Euphoric', 'Zippy', 'Hysterical'
-    ];
-const nameList = [
-    'Dog', 'Cat', 'Elephant', 'Lion', 'Tiger', 'Giraffe', 
-    'Zebra', 'Bear', 'Monkey', 'Kangaroo', 'Dolphin', 
-    'Penguin', 'Owl', 'Koala', 'Cheetah', 'Rhino', 'Hippo',
-    'Fox', 'Wolf', 'Horse', 'Rabbit', 'Squirrel', 'Gorilla',
-    'Orangutan', 'Octopus', 'Crocodile', 'Alligator', 
-    'Camel', 'Peacock', 'Parrot', 'Eagle', 'Hummingbird',
-    'Sloth', 'Panda', 'Otter', 'Seal', 'Lemur', 'Raccoon',
-    'Jellyfish', 'Seahorse', 'Butterfly', 'Meerkat', 
-    'Chimpanzee', 'Platypus', 'Hedgehog', 'Llama', 
-    'Armadillo', 'Ostrich', 'Tortoise', 'Gazelle'
-]
+// ---- Main Functions ----
 
-//Assets
-var buttonImage = new Image();
-var menuImage = new Image();
-var cardHands = new Image();
 
 // ---- onFlip ----
 //  This function is called when the screen is flipped, typically due to a change
@@ -214,7 +169,6 @@ function handleMessage(message) {
     sections = message.split(":");
 
     switch (sections[0]) {
-        
         case "state":
             setState(sections); 
             break;
@@ -233,11 +187,9 @@ function handleMessage(message) {
         case "alert":
             alert(sections[1]);
             break;
-        
+        default:
+            break;
     }
-
-
-
 }
 
 function updateAvailableColors(sections){
@@ -279,8 +231,6 @@ function getDrawables() {
 function foldTimer()    {
     if(playerTurn){
         foldHold = true;
-
-
     }
 
 }
@@ -365,7 +315,6 @@ function handleTouchCancel(id, x, y) {
 
 // Side Effects:
     // Modifies the global variables SCREEN_WIDTH, SCREEN_HEIGHT, and SCREEN_ORIENTATION.
-    // Calls the loadImages function.
     // Modifies the global variable controlpadState.
     // Calls the drawScreen function.
     // Calls the stateRequest function.
@@ -373,7 +322,7 @@ function handleTouchCancel(id, x, y) {
 // Assumptions about State:
 
     // Assumes the existence of global variables SCREEN_WIDTH, SCREEN_HEIGHT, and SCREEN_ORIENTATION.
-    // Assumes the existence of the loadImages, drawScreen, and stateRequest functions.
+    // Assumes the existence of drawScreen and stateRequest functions.
 
 function controlpadStart(width, height, ORIENTATION) {
 
@@ -381,9 +330,6 @@ function controlpadStart(width, height, ORIENTATION) {
     SCREEN_WIDTH = width;
     SCREEN_HEIGHT = height;
     SCREEN_ORIENTATION = ORIENTATION;
-
-    //Load Resources
-    loadImages();
 
     //Initialize controlpadState to "Loading"
     controlpadState = "Loading";
@@ -755,21 +701,6 @@ function controlpadUpdate() {
 
 //Utilities
 
-//Returns a scale y for the button that is dependent on the last drawn text size
-
-function buttonScale(padding) {
-    return (padding*parseInt(ctx.font))/buttonImage.naturalHeight
-}
-
-function loadImages() {
-    buttonImage.src = "resources/button.png"
-    menuImage.src = "resources/menu_bars.png"
-    cardHands.src = "resources/cardhand.png"
-}
-
-function generateName() {
-    return adjList[Math.floor( Math.random() * adjList.length )] + " " + nameList[Math.floor( Math.random() * nameList.length )];
- };
 
 function stateRequest() {
     let msg = "RequestState";
@@ -791,12 +722,6 @@ function sizeFont(text, area) {
     return (fontSize + increment + "px serif")
 }
 
-function sizeImage(image, area) {
-
-    var w = image.naturalWidth;
-    var scale = (SCREEN_WIDTH*area)/w;
-    return scale;
-}
 
 function wipeScreen()
 {
@@ -977,7 +902,6 @@ function addCard(cardarray)
           });
     }
 }
-colorPickerForm.addEventListener("change",changeColor,false);
 
 function openPlayerMenu()
 {
