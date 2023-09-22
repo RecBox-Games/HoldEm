@@ -54,6 +54,9 @@ public class controllerParse : MonoBehaviour
                 {
                     gameController.blindPlay = true;
                 }
+                else {
+                    gameController.antePlay = true;
+                }
                 gameController.startGame(startMoney,ante);
                 // if(messages[2] == "ante")
                 // {
@@ -114,6 +117,20 @@ public class controllerParse : MonoBehaviour
                 controlpads_glue.SendControlpadMessage(client,string.Join(":", playerColors));
 
                 break;
+
+            case "playingRound":
+                if (messages[1] == "Sitting")
+                {
+                    fromPlayer.playRound = false;
+
+                }
+                else 
+                {
+                    fromPlayer.playRound = true;
+
+                }
+                fromPlayer.pregameResponded = true;
+                break;
                 
             //Normal State Request
             case "RequestState":
@@ -160,10 +177,16 @@ public class controllerParse : MonoBehaviour
 
             if(gameController.PreGame())
             {
-                stateName = "PlayingPregame";
+                if (!player.pregameResponded)
+                {
+                    stateName = "PlayingPregame:";
+                }
+                else {
+                    stateName = "JoinedWaiting:";
+                }
 
             }
-            else if (player.isPlayerTurn){
+            else if (gameController.getCurretPlayer().ID == client){
                 stateName = "PlayingPlayerTurn:";
             }
 

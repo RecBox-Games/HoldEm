@@ -10,9 +10,8 @@
 /* Overlay visuals are always z-index-2 or 3*/
 /* Modal visuals are always z-index-4*/
 
-select {
-
-
+button:active {
+    background-color: black;
 }
 
 body {

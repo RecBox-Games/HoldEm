@@ -6,6 +6,8 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
+using System.Threading;
+using System.Threading.Tasks;
 
 public class gameController : MonoBehaviour
 {
@@ -139,6 +141,9 @@ public class gameController : MonoBehaviour
         playerUI.GetComponent<UnityEngine.UI.Text>().text += playerName + "\n";
     }
 
+    private static ManualResetEvent holdForSomethin = new ManualResetEvent(false);
+
+
     public void startGame() { startNewGame(this.startMoney, this.ante); }
 
     public void startGame(int startMoney) { startNewGame(startMoney, this.ante); }
@@ -161,7 +166,7 @@ public class gameController : MonoBehaviour
       * - Turns the instance variable gameState to true.
       * - Assumes that all players who are playing are joined.
       */
-    private void startNewGame(int startMoney, int ante)
+    private async Task startNewGame(int startMoney, int ante)
     {
         this.ante = ante;
 
@@ -184,7 +189,6 @@ public class gameController : MonoBehaviour
             player.money = startMoney;
             player.betted = 0;
             player.bettedRound = 0;
-            player.isPlayerTurn = false;
             player.folded = false;
             player.tappedOut = false;
             player.handRank = 10;
@@ -205,16 +209,19 @@ public class gameController : MonoBehaviour
         // Initialize the first player
         // Reset and Deal Cards
         cardController.resetCards();
+        gameState = true;
+
         if (blindPlay)
             playBlinds();
 
         if (antePlay)
-            anteUP();
+        {
+            await anteUP();
+        }
         else
             cardController.dealCards(playerList);
 
         currentPlayer = playerList[playerTurn];
-        currentPlayer.isPlayerTurn = true;
         currentPlayer.underTheGun = true;
         currentPlayer.enterFrame();
         if (!blindPlay) 
@@ -225,7 +232,6 @@ public class gameController : MonoBehaviour
         Debug.Log("It is now " + currentPlayer.username + "\'s turn. \n " + 
             currentPlayer.getHoleCardsDesc());
 
-        gameState = true;
     }
 
     private void playBlinds()
@@ -239,8 +245,32 @@ public class gameController : MonoBehaviour
         revealBet = ante;
     }
 
-    private void anteUP()
+    private async Task anteUP()
     {
+        isPregame = true;
+       
+        foreach (var player in playerList)
+        {
+            do
+            {
+                Debug.Log("Waiting");
+                //Wait 10 seconds, slow poll
+                await Task.Delay(1000);
+                
+            } while (!player.pregameResponded);
+        }
+        Debug.Log("Through Ante");
+
+        isPregame = false;
+        foreach (var player in playerList)
+        {
+            controlpads_glue.SendControlpadMessage(player.ID, "refresh:Anteing is finished"); 
+        }
+
+        
+            
+        
+         
         var playing = new List<playerController>();
         foreach (var player in playerList)
             if (!player.playRound)
@@ -317,7 +347,6 @@ public class gameController : MonoBehaviour
     public void nextTurn()
     {
         // Make sure the previous playrs turn ends
-        currentPlayer.isPlayerTurn = false;
         currentPlayer.exitFrame();
 
         // Update to the next player
@@ -351,7 +380,6 @@ public class gameController : MonoBehaviour
         {
             newBetRound();
         }
-        currentPlayer.isPlayerTurn = true;
         currentPlayer.enterFrame();
         Debug.Log("It is now " + currentPlayer.username + "\'s turn. \n " +
             currentPlayer.getHoleCardsDesc());

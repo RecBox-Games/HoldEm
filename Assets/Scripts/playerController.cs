@@ -35,8 +35,10 @@ public class playerController : MonoBehaviour
 
     // Game Specific Variables
     public bool playRound { get; set; } // Only used if antePlay is true
+    
+    public bool pregameResponded {get; set;} = false; //Used to see if a player has selected if they are playing or not
+    
     public bool folded { get; set; } = false;
-    public bool isPlayerTurn { get; set; } = false;
     public bool tappedOut { get; set; } = false;
 
     // Card Variables

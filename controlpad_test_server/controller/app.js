@@ -493,7 +493,7 @@ function drawScreen(sections) {
         case "JoinedHost":
             drawJoinedHost();
             break;
-        case "JoinedPregame":
+        case "PlayingPregame":
             drawPregame();
             break;
         //Waiting till next hand
@@ -574,6 +574,9 @@ function drawJoinedWaiting() {
 }
 
 function drawPregame() {
+    playerStatus= "Sit out or Play this round?"
+    drawStatus();
+    topMenu();
     anteMenu.style.display = "block";
 
 
@@ -655,14 +658,13 @@ function flipCard(){
 
 function playingRound(value){
     if (value == 1){
-        playerStatus="Waiting for the hand to begin";
         messages.push("playingRound:Playing");
 
     }
     if (value == 0){
         messages.push("playingRound:Sitting");
-        playerStatus="Sitting Out this Round";
     }
+    anteMenu.style.display = 'none';
 
     setState(["state","JoinedWaiting"]);
 
@@ -707,6 +709,7 @@ function UpdateMoney(amount) {
         action = "Check";
         playerCall = currentCall;
         upArrow.style.display = "flex";
+        downArrow.style.display = "none";
     }
     
     else if (attemptedValue === currentCall)
