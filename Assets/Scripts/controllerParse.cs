@@ -170,6 +170,7 @@ public class controllerParse : MonoBehaviour
         else {
 
             variables.Add(player.money.ToString());
+            Debug.Log(player.bettedRound);
             variables.Add((gameController.getCurrentCall()-player.bettedRound).ToString());
 
             

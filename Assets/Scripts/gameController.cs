@@ -257,7 +257,7 @@ public class gameController : MonoBehaviour
             {
                 Debug.Log("Waiting on " + player.username);
                 //Wait 10 seconds, slow poll
-                await Task.Delay(10000);
+                await Task.Delay(1000);
                 
             } while (!player.pregameResponded);
         }
@@ -400,6 +400,7 @@ public class gameController : MonoBehaviour
         currentPlayer = playerList[playerTurn];
         highestBidder = currentPlayer;
         revealBet = 0;
+        resetBetRound();
 
     }
 
