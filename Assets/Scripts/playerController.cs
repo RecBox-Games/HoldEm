@@ -90,6 +90,7 @@ public class playerController : MonoBehaviour
 
     public int requestFunds(int amount) 
     {
+        Debug.Log("Requesting " + amount + " from " + username);
         if (amount >= money)
         {
             Debug.Log(name + " is ALL IN!!!");

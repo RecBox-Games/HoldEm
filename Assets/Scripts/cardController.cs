@@ -222,32 +222,18 @@ public class cardController : MonoBehaviour
         foreach (var player in gameController.getPlayerList()) { FindBestPokerHand(player); }
     }
 
-    IEnumerator cardMove(GameObject card, Vector3 origin)
+    private IEnumerator cardMove(GameObject card, Vector3 moveToo)
     {
-        while (card.transform.position != origin)
+        while (card.transform.position != moveToo)
         {
             card.transform.position = Vector3.MoveTowards(
                 card.transform.position,
-                origin,
+                moveToo,
                 velocity * Time.deltaTime);
             yield return null;
         }
-        card.transform.position = origin;  
+        card.transform.position = moveToo;  
     }
-    /*
-    IEnumerator reDeckCards(GameObject card)
-    {
-        
-        while (card.transform.position != deckBottom)
-        {
-            card.transform.position = Vector3.MoveTowards(
-                card.transform.position,
-                deckBottom,
-                velocity * Time.deltaTime);
-            yield return null;
-        }
-        card.transform.position = deck.transform.position + new Vector3(0, .65f, 0);
-    } */
 
     public static List<playerController> DetermineWinners(List<playerController> playerList)
     {
