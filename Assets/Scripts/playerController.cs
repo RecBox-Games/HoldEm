@@ -90,6 +90,7 @@ public class playerController : MonoBehaviour
 
     public int requestFunds(int amount) 
     {
+        Debug.Log("Requesting " + amount + " from " + username);
         if (amount >= money)
         {
             Debug.Log(name + " is ALL IN!!!");
@@ -108,9 +109,9 @@ public class playerController : MonoBehaviour
         return amount;
     }
 
-    public IEnumerator enterFrame() { yield return StartCoroutine(movePlayer(new Vector3(0, 6, -23))); }
+    public void enterFrame() { StartCoroutine(movePlayer(new Vector3(0, 6, -23))); }
 
-    public IEnumerator exitFrame() { yield return StartCoroutine(movePlayer(new Vector3(-30, 6, -23))); }
+    public void exitFrame() { StartCoroutine(movePlayer(new Vector3(-30, 6, -23))); }
 
 
     private IEnumerator movePlayer(Vector3 vector)

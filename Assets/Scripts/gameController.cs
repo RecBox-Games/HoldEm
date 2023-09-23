@@ -223,7 +223,7 @@ public class gameController : MonoBehaviour
 
         currentPlayer = playerList[playerTurn];
         currentPlayer.underTheGun = true;
-        StartCoroutine(currentPlayer.enterFrame()); 
+        currentPlayer.enterFrame(); 
         if (!blindPlay) 
             highestBidder = currentPlayer;
         controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh:3");
@@ -237,10 +237,11 @@ public class gameController : MonoBehaviour
     private void playBlinds()
     {
         potMoney += playerList[playerTurn].requestFunds(ante / 2);
-        playerTurn++;
+        playerTurn = (playerTurn + 1) % playerList.Count;
         potMoney += playerList[playerTurn].requestFunds(ante);
         highestBidder = playerList[playerTurn];
-        playerTurn++;
+        playerTurn = (playerTurn + 1) % playerList.Count;
+
         currentBet = ante;
         revealBet = ante;
     }
@@ -338,7 +339,7 @@ public class gameController : MonoBehaviour
 
         currentPlayer = playerList[playerTurn];
         currentPlayer.underTheGun = true;
-        StartCoroutine(currentPlayer.enterFrame());
+        currentPlayer.enterFrame();
         highestBidder = currentPlayer;
         controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh:4");
 
@@ -350,7 +351,7 @@ public class gameController : MonoBehaviour
     private void nextTurn()
     {
         // Make sure the previous playrs turn ends
-        StartCoroutine(currentPlayer.exitFrame());
+        currentPlayer.exitFrame();
 
         // Update to the next player
         playerTurn = (playerTurn + 1) % playerList.Count;
@@ -383,7 +384,7 @@ public class gameController : MonoBehaviour
         {
             newBetRound();
         }
-        StartCoroutine(currentPlayer.enterFrame());
+        currentPlayer.enterFrame();
         Debug.Log("It is now " + currentPlayer.username + "\'s turn. \n " +
             currentPlayer.getHoleCardsDesc());
         controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh:1");
