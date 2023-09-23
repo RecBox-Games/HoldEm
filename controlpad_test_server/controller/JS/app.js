@@ -749,21 +749,27 @@ function sendResponse(){
     let response = confirm(message);
     if(response)
     {
+        let msg;
 
         switch (action) {
             case "Fold":
                 playFoldSound();
                 setState(["state","JoinedWaiting",playerName,playerColor,playerMoney]);
                 break;
-            default:
-                playerCall = playerCall - currentCall;
+            case "Call":
                 playCommitSound();
-                setState(["state","PlayingWaiting",playerName,playerColor,(playerMoney-playerCall-currentCall)]);
-
+                setState(["state","PlayingWaiting",playerName,playerColor,(playerMoney-currentCall)]);
+                msg = "PlayerResponse:Call";
+                break;
+            default:
+                let amountRaised = playerCall - currentCall;
+                playCommitSound();
+                setState(["state","PlayingWaiting",playerName,playerColor,(playerMoney-amountRaised-currentCall)]);
+                msg = ("PlayerResponse:Raise:" + amountRaised.toString())
+                break;
         
         }
         playerTurn = false;
-        let msg = "PlayerResponse:" + action + ":" + playerCall;
         messages.push(msg);
     }    
 }
@@ -956,6 +962,15 @@ function toggleSound() {
     soundSetting = !soundSetting;
     updateSound();
     sendSetting('soundOn',soundSetting);
+}
+
+function changeName() {
+    const newName = prompt("What would you like your new name to be?");
+    if(newName)
+    {
+        sendSetting('playerName', newName);
+        stateRequest();
+    }
 }
 
 function updateSound() {

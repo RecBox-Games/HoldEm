@@ -254,7 +254,7 @@ public class gameController : MonoBehaviour
         {
             do
             {
-                Debug.Log("Waiting on" + player.username);
+                Debug.Log("Waiting on " + player.username);
                 //Wait 10 seconds, slow poll
                 await Task.Delay(1000);
                 

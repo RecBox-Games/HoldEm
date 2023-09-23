@@ -74,7 +74,7 @@ public class controllerParse : MonoBehaviour
 
             case "PlayerResponse":
                 string action = messages[1];
-                int amount = int.Parse(messages[2]);
+                int amount;
                 switch (action)
                 {
                     case "Fold":
@@ -86,6 +86,7 @@ public class controllerParse : MonoBehaviour
                         break;
                     case "Raise":
                     case "All In":
+                        amount = int.Parse(messages[2]);
                         gameController.raise(amount);
                         break;
                 }
@@ -103,6 +104,10 @@ public class controllerParse : MonoBehaviour
                         {
                             controlpads_glue.SendControlpadMessage(client,"alert:Please select a different color. That color has already been selected.");
                         }
+                        break;
+                    case "playerName":
+                        fromPlayer.username = messages[2];
+                        fromPlayer.name = messages[2];
                         break;
                     default:
                         Setting sound = new Setting(messages[1], messages[2]);
