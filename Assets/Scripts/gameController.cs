@@ -350,45 +350,75 @@ public class gameController : MonoBehaviour
 
     private void nextTurn()
     {
-        // Make sure the previous playrs turn ends
-        currentPlayer.exitFrame();
-
-        // Update to the next player
-        playerTurn = (playerTurn + 1) % playerList.Count;
-        currentPlayer = playerList[playerTurn];
-
-        // If the next player is folded or they cant bet anymore just skip their turn
-        if (currentPlayer.folded || currentPlayer.tappedOut) 
+        // Make sure the previous players turn ends
+        StartCoroutine(ExitFrameCoroutine(() =>
         {
-            nextTurn();
-            return;
-        }
 
-        // Check if everyone has folded except the current player.
-        int i = 0;
-        foreach (var player in playerList) 
-        { 
-            if (player.folded)
-            { 
-                i++; 
+            // This code will run when ExitFrame is done
+
+            // Update to the next player
+            playerTurn = (playerTurn + 1) % playerList.Count;
+            currentPlayer = playerList[playerTurn];
+
+            // If the next player is folded or they cant bet anymore just skip their turn
+            if (currentPlayer.folded || currentPlayer.tappedOut) 
+            {
+                nextTurn();
+                return;
             }
-        }
-        if (i == playerList.Count - 1)
-        {
-            newRound();
-            return;
-        }
 
-        // Check if a round of betting has commenced
-        if (currentPlayer == highestBidder)
-        {
-            newBetRound();
-        }
-        currentPlayer.enterFrame();
-        Debug.Log("It is now " + currentPlayer.username + "\'s turn. \n " +
-            currentPlayer.getHoleCardsDesc());
-        controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh:1");
+            // Check if everyone has folded except the current player.
+            int i = 0;
+            foreach (var player in playerList) 
+            { 
+                if (player.folded)
+                { 
+                    i++; 
+                }
+            }
+            if (i == playerList.Count - 1)
+            {
+                newRound();
+                return;
+            }
+
+            // Check if a round of betting has commenced
+            if (currentPlayer == highestBidder)
+            {
+                newBetRound();
+            }
+
+            StartCoroutine(EnterFrameCoroutine(() =>
+            {
+                Debug.Log("It is now " + currentPlayer.username + "\'s turn. \n " +
+                    currentPlayer.getHoleCardsDesc());
+                controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh:1");
+            }));
+        }));
+
     }
+
+    private IEnumerator ExitFrameCoroutine(System.Action onComplete)
+{
+
+    currentPlayer.exitFrame();
+
+    // Call the onComplete callback when exitFrame is done
+    yield return new WaitUntil(() => !currentPlayer.IsMoving); // Modify this condition as needed
+    
+    onComplete?.Invoke();
+}
+
+    private IEnumerator EnterFrameCoroutine(System.Action onComplete)
+{
+    currentPlayer.enterFrame();
+    
+    // Call the onComplete callback when exitFrame is done
+    yield return new WaitUntil(() => !currentPlayer.IsMoving); // Modify this condition as needed
+    
+    onComplete?.Invoke();
+}
+    
 
     private void newBetRound()
     {

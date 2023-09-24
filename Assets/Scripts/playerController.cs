@@ -92,6 +92,8 @@ public class playerController : MonoBehaviour
 
     public void payPlayer(int amount) { money += amount; }
 
+    public bool IsMoving = false;
+
     public void setColor(Material color) { gameObject.GetComponent<Renderer>().material = color; }
 
     public int requestFunds(int amount) 
@@ -115,13 +117,20 @@ public class playerController : MonoBehaviour
         return amount;
     }
 
-    public void enterFrame() { StartCoroutine(movePlayer(new Vector3(0, 6, -23))); }
-
-    public void exitFrame() { StartCoroutine(movePlayer(new Vector3(-30, 6, -23))); }
-
-
-    private IEnumerator movePlayer(Vector3 vector)
+    public void enterFrame() 
     {
+        StartCoroutine(movePlayer(new Vector3(0, 6, -23)));
+    }
+
+    public void exitFrame() 
+    { 
+        StartCoroutine(movePlayer(new Vector3(-30, 6, -23)));
+    }
+
+
+    private IEnumerator movePlayer(Vector3 vector, System.Action onComplete = null)
+    {
+        IsMoving = true; // Set a flag to indicate that the player is currently moving.
         while (transform.position != vector)
         {
             transform.position = Vector3.MoveTowards(
@@ -130,6 +139,13 @@ public class playerController : MonoBehaviour
                 velocity * Time.deltaTime);    
             yield return null;
         }
+        
+        onComplete?.Invoke(); // Invoke the onComplete callback
+
+        IsMoving = false; // Clear the flag to indicate that the movement is complete.
+
+
+
     }
 
     public void resetPlayer()
