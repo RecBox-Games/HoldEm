@@ -45,6 +45,7 @@ const upArrow = document.getElementById("Up");
 const downArrow = document.getElementById("Down");
 const card1 = document.getElementById('card1');
 const card2 = document.getElementById('card2');
+const moneyMenu = document.getElementById('moneyMenu');
 
 
 // ---- Assets ----
@@ -458,6 +459,10 @@ function drawScreen(sections) {
         case "GameFinished":
             drawGameFinished();
             break;
+        case "MoneyRequest":
+            drawMoneyRequest(sections[1],sections[2]);
+            break;
+
         default:
             break;
     }
@@ -567,6 +572,14 @@ function drawGameFinished() {
     
 }
 
+function drawMoneyRequest(playerAskingForMoney, amountAsked) {
+    playerStatus = "Approve or dissaprove " + playerAskingForMoney +"'s request for $" + amountAsked;
+    topMenu();
+    drawStatus();
+    moneyMenu.style.display="block";
+
+}
+
 // ---- Minor Drawing Functions ----
 
 //Draws the card backs
@@ -629,8 +642,32 @@ function playingRound(value){
 
 }
 
+function addFunds()
+{
+    let response = prompt("Enter a positive integer that is divisible by 5");
+    if(response)
+    {
+        while (!/^[0-9]+$/.test(response) & (parseInt(response) % 5 == 0)) {
+            alert("You did not enter a number divisible by 5");
+            response = prompt("Enter a positive integer that is divisible by 5");
+            if(!response)
+            {
+                return;
+            }
+        }
+        console.log(response)
+        alert("Sit Tight while everyone votes");
+        messages.push("requestMoney:"+ response);
+    }
 
+    
+}
 
+function moneyChoice(msg)
+{
+    messages.push("moneyResponse:" + msg);
+    stateRequest();
+}
 
 function UpdateMoney(amount) {
     if(playerMoney <= currentCall)
@@ -879,7 +916,7 @@ function chipStack(){
 
             
 
-        }
+            parseInt  }
 
     }
     

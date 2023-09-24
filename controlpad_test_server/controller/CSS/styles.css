@@ -340,7 +340,7 @@ select {
     overflow: hidden;
 }
 
-.anteMenu {
+.choiceMenu {
     height: calc(50 * var(--vh));
     width: 75vw;
     top: 50%;

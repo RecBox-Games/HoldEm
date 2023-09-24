@@ -38,6 +38,10 @@ public class playerController : MonoBehaviour
     
     public bool pregameResponded {get; set;} = false; //Used to see if a player has selected if they are playing or not
     
+    public bool moneyResponded {get; set;} = false; //Used to see if a player has responded yet to the grab for money
+
+    public bool moneyResponse {get; set;} //Used to determine if another player accepteed the grab for money
+
     public bool folded { get; set; } = false;
     public bool tappedOut { get; set; } = false;
 

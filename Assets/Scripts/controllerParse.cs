@@ -4,13 +4,23 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Threading;
+using System.Threading.Tasks;
+using System;
 
 public class controllerParse : MonoBehaviour
 {
     [SerializeField] gameController gameController;
 
     public List<string> clientsSent = new List<string>();
-    public void messageParse(string client, string msg)
+
+    public bool someonesAskingForMoneyAgain = false;
+
+    public string playerAskingForMoney;
+
+    public string askAmount;
+
+    public async void messageParse(string client, string msg)
     {
         // Parse msg by
         var messages = msg.Split(':');
@@ -120,7 +130,6 @@ public class controllerParse : MonoBehaviour
             case "AvailableColors":
                 string playerColors = listColors();
                 controlpads_glue.SendControlpadMessage(client,string.Join(":", playerColors));
-
                 break;
 
             case "playingRound":
@@ -135,6 +144,26 @@ public class controllerParse : MonoBehaviour
 
                 }
                 fromPlayer.pregameResponded = true;
+                break;
+            
+            case "requestMoney":
+                askAmount = messages[1];
+                Debug.Log("Ask Amount: " + askAmount);
+                Debug.Log("Client: " + client);
+                await moneyRequest(client,askAmount);
+                break;
+            case "moneyResponse":
+                if(messages[1] == "1")
+                {
+                    fromPlayer.moneyResponse = true;
+                }
+                else
+                {
+                    fromPlayer.moneyResponse = false;
+
+                }
+                fromPlayer.moneyResponded = true;
+
                 break;
                 
             //Normal State Request
@@ -180,8 +209,12 @@ public class controllerParse : MonoBehaviour
                 variables.Add(card.suit.ToString() + "-" + card.rank.ToString());
             }
 
+            if(someonesAskingForMoneyAgain & !player.moneyResponded)
+            {
+                stateName="MoneyRequest:";
 
-            if(gameController.PreGame())
+            }
+            else if(gameController.PreGame())
             {
                 if (!player.pregameResponded)
                 {
@@ -192,6 +225,9 @@ public class controllerParse : MonoBehaviour
                 }
 
             }
+
+
+
             else if (player.folded)
             {
                 stateName = "PlayingFolded:";
@@ -216,6 +252,75 @@ public class controllerParse : MonoBehaviour
        
 
     }
+    private async Task moneyRequest(string client, string amount)
+    {
+        someonesAskingForMoneyAgain = true;
+        var RequestingPlayer = grabPlayer(client);
+        var playerList = gameController.getPlayerList();
+        
+        foreach (var player in playerList)
+        {
+            if (player.ID == client)
+            {
+                playerAskingForMoney = player.username;
+                player.moneyResponded = true;
+                player.moneyResponse = true;
+                
+            }
+            else
+            {
+                player.moneyResponded = false;
+
+            }
+
+        }
+
+
+        gameController.refreshPlayers(playerAskingForMoney + " is asking for money again");
+       
+        foreach (var player in playerList)
+        {
+            do
+            {
+                Debug.Log("Waiting on " + player.username);
+                //Wait 1 seconds, slow poll
+                await Task.Delay(1000);
+                
+            } while (!player.moneyResponded);
+        }
+
+        someonesAskingForMoneyAgain = false;
+        bool everyoneAgrees = true;
+
+        foreach (var player in playerList)
+        {
+            if(!player.moneyResponse)
+            {
+                everyoneAgrees = false;
+                
+            }
+        }
+
+        string moneyMessage;
+        if(everyoneAgrees)
+        {
+            moneyMessage = "Request for money was approved";
+            RequestingPlayer.money += Int32.Parse(amount);
+            controlpads_glue.SendControlpadMessage(client,"refresh: You got your Money!");
+
+
+        }
+        else
+        {
+            moneyMessage = "Request for money didn't get approved";
+        }
+        someonesAskingForMoneyAgain = false;
+        foreach (var player in playerList)
+        {
+            controlpads_glue.SendControlpadMessage(player.ID,"alert:" + moneyMessage);
+        }
+    }
+
 
     public void UpdateSettings(string client){
         var player = grabPlayer(client);
