@@ -299,6 +299,7 @@ public class controllerParse : MonoBehaviour
 
         foreach (var player in playerList)
         {
+            player.status="";
             if(!player.moneyResponse)
             {
                 everyoneAgrees = false;
