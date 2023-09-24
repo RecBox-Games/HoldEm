@@ -52,6 +52,8 @@ public class playerController : MonoBehaviour
     private List<Card> holeCards = new List<Card>();
     public List<Card> bestHand { get; set; } = new List<Card>();
 
+    public string status {get; set;}
+
     //Bonus Settings
     public List<Setting> CustomSettings {get; set;} = new List<Setting>();
 

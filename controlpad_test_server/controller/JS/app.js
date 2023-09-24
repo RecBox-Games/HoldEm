@@ -75,7 +75,9 @@ let cards = []; //Array of cards
 let action; //Will be fold, call, check, or raise. Updates in controller UI
 let playerCall; //The amount the user actually called. Will be higher than currentCall for a raise
 let playerMoney; //Amount of money the player has
-let playerTurn; //Bool of whether or not it is the player's turn 
+let playerTurn; //Bool of whether or not it is the player's turn
+let playerAskingForMoney; //Name of Player asking for money
+let playerAskingForAmount; //Amount of money that player is asking for
 
 // ---- Player Specific Variables ----
 let playerName = null; //Name of the player
@@ -188,6 +190,11 @@ function handleMessage(message) {
         case "alert":
             alert(sections[1]);
             break;
+        case "UpdateStatus":
+            playerStatus = sections[1];
+            drawStatus();
+            break;
+
         default:
             break;
     }
@@ -460,8 +467,9 @@ function drawScreen(sections) {
             drawGameFinished();
             break;
         case "MoneyRequest":
-            drawMoneyRequest(sections[1],sections[2]);
+            drawMoneyRequest();
             break;
+
 
         default:
             break;
@@ -572,10 +580,9 @@ function drawGameFinished() {
     
 }
 
-function drawMoneyRequest(playerAskingForMoney, amountAsked) {
-    playerStatus = "Approve or dissaprove " + playerAskingForMoney +"'s request for $" + amountAsked;
+
+function drawMoneyRequest() {
     topMenu();
-    drawStatus();
     moneyMenu.style.display="block";
 
 }
@@ -656,8 +663,9 @@ function addFunds()
             }
         }
         console.log(response)
-        alert("Sit Tight while everyone votes");
         messages.push("requestMoney:"+ response);
+        alert("Sit tight while everyone votes");
+
     }
 
     
@@ -798,6 +806,7 @@ function sendResponse(){
                 setState(["state","PlayingWaiting",playerName,playerColor,(playerMoney-currentCall)]);
                 msg = "PlayerResponse:Call";
                 break;
+            
             default:
                 let amountRaised = playerCall - currentCall;
                 playCommitSound();

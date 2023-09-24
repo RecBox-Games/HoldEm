@@ -170,6 +170,7 @@ public class controllerParse : MonoBehaviour
             case "RequestState":
                 GameState(client);
                 UpdateSettings(client);
+                UpdateStatus(client);
                 break;
 
         }
@@ -257,6 +258,7 @@ public class controllerParse : MonoBehaviour
         someonesAskingForMoneyAgain = true;
         var RequestingPlayer = grabPlayer(client);
         var playerList = gameController.getPlayerList();
+
         
         foreach (var player in playerList)
         {
@@ -269,14 +271,17 @@ public class controllerParse : MonoBehaviour
             }
             else
             {
+                
                 player.moneyResponded = false;
+                player.status = ("Approve or reject " + playerAskingForMoney+ "'s request for $" + askAmount);
 
             }
 
         }
-
-
         gameController.refreshPlayers(playerAskingForMoney + " is asking for money again");
+
+
+
        
         foreach (var player in playerList)
         {
@@ -328,6 +333,15 @@ public class controllerParse : MonoBehaviour
         {
             controlpads_glue.SendControlpadMessage(player.ID, "setting:" + setting.name + ":" + setting.value);
 
+        }
+    }
+
+    public void UpdateStatus(string client) 
+    {
+        var player = grabPlayer(client);
+        if(!String.IsNullOrEmpty(player.status))
+        {
+            controlpads_glue.SendControlpadMessage(player.ID, "UpdateStatus:" + player.status);
         }
     }
 
