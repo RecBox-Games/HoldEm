@@ -9,7 +9,9 @@ public class playerInfoTable : MonoBehaviour
     private void Awake()
     {
         entryContainer = transform.Find("Player Entry Container");
-        entryTemplate = transform.Find("Player Entry Template");
+        entryTemplate = entryContainer.Find("Player Entry Template");
+        
+        entryTemplate.gameObject.SetActive(false);
 
     }
 }

@@ -58,23 +58,35 @@ public class playerController : MonoBehaviour
     public List<Setting> CustomSettings {get; set;} = new List<Setting>();
 
     // GUI Variables
-    private Transform entryContainer, entryTemplate;
-    private Transform namePlate;
+    private Transform entryTransform, namePlate;
 
-    private void Awake()
+    private void Start()
     {
-        namePlate = gameObject.transform.Find("Nameplate");
-        entryContainer = transform.Find("Player Entry Container");
-        entryTemplate = entryContainer.Find("Player Entry Template");
+        namePlate = transform.Find("Nameplate");
+        Transform entryContainer = GameObject.Find("playerEntryContainer").transform;
+        Transform entryTemplate = entryContainer.transform.Find("playerEntryTemplate");
 
         entryTemplate.gameObject.SetActive(false);
+
+        int templateHight = 20;
+        entryTransform = Instantiate(entryTemplate, entryContainer);
+        RectTransform entryRectTransform = entryTransform.GetComponent<RectTransform>();
+        entryRectTransform.anchoredPosition = new Vector2(0, -templateHight * (playerNumber + 1));
+        entryTransform.gameObject.SetActive(true);
+        
     }
 
     private void Update()
     {
         namePlate.GetComponent<TextMeshPro>().text = username;
-        gameObject.transform.Find("Money").GetComponent<TextMeshPro>().text =
-            "Bet: $" + betted + "\nMoney: $" + money;
+        entryTransform.Find("Name").GetComponent<UnityEngine.UI.Text>().text = username;
+        entryTransform.Find("Money").GetComponent<UnityEngine.UI.Text>().text = money.ToString();
+        if (folded)
+            entryTransform.Find("InOut").GetComponent<UnityEngine.UI.Text>().text = "Folded";
+        else
+            entryTransform.Find("InOut").GetComponent<UnityEngine.UI.Text>().text = "-";
+
+        //gameObject.transform.Find("Money").GetComponent<TextMeshPro>().text = "Bet: $" + betted + "\nMoney: $" + money;
     }
 
     // Getters

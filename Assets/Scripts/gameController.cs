@@ -126,10 +126,8 @@ public class gameController : MonoBehaviour
             return;
         }
 
-        // Debug.Log("Player " + playerName + " Added");
-
         // Create a new Player object from the Player prefab and name it the new players name
-        Object playerObj = Instantiate((playerPrefab), new Vector3(30, 6, -23), Quaternion.identity);
+        Object playerObj = Instantiate(playerPrefab, new Vector3(30, 6, -23), Quaternion.identity);
         playerObj.name = playerName;
 
         // Get the playerController and assign anything new to the player
@@ -138,7 +136,6 @@ public class gameController : MonoBehaviour
         player.username = playerName;
         player.ID = client;
         player.playerColor = colors[playerList.Count-1];
-        // Debug.Log(player.playerColor);
         player.playerNumber = playerList.Count;
         if (playerList.Count == 1) { player.isHost = true; }
 
