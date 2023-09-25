@@ -244,7 +244,7 @@ public class controllerParse : MonoBehaviour
         else {
 
             variables.Add(player.money.ToString());
-            variables.Add((gameController.getCurrentCall()-player.bettedRound).ToString());
+            variables.Add((gameController.getRevealBet() - player.bettedRound).ToString());
 
             
             //Need to add card variable tie in here
