@@ -175,28 +175,22 @@ public class controllerParse : MonoBehaviour
 
                 }
                 GameObject playerObject = GameObject.Find(fromPlayer.username);
+                Debug.Log(fromPlayer.username + " removed from the game");
+                playerList.RemoveAll(p => p.ID == client);
+
+
 
                 if(gameController.getCurretPlayer().ID == client)
                 {
                     StartCoroutine(RemovePlayer(() =>
                     {
-                        playerList.RemoveAll(p => p.ID == client);
                         Destroy(playerObject);
-                        Debug.Log(fromPlayer.username + " removed from the game");
-
-
-
-
                     }
                     ));
                 }
                 else
                 {
-                    playerList.RemoveAll(p => p.ID == client);
                         Destroy(playerObject);
-                        Debug.Log(fromPlayer.username + " removed from the game");
-
-
                 }
 
 
