@@ -34,6 +34,7 @@ const peekButton = document.getElementById('peekButton');
 const chips = document.getElementById('chipStack');
 const colorPickerForm = document.getElementById('colorPicker');
 const soundButton = document.getElementById('soundButton');
+const sitOutButton = document.getElementById('sitOutButton');
 const cardBacks = document.getElementsByClassName('cardBack');
 const anteMenu = document.getElementById('anteMenu');
 const gameTypeRadio = document.querySelectorAll('input[name="game-type"]');
@@ -85,6 +86,7 @@ let controlpadState; //State of the player that is pulled from the game
 let playerColor;
 let isHost = false;
 let soundSetting = true;
+let autoSitOut = false;
 
 // ---- Defined tools that need to be up here
 
@@ -448,7 +450,15 @@ function drawScreen(sections) {
             drawJoinedHost();
             break;
         case "PlayingPregame":
+            if (autoSitOut) {
+                messages.push("playingRound:Sitting");
+                stateRequest(); 
+            }
+            else
+            {
+            console.log(autoSitOut);
             drawPregame();
+            }
             break;
         //Waiting till next hand
         case "JoinedWaiting":
@@ -536,10 +546,13 @@ function drawJoinedWaiting() {
 }
 
 function drawPregame() {
-    playerStatus= "Sit out or Play this round?"
-    drawStatus();
-    topMenu();
-    anteMenu.style.display = "block";
+
+        playerStatus= "Sit out or Play this round?"
+        drawStatus();
+        topMenu();
+        anteMenu.style.display = "block";
+
+
 
 
 }
@@ -1010,12 +1023,31 @@ function toggleSound() {
     sendSetting('soundOn',soundSetting);
 }
 
+function toggleAutoSitOut(){
+    autoSitOut = !autoSitOut
+    updateAutoSitOut();
+
+    sendSetting('autoSitOut',autoSitOut);
+
+}
+
 function changeName() {
     const newName = prompt("What would you like your new name to be?");
     if(newName)
     {
         sendSetting('playerName', newName);
         stateRequest();
+    }
+}
+
+function updateAutoSitOut()
+{
+    if(autoSitOut == false)
+    {
+        sitOutButton.innerHTML = "Auto Sit Out: Off";
+    }
+    else{
+        sitOutButton.innerHTML = "Auto Sit Out: On";
     }
 }
 
@@ -1039,18 +1071,28 @@ function sendSetting(setting, variable){
 function updateSettings(sections) {
     switch (sections[1]) {
         case "soundOn":
-            let value = sections[2];
-            if(value == "false")
+            soundSetting = convertToBool(sections[2]);
+            updateSound();
+            break;
+        case "autoSitOut":
+            autoSitOut = convertToBool(sections[2]);
+            updateAutoSitOut();
+            break;
+
+    }
+}
+
+function convertToBool(value)
+{
+    if(value == "false")
             {
                 value = !!!value;
                 
             }
-            else{
-                value = !!value;
-            }
-            soundSetting = value;
-            updateSound();
-            break;
+    else{
+        value = !!value;
     }
+    return value;
+
 }
 

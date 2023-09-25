@@ -193,6 +193,8 @@
           <button class="menuButton" id ="soundButton" ontouchstart="toggleSound()">Sound On</button>
           <button  class="menuButton">
             <select class ="colorPicker" id="colorPicker" name="favcolor" >
+              <option disabled selected> New Color</option>
+
             <select>
           </button>
           <button class="menuButton" ontouchstart="changeName()" id="nameChange">
@@ -201,11 +203,11 @@
           <button class="menuButton" ontouchstart="addFunds()"id="addFunds">
             Add Funds
           </button>
-          <button class="menuButton" id="autoSitOut">
-            Auto Sit Out
+          <button class="menuButton" id="sitOutButton" ontouchstart="toggleAutoSitOut()" id="autoSitOut">
+            Auto Sit Out: Off
           </button>
      
-          <button class="menuButton">Quit</button>
+          <button class="menuButton" ontouchstart="messages.push('quit')">Quit</button>
 
 
         </div>

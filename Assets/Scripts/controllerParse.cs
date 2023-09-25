@@ -165,17 +165,64 @@ public class controllerParse : MonoBehaviour
                 fromPlayer.moneyResponded = true;
 
                 break;
-                
+            case "quit":
+                var playerList = gameController.getPlayerList();
+
+                if(fromPlayer.isHost)
+                {
+                    playerList[1].isHost = true;
+                    Debug.Log("New host is " + playerList[1].username);
+
+                }
+                GameObject playerObject = GameObject.Find(fromPlayer.username);
+
+                if(gameController.getCurretPlayer().ID == client)
+                {
+                    StartCoroutine(RemovePlayer(() =>
+                    {
+                        playerList.RemoveAll(p => p.ID == client);
+                        Destroy(playerObject);
+                        Debug.Log(fromPlayer.username + " removed from the game");
+
+
+
+
+                    }
+                    ));
+                }
+                else
+                {
+                    playerList.RemoveAll(p => p.ID == client);
+                        Destroy(playerObject);
+                        Debug.Log(fromPlayer.username + " removed from the game");
+
+
+                }
+
+
+            break;
+
             //Normal State Request
             case "RequestState":
-                GameState(client);
                 UpdateSettings(client);
+                GameState(client);
                 UpdateStatus(client);
                 break;
 
         }
 
     }
+
+    private IEnumerator RemovePlayer(System.Action onComplete)
+{
+    gameController.getCurretPlayer().IsMoving = true;
+    gameController.triggerNextTurn();
+
+    // Call the onComplete callback when exitFrame is done
+    yield return new WaitUntil(() => !gameController.getCurretPlayer().IsMoving); // Modify this condition as needed
+    
+    onComplete?.Invoke();
+}
 
 
     public void GameState(string client){
@@ -188,9 +235,8 @@ public class controllerParse : MonoBehaviour
         variables.Add(player.playerColor);
 
 
-        if (player.playerNumber == 1)
+        if (player.isHost)
         {
-            player.isHost = true;
             controlpads_glue.SendControlpadMessage(player.ID,"host");
         }
         if(!gameController.gameState)

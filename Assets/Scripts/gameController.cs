@@ -528,4 +528,9 @@ public class gameController : MonoBehaviour
         }
     }
 
+    public void triggerNextTurn()
+    {
+        nextTurn();
+    }
+
 }
