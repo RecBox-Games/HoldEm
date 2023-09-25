@@ -213,64 +213,43 @@
         </div>
       </div>
 
-      <!-- Top informational messages used for guiding the user through extra screens -->
-
-      <div id="infoMessageBlock" class="overlay infoMessage ">
-        <h2 id="infoMessage">Ante Up or Sit Out?</h2>
-
-      </div>
-
       <!-- StartGameForm -->
       <div id="gameFormContainer" class="gameForm overlay hideables">
-        <h1 style="margin-top: 0;">Game Settings</h1>
+        <h1 style="margin-top: 0;">Game Setup</h1>
         <form id="gameForm" class="form" onsubmit="startGame(event)">
           <label for="starting-money">Starting Money per Player:</label>
-          <select id="starting-money" name="starting-money">
+          <button>
+            <select id="starting-money" name="starting-money">
               <option value="100">$100</option>
               <option value="1000">$1,000</option>
               <option value="2500">$2,500</option>
               <option value="5000">$5,000</option>
           </select>
-          <br><br>
-          
+
+          </button>
+                    
           <label>Game Type:</label>
+          <br>
           <input type="radio" id="ante" name="game-type" value="ante" checked>
           <label for="ante">Ante</label>
           <input type="radio" id="blinds" name="game-type" value="blinds">
           <label for="blinds">Blinds</label>
-          <br><br>
           
-          <div id="ante-controls">
-              <label for="ante-amount">Ante Amount:</label>
-              <select id="ante-amount" name="ante-amount">
-                  <option value="5">$5</option>
-                  <option value="10">$10</option>
-                  <option value="25">$25</option>
-                  <option value="50">$50</option>
-              </select>
-              <br><br>
+          <div id="minimum-bet">
+              <label for="minimumBetAmount">Minimum Bet Amount:</label>
+              <button>
+                  <select id="minimumBetAmount" name="minimumBetAmount">
+                    <option class="gameOption" value="5">$5</option>
+                    <option class="gameOption" value="10">$10</option>
+                    <option class="gameOption" value="25">$25</option>
+                    <option class="gameOption" value="50">$50</option>
+                </select>
+              </button>
           </div>
+          <p style="margin-top: 0;" id="anteInfo">For Ante style of game, the ante will be equal to the minimum bet</p>
+          <p id="blindInfo" style="display: none; margin-top: 0;">For Blind style of game, the small blind will be equal to the minimum bet and the large blind will be equal to twice the minimum bet</p>
+
           
-          <div id="blind-controls" style="display: none;">
-              <label for="big-blind">Big Blind:</label>
-              <br>
-              <select id="big-blind" name="big-blind">
-                  <option value="10">$10</option>
-                  <option value="20">$20</option>
-                  <option value="50">$50</option>
-                  <option value="100">$100</option>
-              </select>
-              <br>
-              <label for="small-blind">Small Blind:</label>
-              <br>
-              <select id="small-blind" name="small-blind">
-                  <option value="5">$5</option>
-                  <option value="10">$10</option>
-                  <option value="25">$25</option>
-                  <option value="50">$50</option>
-              </select>
-              <br>
-          </div>
           
           <button type="submit">Start Game</button>
         </form>

@@ -38,8 +38,8 @@ const sitOutButton = document.getElementById('sitOutButton');
 const cardBacks = document.getElementsByClassName('cardBack');
 const anteMenu = document.getElementById('anteMenu');
 const gameTypeRadio = document.querySelectorAll('input[name="game-type"]');
-const anteControls = document.getElementById('ante-controls');
-const blindControls = document.getElementById('blind-controls');
+const anteInfo = document.getElementById('anteInfo');
+const blindInfo = document.getElementById('blindInfo');
 const gameForm = document.getElementById('gameForm');
 const gameFormContainer = document.getElementById('gameFormContainer');
 const upArrow = document.getElementById("Up");
@@ -56,11 +56,11 @@ var cardHands = new Image();
 gameTypeRadio.forEach((radio) => {
     radio.addEventListener('change', () => {
         if (radio.value === 'ante') {
-            anteControls.style.display = 'block';
-            blindControls.style.display = 'none';
+            anteInfo.style.display = 'block';
+            blindInfo.style.display = 'none';
         } else {
-            anteControls.style.display = 'none';
-            blindControls.style.display = 'block';
+            anteInfo.style.display = 'none';
+            blindInfo.style.display = 'block';
         }
     });
 });
@@ -985,24 +985,13 @@ function startGame(event)
         
         const startingMoney = document.getElementById('starting-money').value;
         const gameType = document.querySelector('input[name="game-type"]:checked').value;
-        let anteAmount = null;
-        let bigBlind = null;
-        let smallBlind = null;
+        let minimumBet = null;
         msg=null;
         
-        if (gameType === 'ante') {
-            anteAmount = document.getElementById('ante-amount').value;
-            msg = ["StartGame",startingMoney,gameType,anteAmount];
-            
-        } else {
-            bigBlind = document.getElementById('big-blind').value;
-            smallBlind = document.getElementById('small-blind').value;
-            msg = ["StartGame",startingMoney,gameType,bigBlind,smallBlind];
+        minimumBet = document.getElementById('minimumBetAmount').value;
+  
+        msg = ["StartGame",startingMoney,gameType,minimumBet];
 
-        }
-
-        
-        // Output the values (you can modify this to do something useful with the values)
         messages.push(msg.join(":"));
     
 
