@@ -216,9 +216,8 @@
       <!-- StartGameForm -->
       <div id="gameFormContainer" class="gameForm overlay hideables">
         <h1 style="margin-top: 0;">Game Setup</h1>
-        <form id="gameForm" class="form" onsubmit="startGame(event)">
+        <form id="gameForm" onsubmit = "startGame(event)"class="form" >
           <label for="starting-money">Starting Money per Player:</label>
-          <button>
             <select id="starting-money" name="starting-money">
               <option value="100">$100</option>
               <option value="1000">$1,000</option>
@@ -226,7 +225,6 @@
               <option value="5000">$5,000</option>
           </select>
 
-          </button>
                     
           <label>Game Type:</label>
           <br>
@@ -237,21 +235,16 @@
           
           <div id="minimum-bet">
               <label for="minimumBetAmount">Minimum Bet Amount:</label>
-              <button>
                   <select id="minimumBetAmount" name="minimumBetAmount">
                     <option class="gameOption" value="5">$5</option>
                     <option class="gameOption" value="10">$10</option>
                     <option class="gameOption" value="25">$25</option>
                     <option class="gameOption" value="50">$50</option>
                 </select>
-              </button>
           </div>
           <p style="margin-top: 0;" id="anteInfo">For Ante style of game, the ante will be equal to the minimum bet</p>
           <p id="blindInfo" style="display: none; margin-top: 0;">For Blind style of game, the small blind will be equal to the minimum bet and the large blind will be equal to twice the minimum bet</p>
-
-          
-          
-          <button type="submit">Start Game</button>
+          <button type="submit" >Start Game</button>
         </form>
       </div>
 

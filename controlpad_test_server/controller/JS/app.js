@@ -980,6 +980,7 @@ function startGame(event)
 {
     event.preventDefault();
     event.stopImmediatePropagation();
+    console.log("Were starting");
 
 
         
