@@ -273,26 +273,30 @@ public class gameController : MonoBehaviour
         {
             player.pregameResponded = false;
             controlpads_glue.SendControlpadMessage(player.ID, "refresh:Anteing is finished"); 
-        }
-
-        
-            
+        } 
         
          
         var playing = new List<playerController>();
         foreach (var player in playerList)
             if (!player.playRound)
-                player.fold();
+                player.folded = true;
             else
             {
                 potMoney += player.requestFunds(ante);
                 playing.Add(player);
             }
-                
 
         cardController.dealCards(playing);
         resetBetRound();
+        
+        foreach (var player in playerList)
+        {
+            if (!player.folded)
+                break;
+            playerTurn = (playerTurn + 1) % playerList.Count;
+        }
 
+        
     }
 
 
@@ -320,9 +324,6 @@ public class gameController : MonoBehaviour
         {
             player.resetPlayer();
         }
-
-
-        
 
         // Update Game Variables
         rounds++;

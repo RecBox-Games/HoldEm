@@ -57,14 +57,22 @@ public class playerController : MonoBehaviour
     //Bonus Settings
     public List<Setting> CustomSettings {get; set;} = new List<Setting>();
 
+    // GUI Variables
+    private Transform entryContainer, entryTemplate;
+    private Transform namePlate;
 
-    private void Start()
+    private void Awake()
     {
-        gameObject.transform.Find("Nameplate").GetComponent<TextMeshPro>().text = username;
+        namePlate = gameObject.transform.Find("Nameplate");
+        entryContainer = transform.Find("Player Entry Container");
+        entryTemplate = entryContainer.Find("Player Entry Template");
+
+        entryTemplate.gameObject.SetActive(false);
     }
 
     private void Update()
     {
+        namePlate.GetComponent<TextMeshPro>().text = username;
         gameObject.transform.Find("Money").GetComponent<TextMeshPro>().text =
             "Bet: $" + betted + "\nMoney: $" + money;
     }
@@ -89,7 +97,7 @@ public class playerController : MonoBehaviour
     // Instance Methods
     public void resetHoleCards() { holeCards.Clear(); }
 
-    public void fold() { folded = !folded; }
+    public void fold() { folded = true; }
 
     public void payPlayer(int amount) { money += amount; }
 
