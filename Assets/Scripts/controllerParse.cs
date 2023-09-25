@@ -193,6 +193,10 @@ public class controllerParse : MonoBehaviour
                         Destroy(playerObject);
                 }
 
+                controlpads_glue.SendControlpadMessage(client,"alert:" + "Successful Quit. Close your window at any time");
+
+
+
 
             break;
 
