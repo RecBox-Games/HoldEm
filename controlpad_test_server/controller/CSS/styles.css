@@ -191,6 +191,22 @@ h2 {
     align-items: center;
     display: flex;
     justify-content: center;
+    background-color: white;
+}
+
+.centerMessage{
+    background-color: white;
+    left: 50vw;
+    top: calc(50 * var(--vh));
+    transform: translate(-50%, -50%);
+    display:none;
+    font-size: xx-large;
+    position:absolute;
+    text-align: center;
+    padding: 12px;
+    z-index: 2;
+
+    
 }
 
 table {

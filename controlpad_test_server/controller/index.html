@@ -230,8 +230,14 @@
           <br>
           <input type="radio" id="ante" name="game-type" value="ante" checked>
           <label for="ante">Ante</label>
+          <br>
           <input type="radio" id="blinds" name="game-type" value="blinds">
           <label for="blinds">Blinds</label>
+          <br>
+          <input type="radio" id="none" name="game-type" value="none">
+          <label for="no Antes or Blinds">No Antes or Blinds</label>
+          <br>
+
           
           <div id="minimum-bet">
               <label for="minimumBetAmount">Minimum Bet Amount:</label>
@@ -242,6 +248,7 @@
                     <option class="gameOption" value="50">$50</option>
                 </select>
           </div>
+          <br>
           <p style="margin-top: 0;" id="anteInfo">For Ante style of game, the ante will be equal to the minimum bet</p>
           <p id="blindInfo" style="display: none; margin-top: 0;">For Blind style of game, the small blind will be equal to the minimum bet and the large blind will be equal to twice the minimum bet</p>
           <button type="submit" >Start Game</button>
@@ -300,6 +307,9 @@
         </div>
       </div>
 
+      <!-- Center message popup -->
+      <div id="centerMessage" class=" overlay hideables centerMessage">Fold by swiping up
+      </div>
 
       <!-- Game Canvas -->
       <canvas id="gameCanvas" willReadFrequently="true" class="gameCanvas"></canvas>

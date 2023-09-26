@@ -46,6 +46,7 @@ const downArrow = document.getElementById("Down");
 const card1 = document.getElementById('card1');
 const card2 = document.getElementById('card2');
 const moneyMenu = document.getElementById('moneyMenu');
+const centerMessage = document.getElementById('centerMessage');
 
 
 // ---- Assets ----
@@ -57,7 +58,14 @@ gameTypeRadio.forEach((radio) => {
         if (radio.value === 'ante') {
             anteInfo.style.display = 'block';
             blindInfo.style.display = 'none';
-        } else {
+        }
+        else if(radio.value == 'none')
+        {
+            anteInfo.style.display = 'none';
+            blindInfo.style.display = 'none';
+
+        }
+        else {
             anteInfo.style.display = 'none';
             blindInfo.style.display = 'block';
         }
@@ -563,6 +571,8 @@ function drawPlayingPlayerTurn() {
     drawActions();
     drawStatus();
     chipStack();
+    drawCenterMessage("Fold by Swiping Up");
+    setTimeout(fadeOutEffect.bind(null,centerMessage),3000);
 
 }
 
@@ -590,6 +600,12 @@ function drawCardBack() {
     cardElement.style.display='flex';
 }
 
+function drawCenterMessage(str)
+{
+    
+    centerMessage.innerHTML=str;
+    centerMessage.style.display = 'block';
+}
 
 
 //Draw top menu
@@ -662,6 +678,29 @@ function addFunds()
     }
 
     
+}
+
+function fadeOutEffect(element) {
+
+    let fadeTarget = element;
+    fadeTarget.style.opacity=1;
+
+    let fadeEffect = setInterval(function () {
+        if (!fadeTarget.style.opacity) 
+        {
+            fadeTarget.style.opacity = 1;
+        }
+        if (fadeTarget.style.opacity > 0) 
+        {
+            fadeTarget.style.opacity -= 0.1;
+        } 
+        else 
+        {
+            clearInterval(fadeEffect);
+            fadeTarget.style.display='none';
+        }
+
+    }, 100);
 }
 
 function moneyChoice(msg)
@@ -797,6 +836,7 @@ function sendResponse(){
                 msg="PlayerResponse:Fold";
                 break;
             case "Call":
+            case "Check":
                 playCommitSound();
                 setState(["state","PlayingWaiting",playerName,playerColor,(playerMoney-currentCall)]);
                 msg = "PlayerResponse:Call";
@@ -979,7 +1019,6 @@ function startGame(event)
 {
     event.preventDefault();
     event.stopImmediatePropagation();
-    console.log("Were starting");
 
 
         
