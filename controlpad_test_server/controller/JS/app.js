@@ -15,7 +15,6 @@ let SCREEN_WIDTH; //Width of screen
 let SCREEN_ORIENTATION; //Portrait, Landscape, etc.
 
 // ---- Controller Mechanics ----
-let timer = null; //Timer to track flipping card
 let cardFlipped = false; //Whether or not the card is flipped
 let foldHold = false; //Bool to access the validity of the fold drag
 let foldHoldStartY; //Starting y index of the fold drag function
@@ -279,26 +278,13 @@ function handleTouchMove(id, x, y) {
 // Handle a single touch that has ended
 function handleTouchEnd(id, x, y) {
     foldHold = false;
-    clearTimeout( timer );
-    if(cardFlipped){
-        $("#card").flip(false);
-        cardFlipped=false;
 
-    }
 
 }
 
 // Handle a single touch that has ended in an unexpected way
 function handleTouchCancel(id, x, y) {
-    clearTimeout( timer );
     foldHold = false;
-
-    if(cardFlipped){
-        $("#card").flip(false);
-        cardFlipped=false;
-
-    }
-
 }
 
 // ---- Start and Update ----
@@ -627,9 +613,7 @@ function drawPeek(){
   
 }
 
-function peekButtonTouch(){
-    timer = setTimeout( flipCard, 1000 );
-}
+
 
 function updateActionButton(){
     text = action + ": " + formatter.format(playerCall);
@@ -639,9 +623,9 @@ function updateActionButton(){
 
 }
 
-function flipCard(){
-    $("#card").flip(true);
-    cardFlipped = true;
+function peekButtonTouch(){
+    cardFlipped = !cardFlipped;
+    $("#card").flip(cardFlipped);
 
 }
 
@@ -813,6 +797,7 @@ function sendResponse(){
             case "Fold":
                 playFoldSound();
                 setState(["state","JoinedWaiting",playerName,playerColor,playerMoney]);
+                msg="PlayerResponse:Fold";
                 break;
             case "Call":
                 playCommitSound();
