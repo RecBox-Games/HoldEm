@@ -64,6 +64,7 @@ gameTypeRadio.forEach((radio) => {
     });
 });
 
+
 gameForm.addEventListener("submit",startGame,false);
 
 colorPickerForm.addEventListener("change",changeColor,false);
@@ -244,11 +245,7 @@ function foldTimer()    {
 
 }
 
-function fold() {
-//     action = "Fold";
-//     playerCall = 0;
-//     sendResponse();
-} 
+
 
 // ---- Touch Handlers ----
 
@@ -269,7 +266,6 @@ function handleTouchMove(id, x, y) {
     {
         foldHold = false;
         action = "Fold";
-        playerCall = 0;
         sendResponse();
     }
 
@@ -780,6 +776,7 @@ function wipeScreen()
 
 function sendResponse(){
     let message = "";
+    
     switch (action) {
         case "Fold":
             message = "Fold this round?";
@@ -883,6 +880,23 @@ function updateColor() {
         card.backcolor = playerColor; 
     }
     
+}
+
+function captureAction(){
+
+    if(playerCall == 0)
+    {
+        action = "Check";
+    }
+    else if (playerCall == currentCall)
+    {
+        action = "Call";
+    }
+    else 
+    {
+        action = "Raise";
+    }
+    sendResponse();
 }
 
 function chipStack(){
