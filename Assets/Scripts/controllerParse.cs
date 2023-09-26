@@ -64,10 +64,10 @@ public class controllerParse : MonoBehaviour
                 {
                     gameController.blindPlay = true;
                 }
-                else if(messages[2] = "ante") {
+                else if(messages[2] == "ante") {
                     gameController.antePlay = true;
                 }
-                
+
                 gameController.startGame(startMoney,ante);
                 // if(messages[2] == "ante")
                 // {
