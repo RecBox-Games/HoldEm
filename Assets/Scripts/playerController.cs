@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Setting
 {
@@ -58,21 +59,32 @@ public class playerController : MonoBehaviour
     public List<Setting> CustomSettings {get; set;} = new List<Setting>();
 
     // GUI Variables
-    private Transform entryTransform, namePlate;
+    private Transform entryTransform, backgroundTransform, namePlate;
 
     private void Start()
     {
+        int templateHight = 20;
+
         namePlate = transform.Find("Nameplate");
+
+        // Create a GUI entry
         Transform entryContainer = GameObject.Find("playerEntryContainer").transform;
         Transform entryTemplate = entryContainer.transform.Find("playerEntryTemplate");
 
-        entryTemplate.gameObject.SetActive(false);
-
-        int templateHight = 20;
+        // Instantiate player entry
         entryTransform = Instantiate(entryTemplate, entryContainer);
+        if (playerNumber % 2 == 0)
+            backgroundTransform = entryTransform.Find("Background1");
+        else
+            backgroundTransform = entryTransform.Find("Background2");
+
+
         RectTransform entryRectTransform = entryTransform.GetComponent<RectTransform>();
+        RectTransform backRectTransform = backgroundTransform.GetComponent<RectTransform>();
         entryRectTransform.anchoredPosition = new Vector2(0, -templateHight * (playerNumber + 1));
+        // backRectTransform.anchoredPosition = new Vector2(0, -templateHight * (playerNumber + 1));
         entryTransform.gameObject.SetActive(true);
+        backgroundTransform.gameObject.SetActive(true);
         
     }
 
