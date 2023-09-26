@@ -361,9 +361,11 @@ select {
 }
 
 .choiceMenu {
+    max-height: calc(50 * var(--vh));
     height: calc(50 * var(--vh));
+
     width: 75vw;
-    top: 50%;
+    top: calc(50% + var(--border-offset));
     left: 50%;
     transform: translate(-50%, 50%);
     position: absolute;
