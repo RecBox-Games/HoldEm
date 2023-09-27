@@ -69,18 +69,6 @@ public class controllerParse : MonoBehaviour
                 }
 
                 gameController.startGame(startMoney,ante);
-                // if(messages[2] == "ante")
-                // {
-                //     int ante = int.Parse(messages[3]);
-                //     gameController.startGame(startMoney,ante);  
-                // }
-                // else 
-                // {
-                //     gameController.bigBlind = int.Parse(messages[4]);
-                //     gameController.smallBlind = int.Parse(messages[5]);
-                //     gameController.blindPlay = true;
-                //     gameController.startGame(startMoney);
-                // }
                 break;
 
             case "PlayerResponse":
@@ -120,6 +108,17 @@ public class controllerParse : MonoBehaviour
                         fromPlayer.username = messages[2];
                         fromPlayer.name = messages[2];
                         break;
+                    case "autoSitOut":
+                        if(messages[2] == "true")
+                        {
+                            fromPlayer.autoSitOut = true;
+                        }
+                        else 
+                        {
+                            fromPlayer.autoSitOut = false;
+                        }
+                        break;
+
                     default:
                         Setting sound = new Setting(messages[1], messages[2]);
                         fromPlayer.CustomSettings.RemoveAll(s => s.name == messages[1]);

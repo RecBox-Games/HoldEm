@@ -72,6 +72,10 @@ gameTypeRadio.forEach((radio) => {
     });
 });
 
+// Magic function to prevent double tap zoom
+$(document).click(function(event) {
+});
+
 
 gameForm.addEventListener("submit",startGame,false);
 
@@ -679,6 +683,8 @@ function addFunds()
 
     
 }
+
+
 
 function fadeOutEffect(element) {
 

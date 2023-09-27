@@ -161,6 +161,10 @@ canvas {
     padding: 10px;
 
 }
+* {
+    touch-action: manipulation;
+    user-scalable: no;
+}
 
 
 .innerdiv {
@@ -204,9 +208,7 @@ h2 {
     position:absolute;
     text-align: center;
     padding: 12px;
-    z-index: 2;
-
-    
+    z-index: 2;    
 }
 
 table {
@@ -335,9 +337,6 @@ select {
     
 
 }
-
-
-
 
 .arrow {
 

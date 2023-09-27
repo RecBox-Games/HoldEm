@@ -45,6 +45,8 @@ public class playerController : MonoBehaviour
     public bool folded { get; set; } = false;
     public bool tappedOut { get; set; } = false;
 
+    public bool autoSitOut {get; set; } = false;
+
     // Card Variables
     // These are the two cards in hand
     public int handRank { get; set; }

@@ -251,19 +251,55 @@ public class gameController : MonoBehaviour
 
     private async Task anteUP()
     {
+        int playersPlaying;
+
+        //Setting isPregame to true will force the controller into pregame status
         isPregame = true;
-        refreshPlayers("Time to Ante Up!");
-       
-        foreach (var player in playerList)
+        //Loop to make sure at least two players end up being in the game
+        do
         {
-            do
+            playersPlaying = 0;
+            foreach (var player in playerList)
             {
-                Debug.Log("Waiting on " + player.username);
-                //Wait 10 seconds, slow poll
-                await Task.Delay(1000);
-                
-            } while (!player.pregameResponded);
+
+                if(player.autoSitOut)
+                {
+                    player.pregameResponded = true;
+                    player.playRound = false;
+                }
+                else
+                {
+                   player.pregameResponded = false;
+
+                }
+            }
+            refreshPlayers("Time to Ante Up!");
+        
+            foreach (var player in playerList)
+            {
+                do
+                {
+                    Debug.Log("Waiting on " + player.username);
+                    //Wait 10 seconds, slow poll
+                    await Task.Delay(1000);
+                    
+                } while (!player.pregameResponded);
+                if(player.playRound)
+                {
+                    playersPlaying += 1;
+                }
+            }
+            if(playersPlaying < 2)
+            {
+                foreach (var player in playerList)
+                {
+                    controlpads_glue.SendControlpadMessage(player.ID, "alert:Need more than one person to play a poker game you silly goose."); 
+                }
+
+            }
         }
+        while (playersPlaying < 2);
+
 
         isPregame = false;
         foreach (var player in playerList)
