@@ -347,11 +347,18 @@ public class gameController : MonoBehaviour
 
         // Determine the winners and then give them their share of the pot
         List<playerController> winner = cardController.DetermineWinners(remainingPlayers);
+        int payment = potMoney / winner.Count;
+        int remainder = potMoney % 5;
+
         foreach (var player in winner)
         {
-            int payment = potMoney / winner.Count;
-            Debug.Log(player.username + " has won " + payment + "$");
-            player.payPlayer(payment);
+            int value = payment;
+            if(winner.First() == player)
+            {
+                value += remainder;
+            }
+            Debug.Log(player.username + " has won " + value + "$");
+            player.payPlayer(value);
         }
 
         // Reset Player Objects to the right position and make sure they arnt folded
