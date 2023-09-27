@@ -342,12 +342,15 @@ public class gameController : MonoBehaviour
             await anteUP();
         else
             cardController.dealCards(playerList);
+        foreach (var player in playerList)
+            controlpads_glue.SendControlpadMessage(player.ID, "refresh:4");
 
         currentPlayer = playerList[playerTurn];
         currentPlayer.underTheGun = true;
         currentPlayer.enterFrame();
         highestBidder = currentPlayer;
-        controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh:4");
+
+        controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh:5");
 
         Debug.Log("---------------------- A new round has started! ----------------------");
         Debug.Log("It is now " + currentPlayer.username + "\'s turn. \n " +
