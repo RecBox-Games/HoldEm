@@ -36,6 +36,7 @@ public class gameController : MonoBehaviour
     private List<playerController> playerList = new List<playerController>();
     private playerController currentPlayer;
     private playerController highestBidder;
+    private Transform potGUI;
     private int reveal = 0;         // which of reveal will be played after betting
     private int rounds = 0;         // How many tottal rounds have been played
     private int potMoney = 0; 
@@ -51,7 +52,7 @@ public class gameController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        potGUI = GameObject.Find("PotMoney").transform;
     }
 
     // Update is called once per frame
@@ -61,6 +62,7 @@ public class gameController : MonoBehaviour
         {
             moneyUI.GetComponent<UnityEngine.UI.Text>().text = "Pot: " + potMoney.ToString();
             playerUI.GetComponent<UnityEngine.UI.Text>().text = getPlayerMoneyInfo();
+            potGUI.GetComponent<UnityEngine.UI.Text>().text = "$" + potMoney.ToString();
         }
     }
 
@@ -376,12 +378,15 @@ public class gameController : MonoBehaviour
             await anteUP();
         else
             cardController.dealCards(playerList);
+        foreach (var player in playerList)
+            controlpads_glue.SendControlpadMessage(player.ID, "refresh:4");
 
         currentPlayer = playerList[playerTurn];
         currentPlayer.underTheGun = true;
         currentPlayer.enterFrame();
         highestBidder = currentPlayer;
-        controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh:4");
+
+        controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh:5");
 
         Debug.Log("---------------------- A new round has started! ----------------------");
         Debug.Log("It is now " + currentPlayer.username + "\'s turn. \n " +
