@@ -56,7 +56,7 @@ public class controlpads_glue : MonoBehaviour
     void Start()
     {
         clientHandles = GetClientHandles();
-        Debug.Log(string.Join(", ", clientHandles));
+        // Debug.Log(string.Join(", ", clientHandles));
     }
 
     // Update is called once per frame
@@ -64,11 +64,11 @@ public class controlpads_glue : MonoBehaviour
     {
         if (ClientsChanged()) {
             clientHandles = GetClientHandles();
-            Debug.Log(string.Format("Clients: [{0}]", string.Join(", ", clientHandles)));
+            // Debug.Log(string.Format("Clients: [{0}]", string.Join(", ", clientHandles)));
         }
         foreach (string client in clientHandles) {
             foreach (string msg in GetMessages(client)) {
-                Debug.Log(string.Format("From <{0}> got <{1}>", client, msg));
+                // Debug.Log(string.Format("From <{0}> got <{1}>", client, msg));
                 _onControlpadMessage.Invoke(client, msg);
             }
         }
@@ -77,17 +77,17 @@ public class controlpads_glue : MonoBehaviour
     // Call this function in your own code to send messages to controlpads
     public static void SendControlpadMessage(string client, string message) {
         if (client == null || client.Length == 0 || client.Contains(" ")) {
-            Debug.Log(string.Format("Warning: Invalid client specified for controlpad message <{0}>", message));
+            // Debug.Log(string.Format("Warning: Invalid client specified for controlpad message <{0}>", message));
             return;
         }
 	if (message == null) {
-            Debug.Log("Warning: Tried to send a null controlpad message");
+            // Debug.Log("Warning: Tried to send a null controlpad message");
             return;
         }
         int result = ControlpadsLibrary.send_message(client, message);
         if (result != 0)
         {
-            Debug.Log(string.Format("Could send <{1}> to <{0}>: <{2}>", client, message, result));
+            // Debug.Log(string.Format("Could send <{1}> to <{0}>: <{2}>", client, message, result));
         }
     }
 
@@ -97,7 +97,7 @@ public class controlpads_glue : MonoBehaviour
         bool b = false;
         int result = ControlpadsLibrary.clients_changed(ref b);
         if (result != 0) {
-            Debug.Log(string.Format("Controlpads Error (clients_changed): {0}", result));
+            // Debug.Log(string.Format("Controlpads Error (clients_changed): {0}", result));
         }
         return b;
     }
@@ -106,7 +106,7 @@ public class controlpads_glue : MonoBehaviour
         c_flat_string_vec c_flat_handles = new c_flat_string_vec();
         int result = ControlpadsLibrary.get_client_handles(ref c_flat_handles);
         if (result != 0) {
-            Debug.Log(string.Format("Controlpads Error (get_client_handles): {0}", result));
+            // Debug.Log(string.Format("Controlpads Error (get_client_handles): {0}", result));
         }
         List<string> handles = CFlatToList(c_flat_handles);
         ControlpadsLibrary.free_c_flat_string_vec(c_flat_handles);
@@ -118,7 +118,7 @@ public class controlpads_glue : MonoBehaviour
         c_flat_string_vec c_flat_messages = new c_flat_string_vec();
         int result = ControlpadsLibrary.get_messages(client, ref c_flat_messages);
         if (result != 0) {
-            Debug.Log(string.Format("Controlpads Error (get_messages): {0}", result));
+            // Debug.Log(string.Format("Controlpads Error (get_messages): {0}", result));
         }
         List<string> messages = CFlatToList(c_flat_messages);
         ControlpadsLibrary.free_c_flat_string_vec(c_flat_messages);

@@ -130,7 +130,7 @@ public class cardController : MonoBehaviour
 
     public void shuffleDeck()
     {
-        Debug.Log("Shuffling the Deck!!! Shuffle Shuffle Shuffle");
+        // Debug.Log("Shuffling the Deck!!! Shuffle Shuffle Shuffle");
         for (int i = 0; i < 4; i++)
         {
             for (int j = 0; j < textureDeck.Count; j++)

@@ -148,8 +148,8 @@ public class controllerParse : MonoBehaviour
             
             case "requestMoney":
                 askAmount = messages[1];
-                Debug.Log("Ask Amount: " + askAmount);
-                Debug.Log("Client: " + client);
+                // Debug.Log("Ask Amount: " + askAmount);
+                // Debug.Log("Client: " + client);
                 await moneyRequest(client,askAmount);
                 break;
             case "moneyResponse":
@@ -330,8 +330,8 @@ public class controllerParse : MonoBehaviour
         {
             do
             {
-                Debug.Log("Waiting on " + player.username);
-                //Wait 1 seconds, slow poll
+                // Debug.Log("Waiting on " + player.username);
+                // Wait 1 seconds, slow poll
                 await Task.Delay(1000);
                 
             } while (!player.moneyResponded);

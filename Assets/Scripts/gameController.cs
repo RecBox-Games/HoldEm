@@ -233,9 +233,8 @@ public class gameController : MonoBehaviour
             highestBidder = currentPlayer;
         controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh:3");
 
-        Debug.Log("---------------------- A new game of Texas Hold'Em Has begun ----------------------");
-        Debug.Log("It is now " + currentPlayer.username + "\'s turn. \n " + 
-            currentPlayer.getHoleCardsDesc());
+        // Debug.Log("---------------------- A new game of Texas Hold'Em Has begun ----------------------");
+        // Debug.Log("It is now " + currentPlayer.username + "\'s turn. \n " + currentPlayer.getHoleCardsDesc());
 
     }
 
@@ -281,8 +280,8 @@ public class gameController : MonoBehaviour
             {
                 do
                 {
-                    Debug.Log("Waiting on " + player.username);
-                    //Wait 10 seconds, slow poll
+                    // Debug.Log("Waiting on " + player.username);
+                    // Wait 10 seconds, slow poll
                     await Task.Delay(1000);
                     
                 } while (!player.pregameResponded);
@@ -331,7 +330,7 @@ public class gameController : MonoBehaviour
             playerTurn = (playerTurn + 1) % playerList.Count;
         }
 
-        
+        currentBet += ante;
     }
 
 
@@ -357,7 +356,7 @@ public class gameController : MonoBehaviour
             {
                 value += remainder;
             }
-            Debug.Log(player.username + " has won " + value + "$");
+            // Debug.Log(player.username + " has won " + value + "$");
             player.payPlayer(value);
         }
 
@@ -395,9 +394,8 @@ public class gameController : MonoBehaviour
 
         controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh:5");
 
-        Debug.Log("---------------------- A new round has started! ----------------------");
-        Debug.Log("It is now " + currentPlayer.username + "\'s turn. \n " +
-            currentPlayer.getHoleCardsDesc());
+        // Debug.Log("---------------------- A new round has started! ----------------------");
+        // Debug.Log("It is now " + currentPlayer.username + "\'s turn. \n " + currentPlayer.getHoleCardsDesc());
     }
 
     private void nextTurn()
@@ -442,8 +440,7 @@ public class gameController : MonoBehaviour
 
             StartCoroutine(EnterFrameCoroutine(() =>
             {
-                Debug.Log("It is now " + currentPlayer.username + "\'s turn. \n " +
-                    currentPlayer.getHoleCardsDesc());
+                // Debug.Log("It is now " + currentPlayer.username + "\'s turn. \n " + currentPlayer.getHoleCardsDesc());
                 controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh:1");
             }));
         }));
@@ -488,7 +485,7 @@ public class gameController : MonoBehaviour
 
     private void revealCards()
     {
-        Debug.Log("---------------------- Revealing Card(s) ----------------------");
+        // Debug.Log("---------------------- Revealing Card(s) ----------------------");
         if (reveal == 0)
             cardController.revealFlop();
         else if (reveal == 1)
@@ -528,8 +525,7 @@ public class gameController : MonoBehaviour
         potMoney += money;
         highestBidder = currentPlayer;
 
-        Debug.Log(currentPlayer.username + " sees the last bet of " + 
-            lastBet + " and raises it by " + amount + " putting in a tottal of " + money);
+        // Debug.Log(currentPlayer.username + " sees the last bet of " + lastBet + " and raises it by " + amount + " putting in a tottal of " + money);
 
         nextTurn();
     }
@@ -541,9 +537,10 @@ public class gameController : MonoBehaviour
         if (currentPlayer.betted < currentBet)
             money = currentPlayer.requestFunds(currentBet - currentPlayer.betted);
         else
-            money = currentPlayer.requestFunds(revealBet);   
-        
-        Debug.Log(currentPlayer.username + " calls the current bet of " + currentBet);
+            money = currentPlayer.requestFunds(revealBet);
+
+        // Debug.Log(currentPlayer.username + " needs " + revealBet + " to call.");
+        // Debug.Log(currentPlayer.username + " calls the current bet of " + currentBet);
         potMoney += money;
         nextTurn();
     }
@@ -560,7 +557,7 @@ public class gameController : MonoBehaviour
                     break;
                 }
 
-        Debug.Log(currentPlayer.username + " has folded.");
+        // Debug.Log(currentPlayer.username + " has folded.");
         nextTurn();
     }
 
