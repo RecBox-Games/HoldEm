@@ -31,6 +31,10 @@ public class gameController : MonoBehaviour
     public static bool blindPlay { get; set; } = false;
     public static bool antePlay { get; set; } = false;
 
+    // GUI Variables
+    private Transform entryContainer;
+    private Transform entryTemplate;
+    private Transform entryTransform;
 
     // Instance Variables
     private List<playerController> playerList = new List<playerController>();
@@ -45,8 +49,6 @@ public class gameController : MonoBehaviour
     private int revealBet = 0;      // Resets every reveal
     private int playerTurn = 0;     // Increments each player turn
     private bool isPregame = false;
-
-
 
 
     // Start is called before the first frame update
@@ -143,7 +145,9 @@ public class gameController : MonoBehaviour
 
 
         // This updates a UI with the new player whos playing
-        playerUI.GetComponent<UnityEngine.UI.Text>().text += playerName + "\n";
+        // playerUI.GetComponent<UnityEngine.UI.Text>().text += playerName + "\n";
+        // Instantiate player entry
+
     }
 
     private static ManualResetEvent holdForSomethin = new ManualResetEvent(false);
@@ -174,6 +178,7 @@ public class gameController : MonoBehaviour
     private async void startNewGame(int startMoney, int ante)
     {
         this.ante = ante;
+        
 
         if (gameState)
         {
@@ -187,6 +192,8 @@ public class gameController : MonoBehaviour
                 "Please add more players then continue.");
             return;
         }
+
+        GameObject.Find("StartingGame").gameObject.SetActive(false);
 
         // Reset Player Variables
         foreach (var player in playerList)

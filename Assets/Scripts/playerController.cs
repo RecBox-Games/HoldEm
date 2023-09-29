@@ -61,32 +61,54 @@ public class playerController : MonoBehaviour
     public List<Setting> CustomSettings {get; set;} = new List<Setting>();
 
     // GUI Variables
-    private Transform entryTransform, backgroundTransform, namePlate;
+    private Transform startEntryTransform, entryTransform, namePlate;
 
     private void Start()
     {
         int templateHight = 20;
-
         namePlate = transform.Find("Nameplate");
 
         // Create a GUI entry
         Transform entryContainer = GameObject.Find("playerEntryContainer").transform;
+        Transform entryStartContainer = GameObject.Find("playerJoinContainer").transform;
         Transform entryTemplate = entryContainer.transform.Find("playerEntryTemplate");
+        Transform entryStartTemplate = entryStartContainer.transform.Find("nameTemplate");
 
         // Instantiate player entry
         entryTransform = Instantiate(entryTemplate, entryContainer);
+        startEntryTransform = Instantiate(entryStartTemplate, entryStartContainer);
         if (playerNumber % 2 == 0)
-            backgroundTransform = entryTransform.Find("Background1");
+        {
+            entryTransform.Find("Background1").gameObject.SetActive(true);
+            
+            if (playerNumber > 11)
+                startEntryTransform.Find("NameBackground2").gameObject.SetActive(true);
+        }
         else
-            backgroundTransform = entryTransform.Find("Background2");
+        {
+            entryTransform.Find("Background2").gameObject.SetActive(true);
+            if (playerNumber < 12)
+                startEntryTransform.Find("NameBackground1").gameObject.SetActive(true);
+        }
 
-
+        RectTransform startRectTransform = startEntryTransform.GetComponent<RectTransform>();
         RectTransform entryRectTransform = entryTransform.GetComponent<RectTransform>();
-        RectTransform backRectTransform = backgroundTransform.GetComponent<RectTransform>();
+        if (playerNumber < 12)
+        {
+            startEntryTransform.Find("nameEntry1").gameObject.SetActive(true);
+            startRectTransform.anchoredPosition = new Vector2(0, -templateHight * playerNumber);
+        } else
+        {
+            startEntryTransform.Find("nameEntry2").gameObject.SetActive(true);
+            startRectTransform.anchoredPosition = new Vector2(0, -templateHight * (playerNumber % 11));
+        }
+
+        
         entryRectTransform.anchoredPosition = new Vector2(0, -templateHight * (playerNumber + 1));
-        // backRectTransform.anchoredPosition = new Vector2(0, -templateHight * (playerNumber + 1));
         entryTransform.gameObject.SetActive(true);
-        backgroundTransform.gameObject.SetActive(true);
+        startEntryTransform.gameObject.SetActive(true);
+
+        
         
     }
 
@@ -94,6 +116,7 @@ public class playerController : MonoBehaviour
     {
         namePlate.GetComponent<TextMeshPro>().text = username;
         entryTransform.Find("Name").GetComponent<UnityEngine.UI.Text>().text = username;
+        // startEntryTransform.Find("Name").GetComponent<UnityEngine.UI.Text>().text = username;
         entryTransform.Find("Money").GetComponent<UnityEngine.UI.Text>().text = money.ToString();
         if (folded)
             entryTransform.Find("InOut").GetComponent<UnityEngine.UI.Text>().text = "Folded";
