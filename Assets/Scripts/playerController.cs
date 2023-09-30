@@ -31,6 +31,7 @@ public class playerController : MonoBehaviour
     public int money { get; set; } // Ammount of money a player has to play with
     public int betted { get; set; } // Amount of money the player has betted
     public int bettedRound { get; set; } // Amount of money the player has betted
+    public int sidePot { get; set; } = 0;
     public bool underTheGun { get; set; } = false;
 
 
@@ -84,41 +85,31 @@ public class playerController : MonoBehaviour
         if (playerNumber % 2 == 0)
         {
             entryTransform.Find("Background1").gameObject.SetActive(true);
-            
-            if (playerNumber > 11)
-                startEntryTransform.Find("NameBackground2").gameObject.SetActive(true);
         }
         else
         {
             entryTransform.Find("Background2").gameObject.SetActive(true);
-            if (playerNumber < 12)
-                startEntryTransform.Find("NameBackground1").gameObject.SetActive(true);
-        }
-
-        RectTransform startRectTransform = startEntryTransform.GetComponent<RectTransform>();
-        RectTransform entryRectTransform = entryTransform.GetComponent<RectTransform>();
-        if (playerNumber < 12)
-        {
-            startEntryTransform.Find("nameEntry1").gameObject.SetActive(true);
-            startRectTransform.anchoredPosition = new Vector2(0, -templateHight * playerNumber);
-        } else
-        {
-            startEntryTransform.Find("nameEntry2").gameObject.SetActive(true);
-            startRectTransform.anchoredPosition = new Vector2(0, -templateHight * (playerNumber % 11));
+            startEntryTransform.Find("NameBackground").gameObject.SetActive(true);
         }
 
         
+        RectTransform startRectTransform = startEntryTransform.GetComponent<RectTransform>();
+        if (playerNumber <= 11)
+            startRectTransform.anchoredPosition = new Vector2(0, -templateHight * ((playerNumber - 1) % 11));
+        else
+            startRectTransform.anchoredPosition = new Vector2(150, -templateHight * ((playerNumber - 1) % 11));
+        startEntryTransform.gameObject.SetActive(true);
+        startEntryTransform.Find("nameEntry").gameObject.SetActive(true);
+
+        RectTransform entryRectTransform = entryTransform.GetComponent<RectTransform>();
         entryRectTransform.anchoredPosition = new Vector2(0, -templateHight * (playerNumber + 1));
         entryTransform.gameObject.SetActive(true);
-        startEntryTransform.gameObject.SetActive(true);
-
-        
-        
     }
 
     private void Update()
     {
         namePlate.GetComponent<TextMeshPro>().text = username;
+        startEntryTransform.Find("nameEntry").GetComponent<UnityEngine.UI.Text>().text = username;
         entryTransform.Find("Name").GetComponent<UnityEngine.UI.Text>().text = username;
         // startEntryTransform.Find("Name").GetComponent<UnityEngine.UI.Text>().text = username;
         entryTransform.Find("Money").GetComponent<UnityEngine.UI.Text>().text = money.ToString();
@@ -216,6 +207,7 @@ public class playerController : MonoBehaviour
         folded = false;
         betted = 0;
         bettedRound = 0;
+        sidePot = 0;
         resetHoleCards();
     }
 
