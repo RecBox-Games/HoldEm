@@ -336,14 +336,14 @@ select {
     height: fit-content;
     background-color: white;
     position: absolute;
-    top: calc(30 * var(--vh));
+    top: calc(26 * var(--vh));
     left: 50%;
     transform: translate(-50%);
     padding: 20px;
     text-align: center;
     border-radius: 50px;
     display: none;
-    font-size: 20px;
+    font-size: 17px;
 
 
     
@@ -374,11 +374,10 @@ select {
 .choiceMenu {
     max-height: calc(50 * var(--vh));
     height: calc(50 * var(--vh));
-
     width: 75vw;
-    top: calc(50% + var(--border-offset));
+    top: calc(50 * var(--vh) - (50 * var(--vh)) / 2);
     left: 50%;
-    transform: translate(-50%, 50%);
+    transform: translate(-50%);
     position: absolute;
     display: none;
     
