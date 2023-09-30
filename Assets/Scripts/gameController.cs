@@ -48,6 +48,7 @@ public class gameController : MonoBehaviour
     private int currentBet = 0;     // Resets every round
     private int revealBet = 0;      // Resets every reveal
     private int playerTurn = 0;     // Increments each player turn
+    private int sidePots = 0;
     private bool isPregame = false;
 
 
@@ -352,20 +353,34 @@ public class gameController : MonoBehaviour
         }
 
         // Determine the winners and then give them their share of the pot
-        List<playerController> winner = cardController.DetermineWinners(remainingPlayers);
-        int payment = potMoney / winner.Count;
-        int remainder = potMoney % 5;
+        List<playerController> winners = cardController.DetermineWinners(remainingPlayers);
+        int payment = potMoney / winners.Count;
+        int remainder = potMoney % winners.Count;
 
-        foreach (var player in winner)
+        if (winners[0].sidePot > 0)
         {
-            int value = payment;
-            if(winner.First() == player)
-            {
-                value += remainder;
-            }
-            // Debug.Log(player.username + " has won " + value + "$");
-            player.payPlayer(value);
         }
+
+        foreach (var player in winners)
+        {
+            player.payPlayer(payment);
+        }
+
+        // Give the remainder to the player who is a winner but also 
+        // the closest to the first players turn
+        playerTurn = rounds % playerList.Count;
+        currentPlayer = playerList[playerTurn];
+        foreach (var player in playerList)
+        {
+            if (!currentPlayer.folded)
+            {
+                currentPlayer.payPlayer(remainder);
+                break;
+            }
+            playerTurn = (playerTurn + 1) % playerList.Count;
+            currentPlayer = playerList[playerTurn];
+        }
+
 
         // Reset Player Objects to the right position and make sure they arnt folded
         foreach (var player in playerList) 
@@ -379,6 +394,7 @@ public class gameController : MonoBehaviour
         potMoney = 0;
         revealBet = 0;
         currentBet = 0;
+        sidePots = 0;
         playerTurn = rounds % playerList.Count;
 
         // Initialize first player of the next round
@@ -451,29 +467,27 @@ public class gameController : MonoBehaviour
                 controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh:1");
             }));
         }));
-
     }
 
     private IEnumerator ExitFrameCoroutine(System.Action onComplete)
-{
+    {
+        currentPlayer.exitFrame();
 
-    currentPlayer.exitFrame();
-
-    // Call the onComplete callback when exitFrame is done
-    yield return new WaitUntil(() => !currentPlayer.IsMoving); // Modify this condition as needed
+        // Call the onComplete callback when exitFrame is done
+        yield return new WaitUntil(() => !currentPlayer.IsMoving); // Modify this condition as needed
     
-    onComplete?.Invoke();
-}
+        onComplete?.Invoke();
+    }
 
     private IEnumerator EnterFrameCoroutine(System.Action onComplete)
-{
-    currentPlayer.enterFrame();
+    {
+        currentPlayer.enterFrame();
     
-    // Call the onComplete callback when exitFrame is done
-    yield return new WaitUntil(() => !currentPlayer.IsMoving); // Modify this condition as needed
+        // Call the onComplete callback when exitFrame is done
+        yield return new WaitUntil(() => !currentPlayer.IsMoving); // Modify this condition as needed
     
-    onComplete?.Invoke();
-}
+        onComplete?.Invoke();
+    }
     
 
     private void newBetRound()

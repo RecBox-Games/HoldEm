@@ -31,6 +31,7 @@ public class playerController : MonoBehaviour
     public int money { get; set; } // Ammount of money a player has to play with
     public int betted { get; set; } // Amount of money the player has betted
     public int bettedRound { get; set; } // Amount of money the player has betted
+    public int sidePot { get; set; } = 0;
     public bool underTheGun { get; set; } = false;
 
 
@@ -156,6 +157,7 @@ public class playerController : MonoBehaviour
             bettedRound += money;
 
             money = 0;
+            sidePot = finalAmount + betted;
             return finalAmount;
         }
 
@@ -202,6 +204,7 @@ public class playerController : MonoBehaviour
         folded = false;
         betted = 0;
         bettedRound = 0;
+        sidePot = 0;
         resetHoleCards();
     }
 
