@@ -157,7 +157,6 @@ public class playerController : MonoBehaviour
             bettedRound += money;
 
             money = 0;
-            sidePot = finalAmount + betted;
             return finalAmount;
         }
 
