@@ -38,6 +38,10 @@ public class playerController : MonoBehaviour
     public bool playRound { get; set; } // Only used if antePlay is true
     
     public bool pregameResponded {get; set;} = false; //Used to see if a player has selected if they are playing or not
+
+    public bool readyForNextRound {get; set;} = false; //Whether or not a player is ready for next round
+
+    public bool readyResponded {get; set;} = false; //Whether or not a player has responded to the ready request
     
     public bool moneyResponded {get; set;} = false; //Used to see if a player has responded yet to the grab for money
 

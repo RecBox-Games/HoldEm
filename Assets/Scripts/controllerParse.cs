@@ -20,6 +20,9 @@ public class controllerParse : MonoBehaviour
 
     public string askAmount;
 
+    public bool waitingToReadyUp = false;
+    
+
     public async void messageParse(string client, string msg)
     {
         // Parse msg by
@@ -146,6 +149,14 @@ public class controllerParse : MonoBehaviour
                 fromPlayer.pregameResponded = true;
                 break;
             
+            case "readyUp":
+                fromPlayer.readyForNextRound = true;
+                fromPlayer.readyResponded = true;
+                fromPlayer.status ="Waiting for all players to respond";
+                UpdateStatus(fromPlayer.ID);
+                
+                break;
+            
             case "requestMoney":
                 askAmount = messages[1];
                 // Debug.Log("Ask Amount: " + askAmount);
@@ -253,10 +264,13 @@ public class controllerParse : MonoBehaviour
                 variables.Add(card.suit.ToString() + "-" + card.rank.ToString());
             }
 
-            if(someonesAskingForMoneyAgain & !player.moneyResponded)
+            if(waitingToReadyUp & !player.readyResponded)
+            {
+                stateName = "ReadyUp:";
+            }
+            else if(someonesAskingForMoneyAgain & !player.moneyResponded)
             {
                 stateName="MoneyRequest:";
-
             }
             else if(gameController.PreGame())
             {
@@ -269,6 +283,7 @@ public class controllerParse : MonoBehaviour
                 }
 
             }
+
 
 
 
@@ -427,4 +442,8 @@ public class controllerParse : MonoBehaviour
         }
         return null;
     }
+
+
 }
+
+

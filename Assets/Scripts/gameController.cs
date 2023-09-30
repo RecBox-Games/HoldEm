@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 public class gameController : MonoBehaviour
 {
+
     // Default Varaiables
     [SerializeField] List<Material> colorList = new List<Material>();
     [SerializeField] GameObject playerPrefab;
@@ -18,6 +19,9 @@ public class gameController : MonoBehaviour
     [SerializeField] GameObject moneyUI;
     [SerializeField] cardController cardController;
     [SerializeField] SceneLoader sceneLoader;
+
+    [SerializeField] controllerParse playerComms;
+
     [SerializeField] int maxPlayers;
     [SerializeField] int startMoney;
     [SerializeField] int ante;
@@ -55,6 +59,9 @@ public class gameController : MonoBehaviour
     void Start()
     {
         potGUI = GameObject.Find("PotMoney").transform;
+
+
+
     }
 
     // Update is called once per frame
@@ -287,8 +294,6 @@ public class gameController : MonoBehaviour
             {
                 do
                 {
-                    // Debug.Log("Waiting on " + player.username);
-                    // Wait 10 seconds, slow poll
                     await Task.Delay(1000);
                     
                 } while (!player.pregameResponded);
@@ -366,6 +371,31 @@ public class gameController : MonoBehaviour
             // Debug.Log(player.username + " has won " + value + "$");
             player.payPlayer(value);
         }
+        
+        
+        //Wait for everyone to ready up
+        playerComms.waitingToReadyUp = true;
+
+        foreach (var player in playerList)
+            {
+                player.readyResponded = false;
+                player.readyForNextRound = false;
+                player.status = "Ready up for the next round!";
+            }
+
+        refreshPlayers("Ready up for next round");
+
+        await WaitForReadyForNextRound();
+
+        foreach (var player in playerList)
+            {
+                do
+                {
+                    await Task.Delay(1000);
+                    
+                } while (!player.readyForNextRound);
+            }
+
 
         // Reset Player Objects to the right position and make sure they arnt folded
         foreach (var player in playerList) 
@@ -403,6 +433,16 @@ public class gameController : MonoBehaviour
 
         // Debug.Log("---------------------- A new round has started! ----------------------");
         // Debug.Log("It is now " + currentPlayer.username + "\'s turn. \n " + currentPlayer.getHoleCardsDesc());
+    }
+
+    private async Task WaitForReadyForNextRound()
+    {
+        foreach (var player in playerList)
+    {
+        // Wait until the player signals they are ready for the next round
+        await Task.Run(() => { while (!player.readyForNextRound) { } });
+    }
+
     }
 
     private void nextTurn()

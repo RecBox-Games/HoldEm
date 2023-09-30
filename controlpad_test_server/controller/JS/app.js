@@ -47,6 +47,7 @@ const card1 = document.getElementById('card1');
 const card2 = document.getElementById('card2');
 const moneyMenu = document.getElementById('moneyMenu');
 const centerMessage = document.getElementById('centerMessage');
+const readyButton = document.getElementById('readyButton');
 
 
 // ---- Assets ----
@@ -454,6 +455,8 @@ function drawScreen(sections) {
             drawPregame();
             }
             break;
+        case "ReadyUp":
+            drawReadyUp();
         //Waiting till next hand
         case "JoinedWaiting":
             drawJoinedWaiting();
@@ -545,10 +548,20 @@ function drawPregame() {
         drawStatus();
         topMenu();
         anteMenu.style.display = "block";
+}
+function drawReadyUp(){
+    drawStatus();
+    topMenu();
+    drawCardBack();
+    drawPeek();
 
+    readyButton.style.display= "block";
+}
 
-
-
+function readyUp()
+{
+    messages.push('readyUp')
+    readyButton.style.display="none";
 }
 
 function drawPlayingFolded()

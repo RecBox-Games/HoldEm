@@ -135,6 +135,18 @@ canvas {
     position: relative;
 }
 
+.readyButton {
+    left: 50vw;
+    height: calc(20 * var(--vh));
+    font-size: xx-large;
+    top: calc(50 * var(--vh) - (20 * var(--vh)) / 2);
+    transform: translate(-50%);
+    position:fixed;
+    display:none;
+    margin: 0;
+
+}
+
 .topmenu{
     height:calc(25vh - var(--border-width));
     width: calc(100vw - var(--border-offset));
