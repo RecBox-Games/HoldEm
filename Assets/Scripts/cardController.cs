@@ -166,14 +166,15 @@ public class cardController : MonoBehaviour
         shuffleDeck();
     }
 
-    public void dealCards(List<playerController> playerList)
+    public void dealCards(List<playerController> playerList, int playerTurn)
     {
         for (int i = 0; i < 2; i++)
         {
-            foreach (var player in playerList)
+            for (int j = playerTurn; j != playerTurn - 1; j++)
             {
+                j = j % playerList.Count;
                 playTextures.Dequeue();
-                player.drawCard(playDeck.Dequeue());
+                playerList[j].drawCard(playDeck.Dequeue());
             }
         }
     }

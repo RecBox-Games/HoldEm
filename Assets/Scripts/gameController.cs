@@ -397,10 +397,6 @@ public class gameController : MonoBehaviour
                 player.status = "Ready up for the next round!";
             }
 
-        refreshPlayers("Ready up for next round");
-
-        await WaitForReadyForNextRound();
-
         foreach (var player in playerList)
             {
                 do
@@ -436,6 +432,9 @@ public class gameController : MonoBehaviour
             }
         }
 
+        refreshPlayers("Ready up for next round");
+
+        await WaitForReadyForNextRound();
 
         // Reset Player Objects to the right position and make sure they arnt folded
         foreach (var player in playerList) 
@@ -461,7 +460,7 @@ public class gameController : MonoBehaviour
         if (antePlay)
             await anteUP();
         else
-            cardController.dealCards(playerList);
+            cardController.dealCards(playerList, playerTurn);
         foreach (var player in playerList)
             controlpads_glue.SendControlpadMessage(player.ID, "refresh:4");
 
