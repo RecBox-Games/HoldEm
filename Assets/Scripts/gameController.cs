@@ -15,11 +15,7 @@ public class gameController : MonoBehaviour
     // Default Varaiables
     [SerializeField] List<Material> colorList = new List<Material>();
     [SerializeField] GameObject playerPrefab;
-    [SerializeField] GameObject playerUI;
-    [SerializeField] GameObject moneyUI;
     [SerializeField] cardController cardController;
-    [SerializeField] SceneLoader sceneLoader;
-
     [SerializeField] controllerParse playerComms;
 
     [SerializeField] int maxPlayers;
@@ -34,11 +30,6 @@ public class gameController : MonoBehaviour
     public static bool gameState { get; set; } = false; // True means a game has started
     public static bool blindPlay { get; set; } = false;
     public static bool antePlay { get; set; } = false;
-
-    // GUI Variables
-    private Transform entryContainer;
-    private Transform entryTemplate;
-    private Transform entryTransform;
 
     // Instance Variables
     private List<playerController> playerList = new List<playerController>();
@@ -60,20 +51,11 @@ public class gameController : MonoBehaviour
     void Start()
     {
         potGUI = GameObject.Find("PotMoney").transform;
-
-
-
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        if (gameState)
-        {
-            moneyUI.GetComponent<UnityEngine.UI.Text>().text = "Pot: " + potMoney.ToString();
-            playerUI.GetComponent<UnityEngine.UI.Text>().text = getPlayerMoneyInfo();
-            potGUI.GetComponent<UnityEngine.UI.Text>().text = "$" + potMoney.ToString();
-        }
+        potGUI.GetComponent<UnityEngine.UI.Text>().text = "$" + potMoney.ToString();
     }
 
 
@@ -84,7 +66,7 @@ public class gameController : MonoBehaviour
 
     public int getPlayerTurn() { return playerTurn; }
 
-        public int getRevealBet() {return revealBet;}
+    public int getRevealBet() {return revealBet;}
 
 
     public bool PreGame() {return isPregame;}
@@ -239,7 +221,7 @@ public class gameController : MonoBehaviour
             await anteUP();
         }
         else
-            cardController.dealCards(playerList);
+            cardController.dealCards(playerList, playerTurn);
 
         currentPlayer = playerList[playerTurn];
         currentPlayer.underTheGun = true;
@@ -333,7 +315,7 @@ public class gameController : MonoBehaviour
                 playing.Add(player);
             }
 
-        cardController.dealCards(playing);
+        cardController.dealCards(playing, playerTurn);
         resetBetRound();
         
         foreach (var player in playerList)
@@ -634,15 +616,18 @@ public class gameController : MonoBehaviour
 
     public void fold()
     {
-        currentPlayer.fold();
+        currentPlayer.folded = true;
 
+        // If this player is the highest bidder look for the next non-folded player and make them the highest bidder
         if (currentPlayer == highestBidder)
-            for (int i = playerList.Count - 1; i > 0; i--) 
-                if (!playerList[i].folded)
-                {
-                    highestBidder = playerList[i];
-                    break;
-                }
+        {
+            int i = playerTurn;
+            while (highestBidder.folded)
+            {
+                highestBidder = playerList[i];
+                i = (i + 1) % playerList.Count;
+            }
+        }
 
         // Debug.Log(currentPlayer.username + " has folded.");
         nextTurn();

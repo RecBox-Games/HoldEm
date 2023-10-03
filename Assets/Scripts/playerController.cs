@@ -141,8 +141,6 @@ public class playerController : MonoBehaviour
     // Instance Methods
     public void resetHoleCards() { holeCards.Clear(); }
 
-    public void fold() { folded = true; }
-
     public void payPlayer(int amount) { money += amount; }
 
     public bool IsMoving = false;

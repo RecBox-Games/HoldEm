@@ -3093,10 +3093,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   colorList: []
   playerPrefab: {fileID: 4622742846912395826, guid: 042cd51dfe093c148a114ce95d32fe8f, type: 3}
-  playerUI: {fileID: 1852503607}
-  moneyUI: {fileID: 306686907}
   cardController: {fileID: 1965205995}
-  sceneLoader: {fileID: 0}
+  playerComms: {fileID: 1499767957}
   maxPlayers: 22
   startMoney: 1000
   ante: 10
@@ -5318,6 +5316,7 @@ MonoBehaviour:
   someonesAskingForMoneyAgain: 0
   playerAskingForMoney: 
   askAmount: 
+  waitingToReadyUp: 0
 --- !u!4 &1499767958
 Transform:
   m_ObjectHideFlags: 0
