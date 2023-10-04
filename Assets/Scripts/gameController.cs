@@ -19,8 +19,8 @@ public class gameController : MonoBehaviour
     [SerializeField] controllerParse playerComms;
 
     [SerializeField] int maxPlayers;
-    [SerializeField] int startMoney;
-    [SerializeField] int ante;
+    [SerializeField] int startMoney;    // The default amount of money each player gets
+    [SerializeField] int ante;          // Default amount for an ante
 
     //Colors
     public static string[] colors = new string[] 
@@ -35,28 +35,12 @@ public class gameController : MonoBehaviour
     private List<playerController> playerList = new List<playerController>();
     private List<playerController> sidePots = new List<playerController>();
     private playerController currentPlayer;
-    private playerController highestBidder;
-    private Transform potGUI;
+    private vault vault;
     private int reveal = 0;         // which of reveal will be played after betting
     private int rounds = 0;         // How many tottal rounds have been played
-    private int potMoney = 0; 
-    private int tottalMoney = 0;
-    private int currentBet = 0;     // Resets every round
-    private int revealBet = 0;      // Resets every reveal
     private int playerTurn = 0;     // Increments each player turn
     private bool isPregame = false;
 
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        potGUI = GameObject.Find("PotMoney").transform;
-    }
-
-    private void Update()
-    {
-        potGUI.GetComponent<UnityEngine.UI.Text>().text = "$" + potMoney.ToString();
-    }
 
 
     // ---------- Getters ----------
@@ -66,13 +50,13 @@ public class gameController : MonoBehaviour
 
     public int getPlayerTurn() { return playerTurn; }
 
-    public int getRevealBet() {return revealBet;}
+    public int getRevealBet() {return vault.revealBet;}
 
 
     public bool PreGame() {return isPregame;}
 
 
-    public int getCurrentCall() { return currentBet; }
+    public int getCurrentCall() { return vault.currentBet; }
 
     public int getAnte() {return ante;}
 
@@ -203,10 +187,10 @@ public class gameController : MonoBehaviour
         // Reset & Initialize Game Variables
         reveal = 0;
         rounds = 0;
-        potMoney = 0;
-        currentBet = 0;
+        vault.potMoney = 0;
+        vault.currentBet = 0;
         playerTurn = 0;
-        tottalMoney = startMoney * playerList.Count;
+        vault.tottalMoney = startMoney * playerList.Count;
 
         // Initialize the first player
         // Reset and Deal Cards
@@ -227,7 +211,7 @@ public class gameController : MonoBehaviour
         currentPlayer.underTheGun = true;
         currentPlayer.enterFrame(); 
         if (!blindPlay) 
-            highestBidder = currentPlayer;
+            vault.highestBidder = currentPlayer;
         controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh:3");
 
         // Debug.Log("---------------------- A new game of Texas Hold'Em Has begun ----------------------");
@@ -237,10 +221,10 @@ public class gameController : MonoBehaviour
 
     private void playBlinds()
     {
-        potMoney += playerList[playerTurn].requestFunds(ante / 2);
+        vault.potMoney += playerList[playerTurn].requestFunds(ante / 2);
         playerTurn = (playerTurn + 1) % playerList.Count;
-        potMoney += playerList[playerTurn].requestFunds(ante);
-        highestBidder = playerList[playerTurn];
+        vault.potMoney += playerList[playerTurn].requestFunds(ante);
+        vault.highestBidder = playerList[playerTurn];
         playerTurn = (playerTurn + 1) % playerList.Count;
 
         currentBet = ante;
@@ -249,6 +233,7 @@ public class gameController : MonoBehaviour
 
     private async Task anteUP()
     {
+        Debug.Log("I made it: 1");
         int playersPlaying;
 
         //Setting isPregame to true will force the controller into pregame status
@@ -271,6 +256,8 @@ public class gameController : MonoBehaviour
 
                 }
             }
+
+            Debug.Log("I made it: 2");
             refreshPlayers("Time to Ante Up!");
         
             foreach (var player in playerList)
@@ -278,6 +265,7 @@ public class gameController : MonoBehaviour
                 do
                 {
                     await Task.Delay(1000);
+                    Debug.Log(player.name + player.pregameResponded + "HELP IM STUCK HERE!");
                     
                 } while (!player.pregameResponded);
                 if(player.playRound)
@@ -285,7 +273,9 @@ public class gameController : MonoBehaviour
                     playersPlaying += 1;
                 }
             }
-            if(playersPlaying < 2)
+
+            Debug.Log("I made it: 3");
+            if (playersPlaying < 2)
             {
                 foreach (var player in playerList)
                 {
@@ -296,15 +286,15 @@ public class gameController : MonoBehaviour
         }
         while (playersPlaying < 2);
 
-
+        Debug.Log("I made it: 4");
         isPregame = false;
         foreach (var player in playerList)
         {
             player.pregameResponded = false;
             controlpads_glue.SendControlpadMessage(player.ID, "refresh:Anteing is finished"); 
-        } 
-        
-         
+        }
+
+        Debug.Log("I made it: 5");
         var playing = new List<playerController>();
         foreach (var player in playerList)
             if (!player.playRound)
@@ -315,6 +305,7 @@ public class gameController : MonoBehaviour
                 playing.Add(player);
             }
 
+        Debug.Log("I made it: 6");
         cardController.dealCards(playing, playerTurn);
         resetBetRound();
         
@@ -335,7 +326,7 @@ public class gameController : MonoBehaviour
         List<playerController> remainingPlayers = new List<playerController>();
         foreach (var player in playerList) 
             if (!player.folded)
-                remainingPlayers.Add(player); 
+                remainingPlayers.Add(player);
 
         // Calculate Side Pots
         foreach (var player in sidePots)
@@ -367,8 +358,7 @@ public class gameController : MonoBehaviour
             playerTurn = (playerTurn + 1) % playerList.Count;
             currentPlayer = playerList[playerTurn];
         }
-        
-        
+
         //Wait for everyone to ready up
         playerComms.waitingToReadyUp = true;
 
@@ -378,16 +368,6 @@ public class gameController : MonoBehaviour
                 player.readyForNextRound = false;
                 player.status = "Ready up for the next round!";
             }
-
-        foreach (var player in playerList)
-            {
-                do
-                {
-                    await Task.Delay(1000);
-                    
-                } while (!player.readyForNextRound);
-            }
-
 
         // Now Determine the winner of each sidepot
         sidePots.Reverse();
@@ -414,16 +394,17 @@ public class gameController : MonoBehaviour
             }
         }
 
+
         refreshPlayers("Ready up for next round");
 
-        await WaitForReadyForNextRound();
+        // await WaitForReadyForNextRound();
 
         // Reset Player Objects to the right position and make sure they arnt folded
         foreach (var player in playerList) 
         {
             player.resetPlayer();
         }
-
+        
         // Update Game Variables
         rounds++;
         reveal = 0;
@@ -433,6 +414,7 @@ public class gameController : MonoBehaviour
         playerTurn = rounds % playerList.Count;
         sidePots.Clear();
 
+        Debug.Log("I made it: 9");
         // Initialize first player of the next round
         // Reset and Deal Cards
         cardController.resetCards();
@@ -443,15 +425,14 @@ public class gameController : MonoBehaviour
             await anteUP();
         else
             cardController.dealCards(playerList, playerTurn);
-        foreach (var player in playerList)
-            controlpads_glue.SendControlpadMessage(player.ID, "refresh:4");
 
+        Debug.Log("I made it: 10");
         currentPlayer = playerList[playerTurn];
         currentPlayer.underTheGun = true;
         currentPlayer.enterFrame();
         highestBidder = currentPlayer;
 
-        controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh:5");
+        refreshPlayers();
 
         // Debug.Log("---------------------- A new round has started! ----------------------");
         // Debug.Log("It is now " + currentPlayer.username + "\'s turn. \n " + currentPlayer.getHoleCardsDesc());
@@ -641,6 +622,7 @@ public class gameController : MonoBehaviour
         }
     }
 
+    private void refreshPlayers() { refreshPlayers("Update-Refresh"); }
     public void refreshPlayers(string extra)
     {
         foreach(var player in playerList)

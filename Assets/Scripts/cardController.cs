@@ -130,7 +130,7 @@ public class cardController : MonoBehaviour
 
     public void shuffleDeck()
     {
-        Debug.Log("Shuffling the Deck!!! Shuffle Shuffle Shuffle");
+        // Debug.Log("Shuffling the Deck!!! Shuffle Shuffle Shuffle");
         for (int i = 0; i < 4; i++)
         {
             for (int j = 0; j < textureDeck.Count; j++)
@@ -168,7 +168,7 @@ public class cardController : MonoBehaviour
 
     public void dealCards(List<playerController> playerList, int playerTurn)
     {
-        Debug.Log("Dealing Cards");
+        // Debug.Log("Dealing Cards");
         for (int i = 0; i < 2; i++)
         {
             int j = playerTurn;
@@ -178,7 +178,7 @@ public class cardController : MonoBehaviour
                 j = (j + 1) % playerList.Count;
             } while (j != playerTurn);
         }
-        Debug.Log("Cards Dealt");
+        // Debug.Log("Cards Dealt");
     }
 
     public void revealFlop()

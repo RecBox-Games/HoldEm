@@ -37,20 +37,13 @@ public class playerController : MonoBehaviour
 
     // Game Specific Variables
     public bool playRound { get; set; } // Only used if antePlay is true
-    
     public bool pregameResponded {get; set;} = false; //Used to see if a player has selected if they are playing or not
-
     public bool readyForNextRound {get; set;} = false; //Whether or not a player is ready for next round
-
     public bool readyResponded {get; set;} = false; //Whether or not a player has responded to the ready request
-    
     public bool moneyResponded {get; set;} = false; //Used to see if a player has responded yet to the grab for money
-
     public bool moneyResponse {get; set;} //Used to determine if another player accepteed the grab for money
-
     public bool folded { get; set; } = false;
     public bool tappedOut { get; set; } = false;
-
     public bool autoSitOut {get; set; } = false;
 
     // Card Variables
@@ -149,7 +142,7 @@ public class playerController : MonoBehaviour
 
     public int requestFunds(int amount) 
     {
-        Debug.Log("Requesting " + amount + " from " + username);
+        // Debug.Log("Requesting " + amount + " from " + username);
         if (amount >= money)
         {
             Debug.Log(name + " is ALL IN!!!");
@@ -168,16 +161,9 @@ public class playerController : MonoBehaviour
         return amount;
     }
 
-    public void enterFrame() 
-    {
-        StartCoroutine(movePlayer(new Vector3(0, 6, -23)));
-    }
+    public void enterFrame() { StartCoroutine(movePlayer(new Vector3(0, 6, -23)));}
 
-    public void exitFrame() 
-    { 
-        StartCoroutine(movePlayer(new Vector3(-30, 6, -23)));
-    }
-
+    public void exitFrame() { StartCoroutine(movePlayer(new Vector3(-30, 6, -23)));}
 
     private IEnumerator movePlayer(Vector3 vector, System.Action onComplete = null)
     {
@@ -194,9 +180,6 @@ public class playerController : MonoBehaviour
         onComplete?.Invoke(); // Invoke the onComplete callback
 
         IsMoving = false; // Clear the flag to indicate that the movement is complete.
-
-
-
     }
 
     public void resetPlayer()
