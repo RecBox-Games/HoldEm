@@ -16,7 +16,7 @@ public class gameController : MonoBehaviour
     [SerializeField] List<Material> colorList = new List<Material>();
     [SerializeField] GameObject playerPrefab;
     [SerializeField] cardController cardController;
-    [SerializeField] controllerParse playerComms;
+    [SerializeField] stateRequest stateRequest;
 
     [SerializeField] int maxPlayers;
     [SerializeField] int startMoney;    // The default amount of money each player gets
@@ -359,7 +359,7 @@ public class gameController : MonoBehaviour
         }
 
         //Wait for everyone to ready up
-        playerComms.waitingToReadyUp = true;
+        // stateRequest.waitingToReadyUp = true;
 
         foreach (var player in playerList)
             {
