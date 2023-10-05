@@ -35,7 +35,7 @@ public class gameController : MonoBehaviour
     private List<playerController> playerList = new List<playerController>();
     private List<playerController> sidePots = new List<playerController>();
     private playerController currentPlayer;
-    private vault vault;
+    private Vault vault = new Vault();
     private int reveal = 0;         // which of reveal will be played after betting
     private int rounds = 0;         // How many tottal rounds have been played
     private int playerTurn = 0;     // Increments each player turn
@@ -198,7 +198,7 @@ public class gameController : MonoBehaviour
         gameState = true;
 
         if (blindPlay)
-            playBlinds();
+            blindBets();
 
         if (antePlay)
         {
@@ -211,7 +211,7 @@ public class gameController : MonoBehaviour
         currentPlayer.underTheGun = true;
         currentPlayer.enterFrame(); 
         if (!blindPlay) 
-            vault.highestBidder = currentPlayer;
+            vault.lastRaise = currentPlayer;
         controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh:3");
 
         // Debug.Log("---------------------- A new game of Texas Hold'Em Has begun ----------------------");
@@ -219,16 +219,15 @@ public class gameController : MonoBehaviour
 
     }
 
-    private void playBlinds()
+    private void blindBets()
     {
-        vault.potMoney += playerList[playerTurn].requestFunds(ante / 2);
         playerTurn = (playerTurn + 1) % playerList.Count;
-        vault.potMoney += playerList[playerTurn].requestFunds(ante);
-        vault.highestBidder = playerList[playerTurn];
-        playerTurn = (playerTurn + 1) % playerList.Count;
+        var smallBlind = playerList[playerTurn];
 
-        currentBet = ante;
-        revealBet = ante;
+        playerTurn = (playerTurn + 1) % playerList.Count;
+        var bigBlind = playerList[playerTurn];
+        
+        vault.blind(smallBlind, bigBlind);
     }
 
     private async Task anteUP()
@@ -301,7 +300,7 @@ public class gameController : MonoBehaviour
                 player.folded = true;
             else
             {
-                potMoney += player.requestFunds(ante);
+                vault.potMoney += player.requestFunds(ante);
                 playing.Add(player);
             }
 
@@ -316,7 +315,7 @@ public class gameController : MonoBehaviour
             playerTurn = (playerTurn + 1) % playerList.Count;
         }
 
-        currentBet += ante;
+        vault.currentBet += ante;
     }
 
 
@@ -332,14 +331,14 @@ public class gameController : MonoBehaviour
         foreach (var player in sidePots)
         {
             player.sidePot = player.betted * remainingPlayers.Count;
-            potMoney -= player.sidePot;
+            vault.potMoney -= player.sidePot;
             remainingPlayers.Remove(player);
         }
 
         // Determine the winners and then give them their share of the pot
         List<playerController> winners = cardController.DetermineWinners(remainingPlayers);
-        int payment = potMoney / winners.Count;
-        int remainder = potMoney % winners.Count;
+        int payment = vault.potMoney / winners.Count;
+        int remainder = vault.potMoney % winners.Count;
 
         foreach (var player in winners)
             player.payPlayer(payment);
@@ -408,9 +407,9 @@ public class gameController : MonoBehaviour
         // Update Game Variables
         rounds++;
         reveal = 0;
-        potMoney = 0;
-        revealBet = 0;
-        currentBet = 0;
+        vault.potMoney = 0;
+        vault.revealBet = 0;
+        vault.currentBet = 0;
         playerTurn = rounds % playerList.Count;
         sidePots.Clear();
 
@@ -419,7 +418,7 @@ public class gameController : MonoBehaviour
         // Reset and Deal Cards
         cardController.resetCards();
         if (blindPlay)
-            playBlinds();
+            blindBets();
 
         if (antePlay)
             await anteUP();
@@ -430,7 +429,7 @@ public class gameController : MonoBehaviour
         currentPlayer = playerList[playerTurn];
         currentPlayer.underTheGun = true;
         currentPlayer.enterFrame();
-        highestBidder = currentPlayer;
+        vault.lastRaise = currentPlayer;
 
         refreshPlayers();
 
@@ -485,7 +484,7 @@ public class gameController : MonoBehaviour
             }
 
             // Check if a round of betting has commenced
-            if (currentPlayer == highestBidder)
+            if (currentPlayer == vault.lastRaise)
             {
                 newBetRound();
             }
@@ -527,8 +526,8 @@ public class gameController : MonoBehaviour
         // Reset the turn order till we get to the player who betted first
         playerTurn = rounds % playerList.Count;
         currentPlayer = playerList[playerTurn];
-        highestBidder = currentPlayer;
-        revealBet = 0;
+        vault.lastRaise = currentPlayer;
+        vault.revealBet = 0;
         resetBetRound();
 
     }
@@ -550,48 +549,14 @@ public class gameController : MonoBehaviour
     // The player wishes to raise the curent bet by amount
     public void raise(int amount)
     {
-        int money;
-        int lastBet = currentBet;
-
-        if (currentPlayer.betted < currentBet)
-        {
-            // request funds to call the current tottal bet
-            int callBet = currentPlayer.requestFunds(currentBet - currentPlayer.betted);
-            // requst funds to raise the current tottal bet
-            int raiseMoney = currentPlayer.requestFunds(amount);
-
-            money = callBet + raiseMoney;
-            currentBet += raiseMoney;
-            revealBet += raiseMoney;
-        } else
-        {
-            money = currentPlayer.requestFunds(amount);
-            currentBet += money;
-            revealBet += money;
-        }
-
-        // Increment the amount in the pot and then set the current
-        // player as the highest bidder
-        potMoney += money;
-        highestBidder = currentPlayer;
-
-        // Debug.Log(currentPlayer.username + " sees the last bet of " + lastBet + " and raises it by " + amount + " putting in a tottal of " + money);
-
+        vault.raise(currentPlayer, amount);
         nextTurn();
     }
 
     // Player wishes to call the previous bet and stay in
     public void call()
     {
-        int money;
-        if (currentPlayer.betted < currentBet)
-            money = currentPlayer.requestFunds(currentBet - currentPlayer.betted);
-        else
-            money = currentPlayer.requestFunds(revealBet);
-
-        // Debug.Log(currentPlayer.username + " needs " + revealBet + " to call.");
-        // Debug.Log(currentPlayer.username + " calls the current bet of " + currentBet);
-        potMoney += money;
+        vault.call(currentPlayer);
         nextTurn();
     }
 
@@ -600,12 +565,12 @@ public class gameController : MonoBehaviour
         currentPlayer.folded = true;
 
         // If this player is the highest bidder look for the next non-folded player and make them the highest bidder
-        if (currentPlayer == highestBidder)
+        if (currentPlayer == vault.lastRaise)
         {
             int i = playerTurn;
-            while (highestBidder.folded)
+            while (vault.lastRaise.folded)
             {
-                highestBidder = playerList[i];
+                vault.lastRaise = playerList[i];
                 i = (i + 1) % playerList.Count;
             }
         }

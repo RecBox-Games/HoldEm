@@ -217,9 +217,7 @@ public class controllerParse : MonoBehaviour
                 GameState(client);
                 UpdateStatus(client);
                 break;
-
         }
-
     }
 
     private IEnumerator RemovePlayer(System.Action onComplete)

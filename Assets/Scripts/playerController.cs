@@ -30,7 +30,7 @@ public class playerController : MonoBehaviour
     // Money Variables
     public int money { get; set; } // Ammount of money a player has to play with
     public int betted { get; set; } // Amount of money the player has betted
-    public int bettedRound { get; set; } // Amount of money the player has betted
+    public int bettedRound { get; set; } // Amount of money the player has betted each reveal
     public int sidePot { get; set; } = 0;
     public bool underTheGun { get; set; } = false;
 
