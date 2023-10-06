@@ -184,12 +184,15 @@ public class playerController : MonoBehaviour
 
     public void resetPlayer()
     {
-        resetPosition();
-        folded = false;
+        money = 0;
         betted = 0;
         bettedRound = 0;
-        sidePot = 0;
-        resetHoleCards();
+        folded = false;
+        tappedOut = false;
+        handRank = 10;
+        getHoleCards().Clear();
+        bestHand.Clear();
+        handDescription = null;
     }
 
     public void resetPosition() { transform.position = new Vector3(30, 6, -23); }

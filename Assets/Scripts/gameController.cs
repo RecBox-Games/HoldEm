@@ -15,12 +15,13 @@ public class gameController : MonoBehaviour
     // Default Varaiables
     [SerializeField] List<Material> colorList = new List<Material>();
     [SerializeField] GameObject playerPrefab;
+    [SerializeField] GameObject pregameUI;
     [SerializeField] cardController cardController;
     [SerializeField] stateRequest stateRequest;
 
     [SerializeField] int maxPlayers;
     [SerializeField] int startMoney;    // The default amount of money each player gets
-    [SerializeField] int ante;          // Default amount for an ante
+    [SerializeField] int minimumBet;          // Default amount for an ante
 
     //Colors
     public static string[] colors = new string[] 
@@ -58,7 +59,7 @@ public class gameController : MonoBehaviour
 
     public int getCurrentCall() { return vault.currentBet; }
 
-    public int getAnte() {return ante;}
+    public int getAnte() {return minimumBet;}
 
     public string getTurnOrder()
     {
@@ -87,20 +88,20 @@ public class gameController : MonoBehaviour
      * - client = the ID/IP of the player to keep them unique
      * 
      * OUT:
-     *  Returns if the maximum player limit is reached.
-     *  Returns if there is already a game in progress
+     *  Returns playerError player limit is reached.
+     *  Returns gameStateError if there is a game in progress
      * 
      */
     public void newPlayer(string playerName, string client)
     {
         if (playerList.Count > maxPlayers - 1)
         {
-            Debug.Log("The maximum amount of players has been reached. No More can be added");
+            stateRequest.maxPlayerError();
             return;
         }
         if (gameState)
         {
-            Debug.Log("There is already a game in progress. No new players can join");
+            stateRequest.gameInProgressError();
             return;
         }
 
@@ -117,19 +118,15 @@ public class gameController : MonoBehaviour
         player.playerNumber = playerList.Count;
         if (playerList.Count == 1) { player.isHost = true; }
 
-
-        // This updates a UI with the new player whos playing
-        // playerUI.GetComponent<UnityEngine.UI.Text>().text += playerName + "\n";
-        // Instantiate player entry
-
+        stateRequest.sendPlayerSuccess(player);
     }
 
     private static ManualResetEvent holdForSomethin = new ManualResetEvent(false);
 
 
-    public void startGame() { startNewGame(this.startMoney, this.ante); }
+    public void startGame() { startNewGame(this.startMoney, this.minimumBet); }
 
-    public void startGame(int startMoney) { startNewGame(startMoney, this.ante); }
+    public void startGame(int startMoney) { startNewGame(startMoney, this.minimumBet); }
 
     public void startGame(int startMoney, int ante) { startNewGame(startMoney, ante); }
 
@@ -151,52 +148,47 @@ public class gameController : MonoBehaviour
       */
     private async void startNewGame(int startMoney, int ante)
     {
-        this.ante = ante;
-        
-
         if (gameState)
         {
-            Debug.Log("There is already a game playing." +
-                " Please end the current game before starting a new one.");
+            stateRequest.gameInProgressError();
             return;
         }
         else if (playerList.Count < 2)
         {
-            Debug.Log("There are not enough players to play a game of poker. " +
-                "Please add more players then continue.");
+            stateRequest.minPlayerError();
             return;
         }
-
-        GameObject.Find("StartingGame").gameObject.SetActive(false);
+        
+        this.minimumBet = ante;
+        pregameUI.gameObject.SetActive(false);
 
         // Reset Player Variables
         foreach (var player in playerList)
         {
+            player.resetPlayer();
             player.money = startMoney;
-            player.betted = 0;
-            player.bettedRound = 0;
-            player.folded = false;
-            player.tappedOut = false;
-            player.handRank = 10;
-            player.getHoleCards().Clear();
-            player.bestHand.Clear();
-            player.handDescription = null;
-            controlpads_glue.SendControlpadMessage(player.ID, "refresh:2");
         }
+
+        // Initialize Vault Variables
+        vault.potMoney = 0;
+        vault.currentBet = 0;
+        vault.minimumBet = minimumBet;
+        vault.tottalMoney = startMoney * playerList.Count;
 
         // Reset & Initialize Game Variables
         reveal = 0;
         rounds = 0;
-        vault.potMoney = 0;
-        vault.currentBet = 0;
         playerTurn = 0;
-        vault.tottalMoney = startMoney * playerList.Count;
 
-        // Initialize the first player
-        // Reset and Deal Cards
+
+        
+        // Reset Cards
         cardController.resetCards();
-        gameState = true;
 
+        // Update game State
+        gameState = true;
+        
+        // Initialize the first player and deal cards
         if (blindPlay)
             blindBets();
 
@@ -212,21 +204,16 @@ public class gameController : MonoBehaviour
         currentPlayer.enterFrame(); 
         if (!blindPlay) 
             vault.lastRaise = currentPlayer;
-        controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh:3");
-
-        // Debug.Log("---------------------- A new game of Texas Hold'Em Has begun ----------------------");
-        // Debug.Log("It is now " + currentPlayer.username + "\'s turn. \n " + currentPlayer.getHoleCardsDesc());
-
     }
 
     private void blindBets()
     {
-        playerTurn = (playerTurn + 1) % playerList.Count;
         var smallBlind = playerList[playerTurn];
-
         playerTurn = (playerTurn + 1) % playerList.Count;
-        var bigBlind = playerList[playerTurn];
         
+        var bigBlind = playerList[playerTurn];
+        playerTurn = (playerTurn + 1) % playerList.Count;
+
         vault.blind(smallBlind, bigBlind);
     }
 
@@ -300,7 +287,7 @@ public class gameController : MonoBehaviour
                 player.folded = true;
             else
             {
-                vault.potMoney += player.requestFunds(ante);
+                vault.potMoney += player.requestFunds(minimumBet);
                 playing.Add(player);
             }
 
@@ -315,7 +302,7 @@ public class gameController : MonoBehaviour
             playerTurn = (playerTurn + 1) % playerList.Count;
         }
 
-        vault.currentBet += ante;
+        vault.currentBet += minimumBet;
     }
 
 
