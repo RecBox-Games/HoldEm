@@ -18,7 +18,7 @@ public class gameController : MonoBehaviour
     [SerializeField] GameObject pregameUI;
     [SerializeField] cardController cardController;
     [SerializeField] stateRequest stateRequest;
-
+    [SerializeField] Vault vault;
     [SerializeField] int maxPlayers;
     [SerializeField] int startMoney;    // The default amount of money each player gets
     [SerializeField] int minimumBet;          // Default amount for an ante
@@ -36,7 +36,6 @@ public class gameController : MonoBehaviour
     private List<playerController> playerList = new List<playerController>();
     private List<playerController> sidePots = new List<playerController>();
     private playerController currentPlayer;
-    private Vault vault = new Vault();
     private int reveal = 0;         // which of reveal will be played after betting
     private int rounds = 0;         // How many tottal rounds have been played
     private int playerTurn = 0;     // Increments each player turn
@@ -179,8 +178,6 @@ public class gameController : MonoBehaviour
         reveal = 0;
         rounds = 0;
         playerTurn = 0;
-
-
         
         // Reset Cards
         cardController.resetCards();
@@ -219,7 +216,6 @@ public class gameController : MonoBehaviour
 
     private async Task anteUP()
     {
-        Debug.Log("I made it: 1");
         int playersPlaying;
 
         //Setting isPregame to true will force the controller into pregame status
@@ -242,37 +238,24 @@ public class gameController : MonoBehaviour
 
                 }
             }
-
-            Debug.Log("I made it: 2");
             refreshPlayers("Time to Ante Up!");
         
             foreach (var player in playerList)
             {
                 do
-                {
                     await Task.Delay(1000);
-                    Debug.Log(player.name + player.pregameResponded + "HELP IM STUCK HERE!");
-                    
-                } while (!player.pregameResponded);
+                while (!player.pregameResponded);
+
                 if(player.playRound)
-                {
                     playersPlaying += 1;
-                }
             }
 
-            Debug.Log("I made it: 3");
             if (playersPlaying < 2)
-            {
                 foreach (var player in playerList)
-                {
                     controlpads_glue.SendControlpadMessage(player.ID, "alert:Need more than one person to play a poker game you silly goose."); 
-                }
-
-            }
         }
         while (playersPlaying < 2);
 
-        Debug.Log("I made it: 4");
         isPregame = false;
         foreach (var player in playerList)
         {
@@ -280,29 +263,19 @@ public class gameController : MonoBehaviour
             controlpads_glue.SendControlpadMessage(player.ID, "refresh:Anteing is finished"); 
         }
 
-        Debug.Log("I made it: 5");
+        Debug.Log("Player Turn: " + playerTurn);
+
+        // Find out which players are playing this round
         var playing = new List<playerController>();
         foreach (var player in playerList)
             if (!player.playRound)
                 player.folded = true;
             else
-            {
-                vault.potMoney += player.requestFunds(minimumBet);
                 playing.Add(player);
-            }
 
-        Debug.Log("I made it: 6");
+        vault.ante(playing);
         cardController.dealCards(playing, playerTurn);
         resetBetRound();
-        
-        foreach (var player in playerList)
-        {
-            if (!player.folded)
-                break;
-            playerTurn = (playerTurn + 1) % playerList.Count;
-        }
-
-        vault.currentBet += minimumBet;
     }
 
 
@@ -345,8 +318,8 @@ public class gameController : MonoBehaviour
             currentPlayer = playerList[playerTurn];
         }
 
-        //Wait for everyone to ready up
-        // stateRequest.waitingToReadyUp = true;
+        // Wait for everyone to ready up
+        stateRequest.waitingToReadyUp(true);
 
         foreach (var player in playerList)
             {
@@ -354,6 +327,8 @@ public class gameController : MonoBehaviour
                 player.readyForNextRound = false;
                 player.status = "Ready up for the next round!";
             }
+
+
 
         // Now Determine the winner of each sidepot
         sidePots.Reverse();
@@ -380,15 +355,15 @@ public class gameController : MonoBehaviour
             }
         }
 
-
         refreshPlayers("Ready up for next round");
 
-        // await WaitForReadyForNextRound();
+        await WaitForReadyForNextRound();
+
 
         // Reset Player Objects to the right position and make sure they arnt folded
         foreach (var player in playerList) 
         {
-            player.resetPlayer();
+            player.roundReset();
         }
         
         // Update Game Variables
@@ -400,7 +375,6 @@ public class gameController : MonoBehaviour
         playerTurn = rounds % playerList.Count;
         sidePots.Clear();
 
-        Debug.Log("I made it: 9");
         // Initialize first player of the next round
         // Reset and Deal Cards
         cardController.resetCards();
@@ -412,7 +386,8 @@ public class gameController : MonoBehaviour
         else
             cardController.dealCards(playerList, playerTurn);
 
-        Debug.Log("I made it: 10");
+        Debug.Log("Pot Money: " + vault.potMoney);
+
         currentPlayer = playerList[playerTurn];
         currentPlayer.underTheGun = true;
         currentPlayer.enterFrame();

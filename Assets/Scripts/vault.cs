@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 
-public class Vault
+public class Vault : MonoBehaviour
 {
     private Transform potGUI;
     public playerController lastRaise { get; set; }
@@ -31,7 +32,7 @@ public class Vault
         {
             potMoney += player.requestFunds(minimumBet);
         }
-
+        potGUI.GetComponent<UnityEngine.UI.Text>().text = "$" + potMoney.ToString();
         lastRaise = players[0];
     }
 

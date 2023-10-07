@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class stateRequest : MonoBehaviour
 {
+    [SerializeField] controllerParse controllerParse;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -14,8 +16,14 @@ public class stateRequest : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
     }
 
+
+    public void waitingToReadyUp(bool ready)
+    {
+        controllerParse.waitingToReadyUp = ready;
+    }
 
     public void sendPlayerSuccess(playerController player)
     {

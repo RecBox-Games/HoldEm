@@ -182,10 +182,24 @@ public class playerController : MonoBehaviour
         IsMoving = false; // Clear the flag to indicate that the movement is complete.
     }
 
+    public void roundReset()
+    {
+        betted = 0;
+        bettedRound = 0;
+        handRank = 10;
+        sidePot = 0;
+        getHoleCards().Clear();
+        bestHand.Clear();
+        handDescription = null;
+        if (!tappedOut)
+            folded = false;
+    }
+
     public void resetPlayer()
     {
         money = 0;
         betted = 0;
+        sidePot = 0;
         bettedRound = 0;
         folded = false;
         tappedOut = false;
