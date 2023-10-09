@@ -30,6 +30,24 @@ function chipStack(){
     }
 }
 
+//Provides a response when a user hits the action button
+function captureAction(){
+
+    if(playerCall == 0)
+    {
+        action = "Check";
+    }
+    else if (playerCall == currentCall)
+    {
+        action = "Call";
+    }
+    else 
+    {
+        action = "Raise";
+    }
+    sendResponse();
+}
+
 //Instantiates Card Elements based on given array
 function addCard(cardarray)
 {
@@ -149,18 +167,19 @@ function playingRound(value){
 //Used when a user has requested funds
 function addFunds()
 {
-    let response = prompt("Enter a positive integer that is divisible by 5");
+    let response = prompt("Enter a positive integer less than 1000");
     if(response)
     {
-        while (!/^[0-9]+$/.test(response) & (parseInt(response) % 5 == 0)) {
-            alert("You did not enter a number divisible by 5");
-            response = prompt("Enter a positive integer that is divisible by 5");
-            if(!response)
-            {
-                return;
-            }
+        if(!/^[0-9]+$/.test(response))
+        {
+        alert("You did not enter a valid number");
+        return;
         }
-        console.log(response)
+        if(parseInt(response) > 1000)
+        {
+        alert("You did not enter a number less than 1000");
+        return;
+        }
         messages.push("requestMoney:"+ response);
         alert("Sit tight while everyone votes");
 
