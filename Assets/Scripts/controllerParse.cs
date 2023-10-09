@@ -10,54 +10,59 @@ using System;
 
 public class controllerParse : MonoBehaviour
 {
-    [SerializeField] gameController gameController;
+    [SerializeField] gameController gameController;     //Tie into gameController
+    public List<string> clientsSent = new List<string>(); //Temporary list to keep the game from sending multiple requests for newPlayer
+    public bool someonesAskingForMoneyAgain = false;     //Bool to determine if we need to go to the asking for money screen
 
-    public List<string> clientsSent = new List<string>();
+    public string playerAskingForMoney; //String of player who is asking for money for UI purposes
 
-    public bool someonesAskingForMoneyAgain = false;
+    public string askAmount; //How much they are asking for
 
-    public string playerAskingForMoney;
-
-    public string askAmount;
-
-    public bool waitingToReadyUp = false;
+    public bool waitingToReadyUp = false; //If everyone hasn't readied up yet
     
 
+    //Function for when the game recieves a message
     public async void messageParse(string client, string msg)
     {
-        // Parse msg by
-        var messages = msg.Split(':');
+        var messages = msg.Split(':');   // Parse msg by a colon
 
+        //If the player is trying to join the game, register their name and create a new player item for them
         if (messages[0] == "NewPlayer") 
         {
             string playerName = messages[1];
             gameController.newPlayer(playerName, client);
 
-            messageParse(client,"RequestState");
+            messageParse(client,"RequestState"); //Lastly, send them a refresh message to request their state again
         }
 
+        //Associated the client with a player object
         var fromPlayer = grabPlayer(client);
 
+        //If that player object is null, they haven't been added yet. This works as somewhat a delay for the server
         if (fromPlayer is null)
         {
+            //If client has already been sent a "ReadyToJoin" message
             if (clientsSent.Contains(client))
             {
                 Debug.Log("Found in Client List");
                 return;
             }
+            //Send a "ReadyToJoin" message, which is a validated attempt to join
             else
             {
                 clientsSent.Add(client);
                 controlpads_glue.SendControlpadMessage(client, "state:ReadyToJoin");
                 return;
-
             }
         }
 
+        //If the player object was successfully identified, make a switch on their message
 
         switch (messages[0])
         {
-            //Special Game State Requests
+            //Special Game State Requests that come before the normal game mode
+
+            //Host is trying to start the game
             case "StartGame":
 
                 int startMoney = int.Parse(messages[1]);
@@ -74,6 +79,7 @@ public class controllerParse : MonoBehaviour
                 gameController.startGame(startMoney,ante);
                 break;
 
+            //Player is sending a response from their turn
             case "PlayerResponse":
                 string action = messages[1];
                 int amount;
@@ -93,6 +99,8 @@ public class controllerParse : MonoBehaviour
                         break;
                 }
                 break;
+            
+            //Player has updated one of their custom settings
             case "Setting":
                 switch (messages[1])
                 {
@@ -130,11 +138,13 @@ public class controllerParse : MonoBehaviour
                 }
                 break;
 
+            //Player is grabbing a list of colors that they can be
             case "AvailableColors":
                 string playerColors = listColors();
                 controlpads_glue.SendControlpadMessage(client,string.Join(":", playerColors));
                 break;
 
+            //Player has made a decision on ante'ing up
             case "playingRound":
                 if (messages[1] == "Sitting")
                 {
@@ -149,20 +159,23 @@ public class controllerParse : MonoBehaviour
                 fromPlayer.pregameResponded = true;
                 break;
             
+            //Player has readied up
             case "readyUp":
                 fromPlayer.readyForNextRound = true;
                 fromPlayer.readyResponded = true;
                 fromPlayer.status ="Waiting for all players to respond";
                 UpdateStatus(fromPlayer.ID);
-                
                 break;
             
+            //Player is requesting money from other players
             case "requestMoney":
                 askAmount = messages[1];
                 // Debug.Log("Ask Amount: " + askAmount);
                 // Debug.Log("Client: " + client);
                 await moneyRequest(client,askAmount);
                 break;
+
+            //Player is sending their response to a player's request for money
             case "moneyResponse":
                 if(messages[1] == "1")
                 {
@@ -174,8 +187,9 @@ public class controllerParse : MonoBehaviour
 
                 }
                 fromPlayer.moneyResponded = true;
-
                 break;
+            
+            //Player is quitting the game
             case "quit":
                 var playerList = gameController.getPlayerList();
 
@@ -188,9 +202,6 @@ public class controllerParse : MonoBehaviour
                 GameObject playerObject = GameObject.Find(fromPlayer.username);
                 Debug.Log(fromPlayer.username + " removed from the game");
                 playerList.RemoveAll(p => p.ID == client);
-
-
-
                 if(gameController.getCurretPlayer().ID == client)
                 {
                     StartCoroutine(RemovePlayer(() =>
@@ -203,73 +214,67 @@ public class controllerParse : MonoBehaviour
                 {
                         Destroy(playerObject);
                 }
-
                 controlpads_glue.SendControlpadMessage(client,"alert:" + "Successful Quit. Close your window at any time");
+                break;
 
-
-
-
-            break;
-
-            //Normal State Request
+            //Normal refresh state request to update where they are in the game. Can be used as a reset/refresh
             case "RequestState":
+                //Update the clients custom settings
                 UpdateSettings(client);
+                //Update the clients GameState
                 GameState(client);
+                //Update the clients Status Baar
                 UpdateStatus(client);
                 break;
         }
     }
 
-    private IEnumerator RemovePlayer(System.Action onComplete)
-{
-    gameController.getCurretPlayer().IsMoving = true;
-    gameController.triggerNextTurn();
-
-    // Call the onComplete callback when exitFrame is done
-    yield return new WaitUntil(() => !gameController.getCurretPlayer().IsMoving); // Modify this condition as needed
-    
-    onComplete?.Invoke();
-}
-
-
+    //Normal GameState Request for the player refreshing their screen
     public void GameState(string client){
-        var player = grabPlayer(client);
+        var player = grabPlayer(client); //Grab the correct player object from client
+        var stateName = ""; //Initialize statename
+        List<string> variables = new List<string>(); //Initialize a list of variables to be sent to the client
+        variables.Add(player.username); //Add the user's name from saved player object
+        variables.Add(player.playerColor); //Add the player's color from saved player object
 
-
-        var stateName = "";
-        List<string> variables = new List<string>();
-        variables.Add(player.username);
-        variables.Add(player.playerColor);
-
-
+        //If player is host, send a seperate message to designate that
         if (player.isHost)
         {
             controlpads_glue.SendControlpadMessage(player.ID,"host");
         }
+
+        //If the game has not started yet
         if(!gameController.gameState)
         {
             stateName = "JoinedWaitingToStart:";  
         }
-        else {
 
-            variables.Add(player.money.ToString());
-            variables.Add((gameController.getRevealBet() - player.bettedRound).ToString());
+        //If the game has started
+        else 
+        {
+            variables.Add(player.money.ToString()); //Add the player's money from saved player object
+            variables.Add((gameController.getRevealBet() - player.bettedRound).ToString()); //Add the current bet from saved player object
 
-            
-            //Need to add card variable tie in here
+            //Add player cards
             foreach(var card in player.getHoleCards())
             {
                 variables.Add(card.suit.ToString() + "-" + card.rank.ToString());
             }
+            variables.Add(gameController.getAnte().ToString()); //Add the minimum bet from saved game object
 
+            //If the game is waiting to ready up and the player hasn't responded yet
             if(waitingToReadyUp & !player.readyResponded)
             {
                 stateName = "ReadyUp:";
             }
+
+            //Else if the ask for money screen is triggered and the player hasn't responded yet
             else if(someonesAskingForMoneyAgain & !player.moneyResponded)
             {
                 stateName="MoneyRequest:";
             }
+
+            //Else if the pregaming state is triggered(ante'ing)
             else if(gameController.PreGame())
             {
                 if (!player.pregameResponded)
@@ -282,63 +287,48 @@ public class controllerParse : MonoBehaviour
 
             }
 
-
-
-
+            //Else if player has folded
             else if (player.folded)
             {
                 stateName = "PlayingFolded:";
             }
+
+            //Else if it is the player's turn
             else if (gameController.getCurretPlayer().ID == client){
                 stateName = "PlayingPlayerTurn:";
             }
 
+            //Otherwise, they are playing but it's not their turn
             else {
                 stateName = "PlayingWaiting:";
-            }
-
-            variables.Add(gameController.getAnte().ToString());
-
-
-            
+            } 
         }
-        string variableString = string.Join(":", variables.ToArray());
-
-        controlpads_glue.SendControlpadMessage(player.ID, "state:" + stateName + variableString);
-        
-       
-
+        string variableString = string.Join(":", variables.ToArray()); //Bundle up the variables and send with a colon
+        controlpads_glue.SendControlpadMessage(player.ID, "state:" + stateName + variableString); //Send the player a message with their gamestate and the key variables
     }
+    
+    //Async task to initialize the money request screen. Waits for each player to respond before proceeding
     private async Task moneyRequest(string client, string amount)
     {
         someonesAskingForMoneyAgain = true;
         var RequestingPlayer = grabPlayer(client);
         var playerList = gameController.getPlayerList();
 
-        
         foreach (var player in playerList)
         {
             if (player.ID == client)
             {
                 playerAskingForMoney = player.username;
                 player.moneyResponded = true;
-                player.moneyResponse = true;
-                
+                player.moneyResponse = true;        
             }
             else
-            {
-                
+            {   
                 player.moneyResponded = false;
                 player.status = ("Approve or reject " + playerAskingForMoney+ "'s request for $" + askAmount);
-
             }
-
         }
         gameController.refreshPlayers(playerAskingForMoney + " is asking for money again");
-
-
-
-       
         foreach (var player in playerList)
         {
             do
@@ -383,7 +373,7 @@ public class controllerParse : MonoBehaviour
         }
     }
 
-
+    //Updates the players custom settings by sending a : delimited list
     public void UpdateSettings(string client){
         var player = grabPlayer(client);
         foreach (var setting in player.CustomSettings)
@@ -393,6 +383,7 @@ public class controllerParse : MonoBehaviour
         }
     }
 
+    //Updates the player status banner by the player's current status
     public void UpdateStatus(string client) 
     {
         var player = grabPlayer(client);
@@ -402,6 +393,7 @@ public class controllerParse : MonoBehaviour
         }
     }
 
+    //Returns a string of all available colors for the user to select from
     public string listColors(){
         List<string> playerColors = new List<string>();
         playerColors.Add("colors");
@@ -429,6 +421,8 @@ public class controllerParse : MonoBehaviour
 
 
     }
+
+    //Returns a player object that matches the provided client
     public playerController grabPlayer(string client) {
         foreach (var player in gameController.getPlayerList()) 
         {
@@ -440,6 +434,19 @@ public class controllerParse : MonoBehaviour
         }
         return null;
     }
+
+    //Async task for a player being removed from the game
+    private IEnumerator RemovePlayer(System.Action onComplete)
+    {
+    gameController.getCurretPlayer().IsMoving = true;
+    gameController.triggerNextTurn();
+
+    // Call the onComplete callback when exitFrame is done
+    yield return new WaitUntil(() => !gameController.getCurretPlayer().IsMoving); // Modify this condition as needed
+    
+    onComplete?.Invoke();
+    }
+
 
 
 }
