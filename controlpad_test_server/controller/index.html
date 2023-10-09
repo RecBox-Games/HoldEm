@@ -223,30 +223,15 @@
               <option value="1000">$1,000</option>
               <option value="2500">$2,500</option>
               <option value="5000">$5,000</option>
-          </select>
-
-                    
-          <label>Game Type:</label>
-          <br>
-          <input type="radio" id="ante" name="game-type" value="ante" checked>
-          <label for="ante">Ante</label>
-          <br>
-          <input disabled type="radio" id="blinds" name="game-type" value="blinds">
-          <label for="blinds">Blinds</label>
-          <br>
-          <input disabled type="radio" id="none" name="game-type" value="none">
-          <label for="no Antes or Blinds">No Antes or Blinds</label>
-          <br>
-
-          
-          <div id="minimum-bet">
+          </select>          
+            <div id="minimum-bet">
               <label for="minimumBetAmount">Minimum Bet Amount:</label>
                   <select id="minimumBetAmount" name="minimumBetAmount">
                     <option class="gameOption" value="5">$5</option>
                     <option class="gameOption" value="10">$10</option>
                     <option class="gameOption" value="25">$25</option>
                     <option class="gameOption" value="50">$50</option>
-                </select>
+            </select>
           </div>
           <br>
           <p style="margin-top: 0;" id="anteInfo">For Ante style of game, the ante will be equal to the minimum bet</p>
@@ -324,8 +309,10 @@
 
     </div>
     
-
-    <script src="./JS/game.js"></script>
+    <script src="./JS/settings.js"></script>
+    <script src="./JS/mechanics.js"></script>
+    <script src="./JS/messaging.js"></script>
+    <script src="./JS/stateRequest.js"></script>
     <script src="./JS/utils.js"></script>
     <script src="./JS/ui.js"></script>
 
