@@ -32,7 +32,6 @@ public class Vault : MonoBehaviour
         {
             potMoney += player.requestFunds(minimumBet);
         }
-        potGUI.GetComponent<UnityEngine.UI.Text>().text = "$" + potMoney.ToString();
         lastRaise = players[0];
     }
 

@@ -38,8 +38,10 @@ public class gameController : MonoBehaviour
     private playerController currentPlayer;
     private int reveal = 0;         // which of reveal will be played after betting
     private int rounds = 0;         // How many tottal rounds have been played
+    private int remaining;
     private int playerTurn = 0;     // Increments each player turn
     private bool isPregame = false;
+    private bool lastFold = false;
 
 
 
@@ -178,6 +180,7 @@ public class gameController : MonoBehaviour
         reveal = 0;
         rounds = 0;
         playerTurn = 0;
+        remaining = playerList.Count;
         
         // Reset Cards
         cardController.resetCards();
@@ -263,8 +266,6 @@ public class gameController : MonoBehaviour
             controlpads_glue.SendControlpadMessage(player.ID, "refresh:Anteing is finished"); 
         }
 
-        Debug.Log("Player Turn: " + playerTurn);
-
         // Find out which players are playing this round
         var playing = new List<playerController>();
         foreach (var player in playerList)
@@ -273,6 +274,7 @@ public class gameController : MonoBehaviour
             else
                 playing.Add(player);
 
+        remaining = playing.Count;
         vault.ante(playing);
         cardController.dealCards(playing, playerTurn);
         resetBetRound();
@@ -281,6 +283,7 @@ public class gameController : MonoBehaviour
 
     private async void newRound()
     {
+
         // Parse the players for only the players who havent folded
         List<playerController> remainingPlayers = new List<playerController>();
         foreach (var player in playerList) 
@@ -295,8 +298,14 @@ public class gameController : MonoBehaviour
             remainingPlayers.Remove(player);
         }
 
+
         // Determine the winners and then give them their share of the pot
-        List<playerController> winners = cardController.DetermineWinners(remainingPlayers);
+        List<playerController> winners = new List<playerController>();
+        if (remainingPlayers.Count > 2)
+            winners = cardController.DetermineWinners(remainingPlayers);
+        else
+            winners = remainingPlayers;
+
         int payment = vault.potMoney / winners.Count;
         int remainder = vault.potMoney % winners.Count;
 
@@ -369,6 +378,7 @@ public class gameController : MonoBehaviour
         // Update Game Variables
         rounds++;
         reveal = 0;
+        remaining = playerList.Count;
         vault.potMoney = 0;
         vault.revealBet = 0;
         vault.currentBet = 0;
@@ -423,32 +433,36 @@ public class gameController : MonoBehaviour
             playerTurn = (playerTurn + 1) % playerList.Count;
             currentPlayer = playerList[playerTurn];
 
+            if (lastFold)
+            {
+                
+                vault.lastRaise = currentPlayer;
+
+                lastFold = false;
+            }
+
             // If the next player is folded or they cant bet anymore just skip their turn
             if (currentPlayer.folded || currentPlayer.tappedOut) 
             {
+                if (vault.lastRaise ==  currentPlayer)
+                    lastFold = true;
                 nextTurn();
                 return;
             }
 
-            // Check if everyone has folded except the current player.
-            int i = 0;
-            foreach (var player in playerList) 
-            { 
-                if (player.folded)
-                { 
-                    i++; 
-                }
-            }
-            if (i == playerList.Count - 1)
+            
+            if (remaining.Equals(1))
             {
                 newRound();
                 return;
             }
 
+            
             // Check if a round of betting has commenced
             if (currentPlayer == vault.lastRaise)
             {
                 newBetRound();
+                return;
             }
 
             StartCoroutine(EnterFrameCoroutine(() =>
@@ -525,19 +539,10 @@ public class gameController : MonoBehaviour
     public void fold()
     {
         currentPlayer.folded = true;
+        remaining--;
+        lastFold = true;
 
-        // If this player is the highest bidder look for the next non-folded player and make them the highest bidder
-        if (currentPlayer == vault.lastRaise)
-        {
-            int i = playerTurn;
-            while (vault.lastRaise.folded)
-            {
-                vault.lastRaise = playerList[i];
-                i = (i + 1) % playerList.Count;
-            }
-        }
-
-        // Debug.Log(currentPlayer.username + " has folded.");
+        Debug.Log(currentPlayer.username + " has folded.");
         nextTurn();
     }
 
