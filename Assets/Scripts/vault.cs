@@ -33,6 +33,8 @@ public class Vault : MonoBehaviour
             potMoney += player.requestFunds(minimumBet);
         }
         lastRaise = players[0];
+        // revealBet = minimumBet;
+        currentBet = minimumBet;
     }
 
     public void blind(playerController smallBlind, playerController bigBlind)
@@ -49,7 +51,6 @@ public class Vault : MonoBehaviour
     public void raise(playerController player, int amount)
     {
         int money;
-
         if (player.betted < currentBet)
         {
             // request funds to call the current tottal bet
@@ -76,6 +77,7 @@ public class Vault : MonoBehaviour
 
     public void call(playerController player)
     {
+        Debug.Log(player.betted + " current " + currentBet + " reveal " + revealBet);
         int money;
         if (player.betted < currentBet)
             money = player.requestFunds(currentBet - player.betted);

@@ -206,6 +206,11 @@ public class gameController : MonoBehaviour
             vault.lastRaise = currentPlayer;
     }
 
+    public void endGame()
+    {
+        gameState = false;
+    }
+
     private void blindBets()
     {
         var smallBlind = playerList[playerTurn];
@@ -283,7 +288,6 @@ public class gameController : MonoBehaviour
 
     private async void newRound()
     {
-
         // Parse the players for only the players who havent folded
         List<playerController> remainingPlayers = new List<playerController>();
         foreach (var player in playerList) 
@@ -291,13 +295,15 @@ public class gameController : MonoBehaviour
                 remainingPlayers.Add(player);
 
         // Calculate Side Pots
-        foreach (var player in sidePots)
+        if (!remainingPlayers.Count.Equals(sidePots.Count))
         {
-            player.sidePot = player.betted * remainingPlayers.Count;
-            vault.potMoney -= player.sidePot;
-            remainingPlayers.Remove(player);
+            foreach (var player in sidePots)
+            {
+                player.sidePot = player.betted * remainingPlayers.Count;
+                vault.potMoney -= player.sidePot;
+                remainingPlayers.Remove(player);
+            }
         }
-
 
         // Determine the winners and then give them their share of the pot
         List<playerController> winners = new List<playerController>();
@@ -327,17 +333,12 @@ public class gameController : MonoBehaviour
             currentPlayer = playerList[playerTurn];
         }
 
-        // Wait for everyone to ready up
-        stateRequest.waitingToReadyUp(true);
-
         foreach (var player in playerList)
             {
                 player.readyResponded = false;
                 player.readyForNextRound = false;
                 player.status = "Ready up for the next round!";
             }
-
-
 
         // Now Determine the winner of each sidepot
         sidePots.Reverse();
@@ -364,8 +365,19 @@ public class gameController : MonoBehaviour
             }
         }
 
-        refreshPlayers("Ready up for next round");
+        foreach(var player in playerList)
+        {
+            if (player.money == vault.tottalMoney)
+            {
+                Debug.Log(player.username + " is the winner!!!");
+                endGame();
+                return;
+            }
+        }
 
+        // Wait for everyone to ready up
+        stateRequest.waitingToReadyUp(true);
+        refreshPlayers("Ready up for next round");
         await WaitForReadyForNextRound();
 
 
@@ -433,11 +445,12 @@ public class gameController : MonoBehaviour
             playerTurn = (playerTurn + 1) % playerList.Count;
             currentPlayer = playerList[playerTurn];
 
+            if (sidePots.Count.Equals(playerList.Count))
+                revealCards();
+
             if (lastFold)
             {
-                
                 vault.lastRaise = currentPlayer;
-
                 lastFold = false;
             }
 
@@ -567,5 +580,4 @@ public class gameController : MonoBehaviour
     {
         nextTurn();
     }
-
 }

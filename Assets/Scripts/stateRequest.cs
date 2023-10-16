@@ -19,6 +19,11 @@ public class stateRequest : MonoBehaviour
 
     }
 
+    public void gameOver()
+    {
+        // Tells the controller that the game is over and to stop the loop / ask for a new game.
+    }
+
 
     public void waitingToReadyUp(bool ready)
     {

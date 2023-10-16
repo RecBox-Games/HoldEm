@@ -26,7 +26,7 @@ public class controllerParse : MonoBehaviour
     {
         var messages = msg.Split(':');   // Parse msg by a colon
 
-        //If the player is trying to join the game, register their name and create a new player item for them
+        // If the player is trying to join the game, register their name and create a new player item for them
         if (messages[0] == "NewPlayer") 
         {
             string playerName = messages[1];
@@ -35,19 +35,19 @@ public class controllerParse : MonoBehaviour
             messageParse(client,"RequestState"); //Lastly, send them a refresh message to request their state again
         }
 
-        //Associated the client with a player object
+        // Associated the client with a player object
         var fromPlayer = grabPlayer(client);
-
-        //If that player object is null, they haven't been added yet. This works as somewhat a delay for the server
+         
+        // If that player object is null, they haven't been added yet. This works as somewhat a delay for the server
         if (fromPlayer is null)
         {
-            //If client has already been sent a "ReadyToJoin" message
+            // If client has already been sent a "ReadyToJoin" message
             if (clientsSent.Contains(client))
             {
                 Debug.Log("Found in Client List");
                 return;
             }
-            //Send a "ReadyToJoin" message, which is a validated attempt to join
+            // Send a "ReadyToJoin" message, which is a validated attempt to join
             else
             {
                 clientsSent.Add(client);
