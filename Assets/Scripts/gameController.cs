@@ -209,6 +209,7 @@ public class gameController : MonoBehaviour
     public void endGame()
     {
         gameState = false;
+        stateRequest.gameOver();
     }
 
     private void blindBets()
@@ -222,6 +223,14 @@ public class gameController : MonoBehaviour
         vault.blind(smallBlind, bigBlind);
     }
 
+
+    /* This function first checks if players are:
+     * - Ready to move to the next round (Controller will put up a ready-up button)
+     * - Will do an ante-up screen to check if players are ready to play the round
+     * - Make sure atleast two players are playing
+     * 
+     * The function will then call the vualt and ante each player by the minimum bet
+     */
     private async Task anteUP()
     {
         int playersPlaying;
