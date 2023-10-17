@@ -11,7 +11,9 @@ This readme provides an overview of the different components and utility functio
 ### Functions and Features
 
 - **`init()`**: Initializes the game, sets up event listeners, and prepares the game for the first round.
-- **`startRound()`**: Starts a new game round, dealing cards, updating the UI, and managing player actions.
+- **`startRound()`**: Starts a new game round, dealing cards, updating the UI, and managing
+￼Card Peek
+ player actions.
 - **`handleMessage(message)`**: Handles incoming messages from other players and updates the game state accordingly.
 - **`send(message)`**: Sends a message to other players in the game.
 - **Player Actions**: Manages player actions like betting, folding, and checking.
@@ -21,6 +23,8 @@ This readme provides an overview of the different components and utility functio
 ### Description
 
 `mechanics.js` contains various game mechanics related to player actions, card handling, and UI updates. It manages the internal workings of the game, ensuring that actions are executed correctly.
+￼Card Peek
+
 
 ### Functions and Features
 

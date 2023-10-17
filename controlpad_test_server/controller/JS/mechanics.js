@@ -3,29 +3,47 @@
 //Mechanics should  contain
 //Poker Game Related Functions that aren't just drawing things
 
+// ---- Assets ----
+
+
+const chipValues = [100,25,10,5];
+const chipFiles = ["/resources/chip3.png", "./resources/chip3_green.png","./resources/chip3_blue.png", "./resources/chip3_red.png"];
+
 //Provides Chips for UI Element as they increase betting 
 function chipStack(){
     chips.replaceChildren();
     chips.style.display="block";
-
     let offsetChip = 20;
     chipArray = [0,0,0,0];
     let divideAmount = playerCall;
     let value = 0;
     for(i=0; i < chipValues.length; i++)
     {
-        
-        value = Math.floor(value);
-        chipArray[i] = value;
-        for(j=0; j<value; j++)
+
+        if(divideAmount < 5)
         {
-            var chip_img = document.createElement("IMG");
-            chip_img.setAttribute("src", chipFiles[i]);
-            chip_img.setAttribute("class", "chip");
-            chip_img.setAttribute("style", ("bottom: " + offsetChip.toString() + "px"));
-            document.getElementById("chipStack").appendChild(chip_img);
-            offsetChip = offsetChip + 20;
-            divideAmount = divideAmount - (chipValues[i])
+            break;
+        }
+        else
+        {
+            value = divideAmount/chipValues[i];
+            if(value >= 1)
+            {
+                value = Math.floor(value);
+                chipArray[i] = value;
+                for(j=0; j<value; j++)
+                {
+                    var chip_img = document.createElement("IMG");
+                    chip_img.setAttribute("src", chipFiles[i]);
+                    chip_img.setAttribute("class", "chip");
+                    chip_img.setAttribute("style", ("bottom: " + offsetChip.toString() + "px"));
+                    document.getElementById("chipStack").appendChild(chip_img);
+                    offsetChip = offsetChip + 20;
+                    divideAmount = divideAmount - (chipValues[i])
+                }
+
+
+            }
         }
     }
 }

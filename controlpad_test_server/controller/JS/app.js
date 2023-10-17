@@ -8,8 +8,6 @@
 
 // ---- Globals ----
 
-const chipValues = [100,25,10,5];
-const chipFiles = ["/resources/chip3.png", "./resources/chip3_green.png","./resources/chip3_blue.png", "./resources/chip3_red.png"];
 
 // ---- Canvas Settings ----
 let messages = []; //Array to hold messages to send to the controller
@@ -24,6 +22,7 @@ let SCREEN_ORIENTATION; //Portrait, Landscape, etc.
 let cardFlipped = false; //Whether or not the card is flipped
 let foldHold = false; //Bool to access the validity of the fold drag
 let foldHoldStartY; //Starting y index of the fold drag function
+
 
 // ---- HTML Elements ----
 
