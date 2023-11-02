@@ -99,41 +99,45 @@ function handleMessage(message) {
 
 //Used to send a player response like Call, Fold, Raise...
 function sendResponse(){
-    let message = "";
-    
+    let message = "";    
     switch (action) {
-        case "Fold":
-            message = "Fold this round?";
-            break;
-        default:
-            message = action + " " + playerCall + "?";
-            break;    
+    case "Fold":
+        message = "Fold this round?";
+        break;
+    default:
+        message = action + " " + playerCall + "?";
+        break;
     }
     let response = confirm(message);
     if(response)
     {
         let msg;
-
         switch (action) {
-            case "Fold":
-                playFoldSound();
-                setState(["state","JoinedWaiting",playerName,playerColor,playerMoney]);
-                msg="PlayerResponse:Fold";
-                break;
-            case "Call":
-            case "Check":
-                playCommitSound();
-                setState(["state","PlayingWaiting",playerName,playerColor,(playerMoney-currentCall)]);
-                msg = "PlayerResponse:Call";
-                break;
-            
-            default:
-                let amountRaised = playerCall - currentCall;
-                playCommitSound();
-                setState(["state","PlayingWaiting",playerName,playerColor,(playerMoney-amountRaised-currentCall)]);
-                msg = ("PlayerResponse:Raise:" + amountRaised.toString())
-                break;
-        
+        case "Fold":
+            playFoldSound();
+            setState(["state","JoinedWaiting",playerName,
+                      playerColor,
+                      playerMoney]);
+            msg="PlayerResponse:Fold";
+            break;
+        case "Call":
+        case "Check":
+            playCommitSound();
+            setState(["state","PlayingWaiting",
+                      playerName,
+                      playerColor,
+                      (playerMoney-currentCall)]);
+            msg = "PlayerResponse:Call";
+            break;
+        default:
+            let amountRaised = playerCall - currentCall;
+            playCommitSound();
+            setState(["state","PlayingWaiting",playerName,
+                      playerColor,
+                      (playerMoney-amountRaised-currentCall)]);
+            msg = ("PlayerResponse:Raise:" + amountRaised.toString())
+            break;
+
         }
         playerTurn = false;
         messages.push(msg);

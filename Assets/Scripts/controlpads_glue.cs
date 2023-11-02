@@ -47,6 +47,7 @@ public class ControlpadsLibrary {
     
 public class controlpads_glue : MonoBehaviour
 {
+    
     [SerializeField]
     private UnityEvent<string, string> _onControlpadMessage;
     

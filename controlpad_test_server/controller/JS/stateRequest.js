@@ -89,54 +89,53 @@ function drawScreen(sections) {
     wipeScreen(); 
     updateVariables(sections); //Updates name, money, current call
     switch(controlpadState) {
-        case "Loading":
-            drawLoadingScreen();
-            break;
-        case "ReadyToJoin":
-            drawReadyToJoin();
-            break;
-        case "JoinedWaitingToStart":
-            drawJoinedWaitingToStart();
-            break;
-        case "JoinedHost":
-            drawJoinedHost();
-            break;
-        case "PlayingPregame":
-            if (autoSitOut) {
-                messages.push("playingRound:Sitting");
-                stateRequest(); 
-            }
-            else
-            {
+    case "Loading":
+        drawLoadingScreen();
+        break;
+    case "ReadyToJoin":
+        drawReadyToJoin();
+        break;
+    case "JoinedWaitingToStart":
+        drawJoinedWaitingToStart();
+        break;
+    case "JoinedHost":
+        drawJoinedHost();
+        break;
+    case "PlayingPregame":
+        if (autoSitOut) {
+            messages.push("playingRound:Sitting");
+            stateRequest();
+        }
+        else
+        {
             console.log(autoSitOut);
             drawPregame();
-            }
-            break;
-        case "ReadyUp":
-            drawReadyUp();
+        }
+        break;
+    case "ReadyUp":
+        drawReadyUp();
         //Waiting till next hand
-        case "JoinedWaiting":
-            drawJoinedWaiting();
+    case "JoinedWaiting":
+        drawJoinedWaiting();
+        break;
+    case "PlayingFolded":
+        drawPlayingFolded();
+        break;
+    case "PlayingWaiting":
+        drawPlayingWaiting();
             break;
-        case "PlayingFolded":
-            drawPlayingFolded();
-            break;
-        case "PlayingWaiting":
-            drawPlayingWaiting();
-            break;
-        case "PlayingPlayerTurn":
-            drawPlayingPlayerTurn();
-            break;Messaging
-        case "GameFinished":
-            drawGameFinished();
-            break;
-        case "MoneyRequest":
-            drawMoneyRequest();
-            break;
-
-
-        default:
-            break;
+    case "PlayingPlayerTurn":
+        drawPlayingPlayerTurn();
+        break;
+    case "GameFinished":
+        drawGameFinished();
+        break;
+    case "MoneyRequest":
+        drawMoneyRequest();
+        break;
+        
+    default:
+        break;
     }
     needs_draw=true;
 }

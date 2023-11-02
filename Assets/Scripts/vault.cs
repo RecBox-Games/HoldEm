@@ -8,7 +8,7 @@ public class Vault : MonoBehaviour
     private Transform potGUI;
     public playerController lastRaise { get; set; }
     public int potMoney { get; set; } = 0;
-    public int tottalMoney { get; set; } = 0;
+    public int totalMoney { get; set; } = 0;
     public int currentBet { get; set; } = 0;     // Resets every round
     public int revealBet { get; set; } = 0;      // Resets every reveal
     public int minimumBet { get; set; } = 1;
@@ -32,7 +32,6 @@ public class Vault : MonoBehaviour
         {
             potMoney += player.requestFunds(minimumBet);
         }
-        lastRaise = players[0];
         // revealBet = minimumBet;
         currentBet = minimumBet;
     }
@@ -53,9 +52,9 @@ public class Vault : MonoBehaviour
         int money;
         if (player.betted < currentBet)
         {
-            // request funds to call the current tottal bet
+            // request funds to call the current total bet
             int callBet = player.requestFunds(currentBet - player.betted);
-            // requst funds to raise the current tottal bet
+            // requst funds to raise the current total bet
             int raiseMoney = player.requestFunds(amount);
 
             money = callBet + raiseMoney;

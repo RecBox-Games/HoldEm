@@ -10,15 +10,18 @@ using System;
 
 public class controllerParse : MonoBehaviour
 {
-    [SerializeField] gameController gameController;     //Tie into gameController
-    public List<string> clientsSent = new List<string>(); //Temporary list to keep the game from sending multiple requests for newPlayer
-    public bool someonesAskingForMoneyAgain = false;     //Bool to determine if we need to go to the asking for money screen
-
-    public string playerAskingForMoney; //String of player who is asking for money for UI purposes
-
-    public string askAmount; //How much they are asking for
-
-    public bool waitingToReadyUp = false; //If everyone hasn't readied up yet
+    //Tie into gameController
+    [SerializeField] gameController gameController;     
+    //Temporary list to keep the game from sending multiple requests for newPlayer
+    public List<string> clientsSent = new List<string>();
+    //Bool to determine if we need to go to the asking for money screen
+    public bool someonesAskingForMoneyAgain = false;
+    //String of player who is asking for money for UI purposes
+    public string playerAskingForMoney;
+    //How much they are asking for
+    public string askAmount;
+    //If everyone hasn't readied up yet
+    public bool waitingToReadyUp = false; 
     
 
     //Function for when the game recieves a message
@@ -31,8 +34,9 @@ public class controllerParse : MonoBehaviour
         {
             string playerName = messages[1];
             gameController.newPlayer(playerName, client);
-
-            messageParse(client,"RequestState"); //Lastly, send them a refresh message to request their state again
+            
+            //Lastly, send them a refresh message to request their state again
+            messageParse(client,"RequestState"); 
         }
 
         // Associated the client with a player object
@@ -76,6 +80,7 @@ public class controllerParse : MonoBehaviour
                     gameController.antePlay = true;
                 }
 
+                // starting with ante always?
                 gameController.startGame(startMoney,ante);
                 break;
 
@@ -112,7 +117,8 @@ public class controllerParse : MonoBehaviour
                         }
                         else
                         {
-                            controlpads_glue.SendControlpadMessage(client,"alert:Please select a different color. That color has already been selected.");
+                            string alert = "alert:Please select a different color. That color has already been selected.";
+                            controlpads_glue.SendControlpadMessage(client, alert);
                         }
                         break;
                     case "playerName":
@@ -129,7 +135,6 @@ public class controllerParse : MonoBehaviour
                             fromPlayer.autoSitOut = false;
                         }
                         break;
-
                     default:
                         Setting sound = new Setting(messages[1], messages[2]);
                         fromPlayer.CustomSettings.RemoveAll(s => s.name == messages[1]);
@@ -202,7 +207,7 @@ public class controllerParse : MonoBehaviour
                 GameObject playerObject = GameObject.Find(fromPlayer.username);
                 Debug.Log(fromPlayer.username + " removed from the game");
                 playerList.RemoveAll(p => p.ID == client);
-                if(gameController.getCurretPlayer().ID == client)
+                if(gameController.getCurrentPlayer().ID == client)
                 {
                     StartCoroutine(RemovePlayer(() =>
                     {
@@ -294,7 +299,7 @@ public class controllerParse : MonoBehaviour
             }
 
             //Else if it is the player's turn
-            else if (gameController.getCurretPlayer().ID == client){
+            else if (gameController.getCurrentPlayer().ID == client){
                 stateName = "PlayingPlayerTurn:";
             }
 
@@ -304,7 +309,8 @@ public class controllerParse : MonoBehaviour
             } 
         }
         string variableString = string.Join(":", variables.ToArray()); //Bundle up the variables and send with a colon
-        controlpads_glue.SendControlpadMessage(player.ID, "state:" + stateName + variableString); //Send the player a message with their gamestate and the key variables
+        //Send the player a message with their gamestate and the key variables
+        controlpads_glue.SendControlpadMessage(player.ID, "state:" + stateName + variableString); 
     }
     
     //Async task to initialize the money request screen. Waits for each player to respond before proceeding
@@ -438,11 +444,11 @@ public class controllerParse : MonoBehaviour
     //Async task for a player being removed from the game
     private IEnumerator RemovePlayer(System.Action onComplete)
     {
-    gameController.getCurretPlayer().IsMoving = true;
+    gameController.getCurrentPlayer().IsMoving = true;
     gameController.triggerNextTurn();
 
     // Call the onComplete callback when exitFrame is done
-    yield return new WaitUntil(() => !gameController.getCurretPlayer().IsMoving); // Modify this condition as needed
+    yield return new WaitUntil(() => !gameController.getCurrentPlayer().IsMoving); // Modify this condition as needed
     
     onComplete?.Invoke();
     }

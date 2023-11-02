@@ -56,15 +56,13 @@ function drawJoinedWaiting() {
     playerStatus = "Waiting for the next round to begin";
     topMenu();
     drawStatus();
-
 }
 
 function drawPregame() {
-
-        playerStatus= "Sit out or Play this round?"
-        drawStatus();
-        topMenu();
-        anteMenu.style.display = "block";
+    playerStatus= "Sit out or Play this round?"
+    drawStatus();
+    topMenu();
+    anteMenu.style.display = "block";
 }
 function drawReadyUp(){
     drawStatus();

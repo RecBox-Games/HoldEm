@@ -19,12 +19,12 @@ public class gameController : MonoBehaviour
     [SerializeField] cardController cardController;
     [SerializeField] stateRequest stateRequest;
     [SerializeField] Vault vault;
-    [SerializeField] int maxPlayers;
+    //    [SerializeField] int maxPlayers;
     [SerializeField] int startMoney;    // The default amount of money each player gets
-    [SerializeField] int minimumBet;          // Default amount for an ante
+    [SerializeField] int minimumBet;    // Default amount for an ante
 
     //Colors
-    public static string[] colors = new string[] 
+    public static string[] colors = new string[]
     { "Blue", "Green", "Red", "Purple", "Pink", "Orange", "Yellow", "Brown", "Teal", "Lavender", "Indigo", "Maroon", "Aqua", "Coral", "Gold", "Silver", "Lime", "Olive", "Navy", "Turquoise", "Tan"};
 
     // Static Variables
@@ -37,7 +37,7 @@ public class gameController : MonoBehaviour
     private List<playerController> sidePots = new List<playerController>();
     private playerController currentPlayer;
     private int reveal = 0;         // which of reveal will be played after betting
-    private int rounds = 0;         // How many tottal rounds have been played
+    private int rounds = 0;         // How many total rounds have been played
     private int remaining;
     private int playerTurn = 0;     // Increments each player turn
     private bool isPregame = false;
@@ -48,25 +48,25 @@ public class gameController : MonoBehaviour
     // ---------- Getters ----------
     public List<playerController> getPlayerList() { return playerList; }
 
-    public playerController getCurretPlayer() { return currentPlayer; }
+    public playerController getCurrentPlayer() { return currentPlayer; }
 
     public int getPlayerTurn() { return playerTurn; }
 
-    public int getRevealBet() {return vault.revealBet;}
+    public int getRevealBet() { return vault.revealBet; }
 
 
-    public bool PreGame() {return isPregame;}
+    public bool PreGame() { return isPregame; }
 
 
     public int getCurrentCall() { return vault.currentBet; }
 
-    public int getAnte() {return minimumBet;}
+    public int getAnte() { return minimumBet; }
 
     public string getTurnOrder()
     {
         string order = "";
         foreach (var player in playerList) { order += player.username + " "; }
-        return order; 
+        return order;
     }
 
     public string getPlayerMoneyInfo()
@@ -81,7 +81,67 @@ public class gameController : MonoBehaviour
         return finalInfo;
     }
 
+    private Vector3 calculateNewPlayersPosition(int playerNumber)
+    {
+        // Constants for table dimensions
+        float tableLength = 40f; // The length of the rectangle part of the table
+        float tableWidth = 45f;  // The width of the rectangle part of the table
+        float semiCircleRadius = 19f; // The radius of the semi-circle parts of the table
 
+        // Positions for players on the longer edges of the rectangle
+        if (playerNumber == 1 || playerNumber == 2)
+        {
+            // Players 1-2 on one long edge
+            return new Vector3((-tableLength / 4) * (playerNumber % 2 == 0 ? 1 : -1), 0, -tableWidth / 2);
+        }
+        else if (playerNumber == 3 || playerNumber == 4)
+        {
+            // Players 3-4 on the opposite long edge
+            return new Vector3((-tableLength / 4) * (playerNumber % 2 == 0 ? 1 : -1), 0, tableWidth / 2);
+        }
+        else
+        {
+            // Constants for adjusting the position
+            // Calculate angle for players on the semi-circles
+            // Spread the players evenly across the semi-circle by dividing the semi-circle
+            // into two arcs for three players: (180 degrees or Mathf.PI) / (3 - 1)
+            float angleStep = Mathf.PI / 2; // This now represents the step between each player
+            float startAngle = playerNumber <= 7 ? Mathf.PI : 0; // Starting from the top for players 5-7, bottom for 8-10
+
+            int playerSemiIndex = playerNumber - 5; // Index of the player on the semicircle
+            // float angle = startAngle + (playerSemiIndex * angleStep);
+
+            // Adjust the calculation for the x and z positions
+            // float xPosition = Mathf.Cos(angle) * semiCircleRadius;
+            // float zPosition = Mathf.Sin(angle) * semiCircleRadius;
+
+            if (playerNumber >= 5 && playerNumber <= 7)
+            {
+                // Mirror players 8-10
+                float angle = Mathf.PI - (playerSemiIndex * angleStep) + startAngle;
+
+                // Calculate the x and z positions based on the angle
+                // Note that we also need to adjust the zPosition calculation to ensure they are positioned correctly
+                // along the width of the table. The "+ tableWidth / 2" is used to position the players on top of the semi-circle edge.
+                float xPosition = Mathf.Sin(angle) * semiCircleRadius;
+                float zPosition = Mathf.Cos(angle) * semiCircleRadius;
+
+                // Adjust the xPosition by subtracting from -tableLength / 2 to move to the left side of the table
+                // For zPosition, we use the same calculation as for players 8-10 but we don't need to make it negative
+                // since we're already dealing with the top semi-circle. We subtract 22f to move them back a bit from the edge.
+                return new Vector3(-50 / 2 + xPosition, 0, (zPosition - tableWidth / 2) + 22f);
+            }
+            // Players 8-10 on the right semi-circle
+            else
+            {
+                float angle = startAngle + (playerSemiIndex * angleStep);
+                // Adjust the calculation for the x and z positions
+                float xPosition = Mathf.Cos(angle) * semiCircleRadius;
+                float zPosition = Mathf.Sin(angle) * semiCircleRadius;
+                return new Vector3(50 / 2 + xPosition, 0, -(zPosition - tableWidth / 2) - 22f); // Negative z to move to the other semi-circle
+            }
+        }
+    }
     /* Creates/Joins a new player to the game
      * 
      * IN: 
@@ -95,7 +155,7 @@ public class gameController : MonoBehaviour
      */
     public void newPlayer(string playerName, string client)
     {
-        if (playerList.Count > maxPlayers - 1)
+        if (playerList.Count > 10)
         {
             stateRequest.maxPlayerError();
             return;
@@ -106,8 +166,12 @@ public class gameController : MonoBehaviour
             return;
         }
 
+
+        Vector3 playerPos = calculateNewPlayersPosition(playerList.Count + 1);
+
+
         // Create a new Player object from the Player prefab and name it the new players name
-        Object playerObj = Instantiate(playerPrefab, new Vector3(30, 6, -23), Quaternion.identity);
+        Object playerObj = Instantiate(playerPrefab, playerPos, Quaternion.identity);
         playerObj.name = playerName;
 
         // Get the playerController and assign anything new to the player
@@ -115,7 +179,7 @@ public class gameController : MonoBehaviour
         playerList.Add(player);
         player.username = playerName;
         player.ID = client;
-        player.playerColor = colors[playerList.Count-1];
+        player.playerColor = colors[playerList.Count - 1];
         player.playerNumber = playerList.Count;
         if (playerList.Count == 1) { player.isHost = true; }
 
@@ -159,7 +223,7 @@ public class gameController : MonoBehaviour
             stateRequest.minPlayerError();
             return;
         }
-        
+
         this.minimumBet = ante;
         pregameUI.gameObject.SetActive(false);
 
@@ -174,36 +238,35 @@ public class gameController : MonoBehaviour
         vault.potMoney = 0;
         vault.currentBet = 0;
         vault.minimumBet = minimumBet;
-        vault.tottalMoney = startMoney * playerList.Count;
+        vault.totalMoney = startMoney * playerList.Count;
 
         // Reset & Initialize Game Variables
         reveal = 0;
         rounds = 0;
         playerTurn = 0;
         remaining = playerList.Count;
-        
+
         // Reset Cards
         cardController.resetCards();
 
         // Update game State
         gameState = true;
-        
+
         // Initialize the first player and deal cards
         if (blindPlay)
             blindBets();
 
         if (antePlay)
-        {
             await anteUP();
-        }
         else
             cardController.dealCards(playerList, playerTurn);
 
         currentPlayer = playerList[playerTurn];
         currentPlayer.underTheGun = true;
-        currentPlayer.enterFrame(); 
-        if (!blindPlay) 
+        //currentPlayer.enterFrame();
+        if (!blindPlay)
             vault.lastRaise = currentPlayer;
+        UpdatePlayerVisuals();
     }
 
     public void endGame()
@@ -216,7 +279,7 @@ public class gameController : MonoBehaviour
     {
         var smallBlind = playerList[playerTurn];
         playerTurn = (playerTurn + 1) % playerList.Count;
-        
+
         var bigBlind = playerList[playerTurn];
         playerTurn = (playerTurn + 1) % playerList.Count;
 
@@ -244,32 +307,32 @@ public class gameController : MonoBehaviour
             foreach (var player in playerList)
             {
 
-                if(player.autoSitOut)
+                if (player.autoSitOut)
                 {
                     player.pregameResponded = true;
                     player.playRound = false;
                 }
                 else
                 {
-                   player.pregameResponded = false;
+                    player.pregameResponded = false;
 
                 }
             }
             refreshPlayers("Time to Ante Up!");
-        
+
             foreach (var player in playerList)
             {
                 do
                     await Task.Delay(1000);
                 while (!player.pregameResponded);
 
-                if(player.playRound)
+                if (player.playRound)
                     playersPlaying += 1;
             }
 
             if (playersPlaying < 2)
                 foreach (var player in playerList)
-                    controlpads_glue.SendControlpadMessage(player.ID, "alert:Need more than one person to play a poker game you silly goose."); 
+                    controlpads_glue.SendControlpadMessage(player.ID, "alert:Need 2 or more to play");
         }
         while (playersPlaying < 2);
 
@@ -277,7 +340,7 @@ public class gameController : MonoBehaviour
         foreach (var player in playerList)
         {
             player.pregameResponded = false;
-            controlpads_glue.SendControlpadMessage(player.ID, "refresh:Anteing is finished"); 
+            controlpads_glue.SendControlpadMessage(player.ID, "refresh:Anteing is finished");
         }
 
         // Find out which players are playing this round
@@ -299,15 +362,18 @@ public class gameController : MonoBehaviour
     {
         // Parse the players for only the players who havent folded
         List<playerController> remainingPlayers = new List<playerController>();
-        foreach (var player in playerList) 
+        foreach (var player in playerList)
             if (!player.folded)
                 remainingPlayers.Add(player);
 
         // Calculate Side Pots
+        Debug.Log("Sidepots count: " + sidePots.Count);
+
         if (!remainingPlayers.Count.Equals(sidePots.Count))
         {
             foreach (var player in sidePots)
             {
+                Debug.Log("player name: " + player.username);
                 player.sidePot = player.betted * remainingPlayers.Count;
                 vault.potMoney -= player.sidePot;
                 remainingPlayers.Remove(player);
@@ -316,17 +382,30 @@ public class gameController : MonoBehaviour
 
         // Determine the winners and then give them their share of the pot
         List<playerController> winners = new List<playerController>();
-        if (remainingPlayers.Count > 2)
+
+        if (remainingPlayers.Count > 1)
             winners = cardController.DetermineWinners(remainingPlayers);
         else
             winners = remainingPlayers;
 
+
+
         int payment = vault.potMoney / winners.Count;
         int remainder = vault.potMoney % winners.Count;
-
+        foreach (playerController winner in winners)
+        {
+            Debug.Log("winners payout: " + payment);
+            Debug.Log("winners name: " + winner.username);
+        }
+        Debug.Log("winners count " + winners.Count);
+        //winners money before payout
+        Debug.Log("winners money before payout:" + winners[0].money);
         foreach (var player in winners)
             player.payPlayer(payment);
 
+
+        Debug.Log("money won: " + payment);
+        Debug.Log("player name: " + currentPlayer.username);
         // Give the remainder to the player who is a winner but also 
         // the closest to the first players turn
         playerTurn = rounds % playerList.Count;
@@ -343,11 +422,11 @@ public class gameController : MonoBehaviour
         }
 
         foreach (var player in playerList)
-            {
-                player.readyResponded = false;
-                player.readyForNextRound = false;
-                player.status = "Ready up for the next round!";
-            }
+        {
+            player.readyResponded = false;
+            player.readyForNextRound = false;
+            player.status = "Ready up for the next round!";
+        }
 
         // Now Determine the winner of each sidepot
         sidePots.Reverse();
@@ -374,9 +453,9 @@ public class gameController : MonoBehaviour
             }
         }
 
-        foreach(var player in playerList)
+        foreach (var player in playerList)
         {
-            if (player.money == vault.tottalMoney)
+            if (player.money == vault.totalMoney)
             {
                 Debug.Log(player.username + " is the winner!!!");
                 endGame();
@@ -391,11 +470,11 @@ public class gameController : MonoBehaviour
 
 
         // Reset Player Objects to the right position and make sure they arnt folded
-        foreach (var player in playerList) 
+        foreach (var player in playerList)
         {
             player.roundReset();
         }
-        
+
         // Update Game Variables
         rounds++;
         reveal = 0;
@@ -411,7 +490,6 @@ public class gameController : MonoBehaviour
         cardController.resetCards();
         if (blindPlay)
             blindBets();
-
         if (antePlay)
             await anteUP();
         else
@@ -421,7 +499,7 @@ public class gameController : MonoBehaviour
 
         currentPlayer = playerList[playerTurn];
         currentPlayer.underTheGun = true;
-        currentPlayer.enterFrame();
+        //currentPlayer.enterFrame();
         vault.lastRaise = currentPlayer;
 
         refreshPlayers();
@@ -433,101 +511,120 @@ public class gameController : MonoBehaviour
     private async Task WaitForReadyForNextRound()
     {
         foreach (var player in playerList)
-    {
-        // Wait until the player signals they are ready for the next round
-        await Task.Run(() => { while (!player.readyForNextRound) { } });
-    }
+        {
+            // Wait until the player signals they are ready for the next round
+            await Task.Run(() => { while (!player.readyForNextRound) { } });
+        }
 
     }
 
     private void nextTurn()
     {
-        // Make sure the previous players turn ends
-        StartCoroutine(ExitFrameCoroutine(() =>
+        if (playerTurn + 1 == playerList.Count)
         {
-            // This code will run when ExitFrame is done
-            // Make sure if the player has gone all in to add them to a list of side pots
-            if (currentPlayer.tappedOut && !sidePots.Contains(currentPlayer)) 
-                sidePots.Add(currentPlayer);
+            newBetRound();
+            //check if everyone called before revealing cards 
+            if (vault.lastRaise == currentPlayer) revealCards();
 
-            // Update to the next player
+        }
+
+        Debug.Log("before next turn: " + currentPlayer.username);
+        // Make sure the previous players turn ends
+
+        // This code will run when ExitFrame is done
+        // Make sure if the player has gone all in to add them to a list of side pots
+        if (currentPlayer.tappedOut && !sidePots.Contains(currentPlayer))
+            sidePots.Add(currentPlayer);
+
+        // Update to the next player
+        playerTurn = (playerTurn + 1) % playerList.Count;
+        currentPlayer = playerList[playerTurn];
+
+        Debug.Log("new players turn: " + currentPlayer.username);
+
+        // update current players color to green
+        UpdatePlayerVisuals();
+
+        Debug.Log("sidepots count: " + sidePots.Count);
+        Debug.Log("playerlist count: " + playerList.Count);
+
+        if (sidePots.Count.Equals(playerList.Count))
+            revealCards();
+
+        if (lastFold)
+        {
+            vault.lastRaise = currentPlayer;
+            lastFold = false;
+        }
+
+        // If the next player is folded or they cant bet anymore just skip their turn
+        if (currentPlayer.folded || currentPlayer.tappedOut)
+        {
+            Debug.Log("tapped out or folded" + currentPlayer.tappedOut + currentPlayer.folded);
+            if (vault.lastRaise == currentPlayer)
+                lastFold = true;
             playerTurn = (playerTurn + 1) % playerList.Count;
             currentPlayer = playerList[playerTurn];
+            UpdatePlayerVisuals();
+        }
 
-            if (sidePots.Count.Equals(playerList.Count))
-                revealCards();
 
-            if (lastFold)
-            {
-                vault.lastRaise = currentPlayer;
-                lastFold = false;
-            }
 
-            // If the next player is folded or they cant bet anymore just skip their turn
-            if (currentPlayer.folded || currentPlayer.tappedOut) 
-            {
-                if (vault.lastRaise ==  currentPlayer)
-                    lastFold = true;
-                nextTurn();
-                return;
-            }
+        if (remaining.Equals(1))
+        {
+            newRound();
+            return;
+        }
 
-            
-            if (remaining.Equals(1))
-            {
-                newRound();
-                return;
-            }
+        Debug.Log("is LastRaise: " + vault.lastRaise);
 
-            
-            // Check if a round of betting has commenced
-            if (currentPlayer == vault.lastRaise)
-            {
-                newBetRound();
-                return;
-            }
+        // Check if a round of betting has commenced
 
-            StartCoroutine(EnterFrameCoroutine(() =>
-            {
-                // Debug.Log("It is now " + currentPlayer.username + "\'s turn. \n " + currentPlayer.getHoleCardsDesc());
-                controlpads_glue.SendControlpadMessage(currentPlayer.ID, "refresh:1");
-            }));
-        }));
+
+        refreshPlayers();
     }
 
-    private IEnumerator ExitFrameCoroutine(System.Action onComplete)
+    private void UpdatePlayerVisuals()
     {
-        currentPlayer.exitFrame();
+        // Iterate through all players
+        for (int i = 0; i < playerList.Count; i++)
+        {
+            // Get the player game object, assuming each player has a reference to their game object
+            GameObject playerGameObject = playerList[i].gameObject;
 
-        // Call the onComplete callback when exitFrame is done
-        yield return new WaitUntil(() => !currentPlayer.IsMoving); // Modify this condition as needed
-    
-        onComplete?.Invoke();
+            // Check if the current index matches the playerTurn
+            if (i == playerTurn)
+            {
+                // It's this player's turn, set their game object color to green
+                SetPlayerColor(playerGameObject, Color.green);
+            }
+            else
+            {
+                // It's not this player's turn, set their game object color to gray
+                SetPlayerColor(playerGameObject, Color.gray);
+            }
+        }
     }
 
-    private IEnumerator EnterFrameCoroutine(System.Action onComplete)
+    private void SetPlayerColor(GameObject playerGameObject, Color color)
     {
-        currentPlayer.enterFrame();
-    
-        // Call the onComplete callback when exitFrame is done
-        yield return new WaitUntil(() => !currentPlayer.IsMoving); // Modify this condition as needed
-    
-        onComplete?.Invoke();
+        // Assuming the player game object has a Renderer component where the color is to be set
+        Renderer renderer = playerGameObject.GetComponent<Renderer>();
+        if (renderer != null)
+        {
+            // Set the color of the material, note this will affect all objects using this material
+            renderer.material.color = color;
+        }
     }
-    
-
     private void newBetRound()
     {
-        revealCards();
-        foreach (var player in playerList) { player.transform.position = new Vector3(30, 6, -23); }
-
         // Reset the turn order till we get to the player who betted first
-        playerTurn = rounds % playerList.Count;
-        currentPlayer = playerList[playerTurn];
-        vault.lastRaise = currentPlayer;
+        // playerTurn = rounds % playerList.Count;
+        // currentPlayer = playerList[playerTurn];
+        // vault.lastRaise = currentPlayer;
         vault.revealBet = 0;
         resetBetRound();
-
+        refreshPlayers();
     }
 
     private void revealCards()
@@ -539,8 +636,10 @@ public class gameController : MonoBehaviour
             cardController.revealTurn();
         else if (reveal == 2)
             cardController.revealRiver();
-        else {
-            newRound(); return; }
+        else
+        {
+            newRound(); return;
+        }
         reveal++;
     }
 
@@ -570,7 +669,7 @@ public class gameController : MonoBehaviour
 
     public void resetBetRound()
     {
-        foreach(var player in playerList)
+        foreach (var player in playerList)
         {
             player.bettedRound = 0;
         }
@@ -579,7 +678,8 @@ public class gameController : MonoBehaviour
     private void refreshPlayers() { refreshPlayers("Update-Refresh"); }
     public void refreshPlayers(string extra)
     {
-        foreach(var player in playerList)
+        Debug.Log("refresh parameter" + extra);
+        foreach (var player in playerList)
         {
             controlpads_glue.SendControlpadMessage(player.ID, "refresh:" + extra);
         }

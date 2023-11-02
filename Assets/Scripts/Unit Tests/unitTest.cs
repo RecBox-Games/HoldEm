@@ -19,21 +19,6 @@ public class unitTest : MonoBehaviour
     // Instance Variables
     private int playerID = 0;
 
-
-    
-
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     // Test the newPlayer function in controllerParse
     public void addNewPlayer(string name)
     {
@@ -43,7 +28,7 @@ public class unitTest : MonoBehaviour
 
     public void addListOfPlayers()
     {
-        for (int i = 0; i < playerList.Count; i++)
+        for (int i = 0; i < 3; i++)
         {
             gameController.newPlayer(playerList[i], playerID.ToString());
             playerID++;
@@ -76,13 +61,13 @@ public class unitTest : MonoBehaviour
 
     public void testTurnOrder() { Debug.Log(gameController.getTurnOrder()); }
 
-    public void testMyTottalBet() { 
-        Debug.Log("I\'ve Betted: " + gameController.getCurretPlayer().money); }
+    public void testMyTotalBet() { 
+        Debug.Log("I\'ve Betted: " + gameController.getCurrentPlayer().money); }
 
     public void testShowMyCards()
     {
         string final = "Cards:";
-        foreach (var card in gameController.getCurretPlayer().getHoleCardsDesc()) { final += " " + card; }
+        foreach (var card in gameController.getCurrentPlayer().getHoleCardsDesc()) { final += " " + card; }
         Debug.Log(final);
     }
 
@@ -90,8 +75,7 @@ public class unitTest : MonoBehaviour
         gameController.gameState = false;
         gameController.startGame(); }
 
-    public void testCommunityCards() { 
-        Debug.Log(cardController.getCommunityCards()); }
+    public void testCommunityCards() { Debug.Log(cardController.getCommunityCards()); }
 
     public void testRevealCards()
     {

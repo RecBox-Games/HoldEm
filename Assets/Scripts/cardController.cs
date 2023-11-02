@@ -12,8 +12,10 @@ using static UnityEngine.UI.Image;
 public class Card
 {
     public enum Suit { Hearts, Diamonds, Clubs, Spades }
-    public enum Rank { 
-        Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King, Ace }
+    public enum Rank
+    {
+        Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King, Ace
+    }
 
     public Suit suit;
     public Rank rank;
@@ -95,7 +97,7 @@ public class cardController : MonoBehaviour
     private List<Card> communityCards = new List<Card>();
     // This deck gets shuffled, and handles textures. (always has 52 cards
     private List<Material> textureDeck = new List<Material>();
-    private Queue<Material> playTextures= new Queue<Material>();
+    private Queue<Material> playTextures = new Queue<Material>();
     private Queue<Card> playDeck = new Queue<Card>();
 
 
@@ -103,11 +105,11 @@ public class cardController : MonoBehaviour
     void Start()
     {
         foreach (var card in cardTextures) { textureDeck.Add(card); }
-        foreach (var card in tableCards) 
-        { 
+        foreach (var card in tableCards)
+        {
             originPos.Add(card.transform.position);
             card.transform.position = deck.transform.position;
-        
+
         }
         // Clear all cards on table
         resetCards();
@@ -116,7 +118,7 @@ public class cardController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     public string getCommunityCards()
@@ -124,7 +126,7 @@ public class cardController : MonoBehaviour
         string final = "";
         foreach (var card in communityCards)
             final += card.rank.ToString() + " of " + card.suit.ToString() + ", ";
-     
+
         return final;
     }
 
@@ -145,12 +147,12 @@ public class cardController : MonoBehaviour
                 cardDeck[rand] = temp2;
             }
         }
-        
-        foreach (var card in textureDeck) { playTextures.Enqueue(card);}   
-        foreach (var card in cardDeck) {  playDeck.Enqueue(card); }
-        
+
+        foreach (var card in textureDeck) { playTextures.Enqueue(card); }
+        foreach (var card in cardDeck) { playDeck.Enqueue(card); }
+
     }
-    
+
     public void resetCards()
     {
         Vector3 deckBottom = deck.transform.position - new Vector3(0, .60f, 0);
@@ -168,17 +170,16 @@ public class cardController : MonoBehaviour
 
     public void dealCards(List<playerController> playerList, int playerTurn)
     {
-        // Debug.Log("Dealing Cards");
         for (int i = 0; i < 2; i++)
         {
             int j = playerTurn;
-            do {
+            do
+            {
                 playTextures.Dequeue();
                 playerList[j].drawCard(playDeck.Dequeue());
                 j = (j + 1) % playerList.Count;
             } while (j != playerTurn);
         }
-        // Debug.Log("Cards Dealt");
     }
 
     public void revealFlop()
@@ -186,13 +187,13 @@ public class cardController : MonoBehaviour
         // Burn a Card to prevent cheating (not sure how you can but tradition ya know)
         playTextures.Dequeue();
         playDeck.Dequeue();
-  
-        for (int i = 0; i < 3; i++) 
+
+        for (int i = 0; i < 3; i++)
         {
             tableCards[i].GetComponent<Renderer>().material = playTextures.Dequeue();
             tableCards[i].GetComponent<Renderer>().enabled = true;
             StartCoroutine(cardMove(tableCards[i], originPos[i]));
-            communityCards.Add(playDeck.Dequeue()); 
+            communityCards.Add(playDeck.Dequeue());
         }
 
         foreach (var player in gameController.getPlayerList()) { FindBestPokerHand(player); }
@@ -235,7 +236,7 @@ public class cardController : MonoBehaviour
                 velocity * Time.deltaTime);
             yield return null;
         }
-        card.transform.position = moveToo;  
+        card.transform.position = moveToo;
     }
 
     public static List<playerController> DetermineWinners(List<playerController> playerList)
@@ -251,22 +252,8 @@ public class cardController : MonoBehaviour
 
         foreach (var playerHand in playerList)
         {
-            if (playerHand.handRank == winningRank)
-            {
-                winnerList.Add(playerHand);
-            }
-            else
-            {
-                break;
-            }
-            if (playerHand.handRank == winningRank)
-            {
-                winnerList.Add(playerHand);
-            }
-            else
-            {
-                break;
-            }
+            if (playerHand.handRank == winningRank) winnerList.Add(playerHand);    
+            else break;       
         }
 
         //Check for multiple winners -Tiebreak
@@ -286,7 +273,9 @@ public class cardController : MonoBehaviour
                 //Create a variable of the rank of that card
                 var highestCard = winnerList[0].bestHand[i].rank;
 
-                //Remove all players in the winner list that don't have at least as high as 
+                Debug.Log("highest card: " + highestCard);
+
+                //Remove all players in the winner list that don't have at least as high as
                 // that rank of card
 
                 winnerList.RemoveAll(p => p.bestHand[i].rank < highestCard);
@@ -375,7 +364,7 @@ public class cardController : MonoBehaviour
     }
 
 
-    // Implement methods to check for poker hands (Four of a Kind, Full House, etc.) 
+    // Implement methods to check for poker hands (Four of a Kind, Full House, etc.)
     public static bool IsRoyalFlush(List<Card> cards, out List<Card> royalFlush)
     {
         royalFlush = null;

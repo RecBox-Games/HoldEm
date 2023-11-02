@@ -91,7 +91,7 @@ ws.onclose = (event) => {
 
 // wait for websocket to connect
 ws.onopen = (event) => {
-    console.log("openned websocket")
+    console.log("opened websocket")
 
     byte_array = new Uint8Array(1);
     byte_array[0] = subid;
@@ -100,16 +100,16 @@ ws.onopen = (event) => {
     ws.onmessage = async (event) => {        
         console.log("Message is: ", event.data);
         if (event.data instanceof Blob) {
-            const blobData = new Uint8Array(await event.data.arrayBuffer()); // Read the Blob as a Uint8Array                                                                                                  
-            // Check the first byte to trigger a reload if it's equal to 0x01                                                                                                                                  
+            const blobData = new Uint8Array(await event.data.arrayBuffer()); // Read the Blob as a Uint8Array        
+            // Check the first byte to trigger a reload if it's equal to 0x01
             if (blobData.length > 0 && blobData[0] === 0x01) {
                 console.log("Hold your hats! It's reload time!");
                 location.reload();
             }
             else {
-                // Handle other binary data                                                                                                                                                                    
+                // Handle other binary data                
                 console.log("Received binary data:", blobData);
-                // Handle it according to your use case.                                                                                                                                                       
+                // Handle it according to your use case.
             }
         }
 	    msg = event.data;
