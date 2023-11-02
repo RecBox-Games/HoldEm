@@ -273,7 +273,7 @@ public class cardController : MonoBehaviour
                 //Create a variable of the rank of that card
                 var highestCard = winnerList[0].bestHand[i].rank;
 
-                Debug.Log("highest card: " + highestCard);
+                //Debug.Log("highest card: " + highestCard);
 
                 //Remove all players in the winner list that don't have at least as high as
                 // that rank of card

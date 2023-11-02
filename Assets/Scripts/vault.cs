@@ -76,7 +76,6 @@ public class Vault : MonoBehaviour
 
     public void call(playerController player)
     {
-        Debug.Log(player.betted + " current " + currentBet + " reveal " + revealBet);
         int money;
         if (player.betted < currentBet)
             money = player.requestFunds(currentBet - player.betted);

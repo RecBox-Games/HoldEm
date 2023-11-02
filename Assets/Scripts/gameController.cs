@@ -43,6 +43,8 @@ public class gameController : MonoBehaviour
     private bool isPregame = false;
     private bool lastFold = false;
 
+    private int playersWent;
+
 
 
     // ---------- Getters ----------
@@ -367,13 +369,12 @@ public class gameController : MonoBehaviour
                 remainingPlayers.Add(player);
 
         // Calculate Side Pots
-        Debug.Log("Sidepots count: " + sidePots.Count);
 
         if (!remainingPlayers.Count.Equals(sidePots.Count))
         {
             foreach (var player in sidePots)
             {
-                Debug.Log("player name: " + player.username);
+                //Debug.Log("player name: " + player.username);
                 player.sidePot = player.betted * remainingPlayers.Count;
                 vault.potMoney -= player.sidePot;
                 remainingPlayers.Remove(player);
@@ -520,18 +521,6 @@ public class gameController : MonoBehaviour
 
     private void nextTurn()
     {
-        if (playerTurn + 1 == playerList.Count)
-        {
-            newBetRound();
-            //check if everyone called before revealing cards 
-            if (vault.lastRaise == currentPlayer) revealCards();
-
-        }
-
-        Debug.Log("before next turn: " + currentPlayer.username);
-        // Make sure the previous players turn ends
-
-        // This code will run when ExitFrame is done
         // Make sure if the player has gone all in to add them to a list of side pots
         if (currentPlayer.tappedOut && !sidePots.Contains(currentPlayer))
             sidePots.Add(currentPlayer);
@@ -539,15 +528,9 @@ public class gameController : MonoBehaviour
         // Update to the next player
         playerTurn = (playerTurn + 1) % playerList.Count;
         currentPlayer = playerList[playerTurn];
-
-        Debug.Log("new players turn: " + currentPlayer.username);
-
-        // update current players color to green
         UpdatePlayerVisuals();
 
-        Debug.Log("sidepots count: " + sidePots.Count);
-        Debug.Log("playerlist count: " + playerList.Count);
-
+        Debug.Log("Sidepots count: " + sidePots.Count);
         if (sidePots.Count.Equals(playerList.Count))
             revealCards();
 
@@ -560,68 +543,66 @@ public class gameController : MonoBehaviour
         // If the next player is folded or they cant bet anymore just skip their turn
         if (currentPlayer.folded || currentPlayer.tappedOut)
         {
-            Debug.Log("tapped out or folded" + currentPlayer.tappedOut + currentPlayer.folded);
-            if (vault.lastRaise == currentPlayer)
-                lastFold = true;
-            playerTurn = (playerTurn + 1) % playerList.Count;
-            currentPlayer = playerList[playerTurn];
-            UpdatePlayerVisuals();
-        }
+            do
+            {
+                playerTurn = (playerTurn + 1) % playerList.Count;
+                currentPlayer = playerList[playerTurn];
+            } while (currentPlayer.folded || currentPlayer.tappedOut);
 
+            UpdatePlayerVisuals();
+            refreshPlayers();
+        }
 
 
         if (remaining.Equals(1))
         {
+            playersWent = 0;
             newRound();
+            refreshPlayers();
             return;
         }
 
-        Debug.Log("is LastRaise: " + vault.lastRaise);
 
         // Check if a round of betting has commenced
+        Debug.Log("last raise: " + vault.lastRaise.username);
+        Debug.Log("current player username: " + currentPlayer.username);
+        Debug.Log("current player object: " + currentPlayer);
 
+        Debug.Log("players went " + playersWent);
 
-        refreshPlayers();
-    }
-
-    private void UpdatePlayerVisuals()
-    {
-        // Iterate through all players
-        for (int i = 0; i < playerList.Count; i++)
+        // the below is wrong because newBetRound will prematurely reveal cards if the last user folded
+        // Check if we have completed a round of betting
+        if (currentPlayer == vault.lastRaise)
         {
-            // Get the player game object, assuming each player has a reference to their game object
-            GameObject playerGameObject = playerList[i].gameObject;
-
-            // Check if the current index matches the playerTurn
-            if (i == playerTurn)
+            // If the player who started the round folds, do not immediately end the betting round.
+            // Check if all other players had a chance to act.
+            if (playersWent < howManyActive())
             {
-                // It's this player's turn, set their game object color to green
-                SetPlayerColor(playerGameObject, Color.green);
+                // Not all players have acted yet, just refresh their options
+                refreshPlayers();
             }
             else
             {
-                // It's not this player's turn, set their game object color to gray
-                SetPlayerColor(playerGameObject, Color.gray);
+                // All players have acted, end the betting round
+                playersWent = 0;
+                newBetRound();
+                refreshPlayers();
+
             }
+            return;
         }
+
+        // If not all players have had their turn, refresh the current player's options
+
+        refreshPlayers();
+
     }
 
-    private void SetPlayerColor(GameObject playerGameObject, Color color)
-    {
-        // Assuming the player game object has a Renderer component where the color is to be set
-        Renderer renderer = playerGameObject.GetComponent<Renderer>();
-        if (renderer != null)
-        {
-            // Set the color of the material, note this will affect all objects using this material
-            renderer.material.color = color;
-        }
-    }
     private void newBetRound()
     {
         // Reset the turn order till we get to the player who betted first
-        // playerTurn = rounds % playerList.Count;
-        // currentPlayer = playerList[playerTurn];
-        // vault.lastRaise = currentPlayer;
+        revealCards();
+        vault.lastRaise = currentPlayer;
         vault.revealBet = 0;
         resetBetRound();
         refreshPlayers();
@@ -646,6 +627,7 @@ public class gameController : MonoBehaviour
     // The player wishes to raise the curent bet by amount
     public void raise(int amount)
     {
+        playersWent++;
         vault.raise(currentPlayer, amount);
         nextTurn();
     }
@@ -653,6 +635,7 @@ public class gameController : MonoBehaviour
     // Player wishes to call the previous bet and stay in
     public void call()
     {
+        playersWent++;
         vault.call(currentPlayer);
         nextTurn();
     }
@@ -689,4 +672,50 @@ public class gameController : MonoBehaviour
     {
         nextTurn();
     }
+
+    private void UpdatePlayerVisuals()
+    {
+        // Iterate through all players
+        for (int i = 0; i < playerList.Count; i++)
+        {
+            // Get the player game object, assuming each player has a reference to their game object
+            GameObject playerGameObject = playerList[i].gameObject;
+
+            // Check if the current index matches the playerTurn
+            if (i == playerTurn)
+            {
+                // It's this player's turn, set their game object color to green
+                SetPlayerColor(playerGameObject, Color.green);
+            }
+            else
+            {
+                // It's not this player's turn, set their game object color to gray
+                SetPlayerColor(playerGameObject, Color.gray);
+            }
+        }
+    }
+
+    private void SetPlayerColor(GameObject playerGameObject, Color color)
+    {
+        // Assuming the player game object has a Renderer component where the color is to be set
+        Renderer renderer = playerGameObject.GetComponent<Renderer>();
+        if (renderer != null)
+        {
+            // Set the color of the material, note this will affect all objects using this material
+            renderer.material.color = color;
+        }
+    }
+
+    // determine how many active hands are still in the round
+    private int howManyActive()
+    {
+        int active = 0;
+        foreach (var player in playerList)
+        {
+            if (!player.folded && !player.tappedOut)
+                active++;
+        }
+        return active;
+    }
+
 }

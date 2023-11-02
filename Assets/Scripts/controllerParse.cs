@@ -48,7 +48,7 @@ public class controllerParse : MonoBehaviour
             // If client has already been sent a "ReadyToJoin" message
             if (clientsSent.Contains(client))
             {
-                Debug.Log("Found in Client List");
+                //Debug.Log("Found in Client List");
                 return;
             }
             // Send a "ReadyToJoin" message, which is a validated attempt to join
@@ -205,7 +205,7 @@ public class controllerParse : MonoBehaviour
 
                 }
                 GameObject playerObject = GameObject.Find(fromPlayer.username);
-                Debug.Log(fromPlayer.username + " removed from the game");
+                //Debug.Log(fromPlayer.username + " removed from the game");
                 playerList.RemoveAll(p => p.ID == client);
                 if(gameController.getCurrentPlayer().ID == client)
                 {
