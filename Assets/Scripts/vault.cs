@@ -28,7 +28,7 @@ public class Vault : MonoBehaviour
 
     public void ante(List<playerController> players)
     {
-        foreach(var player in players)
+        foreach (var player in players)
         {
             potMoney += player.requestFunds(minimumBet);
         }

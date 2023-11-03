@@ -24,8 +24,8 @@ public class playerController : MonoBehaviour
     public string username { get; set; }
     public int playerNumber { get; set; } // This is the number the player joined
     public bool isHost { get; set; } = false;
-    public string playerColor {get; set;}
-    
+    public string playerColor { get; set; }
+
 
     // Money Variables
     public int money { get; set; } // Ammount of money a player has to play with
@@ -37,14 +37,14 @@ public class playerController : MonoBehaviour
 
     // Game Specific Variables
     public bool playRound { get; set; } // Only used if antePlay is true
-    public bool pregameResponded {get; set;} = false; //Used to see if a player has selected if they are playing or not
-    public bool readyForNextRound {get; set;} = false; //Whether or not a player is ready for next round
-    public bool readyResponded {get; set;} = false; //Whether or not a player has responded to the ready request
-    public bool moneyResponded {get; set;} = false; //Used to see if a player has responded yet to the grab for money
-    public bool moneyResponse {get; set;} //Used to determine if another player accepteed the grab for money
+    public bool pregameResponded { get; set; } = false; //Used to see if a player has selected if they are playing or not
+    public bool readyForNextRound { get; set; } = false; //Whether or not a player is ready for next round
+    public bool readyResponded { get; set; } = false; //Whether or not a player has responded to the ready request
+    public bool moneyResponded { get; set; } = false; //Used to see if a player has responded yet to the grab for money
+    public bool moneyResponse { get; set; } //Used to determine if another player accepteed the grab for money
     public bool folded { get; set; } = false;
     public bool tappedOut { get; set; } = false;
-    public bool autoSitOut {get; set; } = false;
+    public bool autoSitOut { get; set; } = false;
 
     // Card Variables
     // These are the two cards in hand
@@ -53,10 +53,10 @@ public class playerController : MonoBehaviour
     private List<Card> holeCards = new List<Card>();
     public List<Card> bestHand { get; set; } = new List<Card>();
 
-    public string status {get; set;}
+    public string status { get; set; }
 
     //Bonus Settings
-    public List<Setting> CustomSettings {get; set;} = new List<Setting>();
+    public List<Setting> CustomSettings { get; set; } = new List<Setting>();
 
     // GUI Variables
     private Transform startEntryTransform, entryTransform, namePlate;
@@ -85,7 +85,7 @@ public class playerController : MonoBehaviour
             startEntryTransform.Find("NameBackground").gameObject.SetActive(true);
         }
 
-        
+
         RectTransform startRectTransform = startEntryTransform.GetComponent<RectTransform>();
         if (playerNumber <= 11)
             startRectTransform.anchoredPosition = new Vector2(0, -templateHight * ((playerNumber - 1) % 11));
@@ -121,7 +121,7 @@ public class playerController : MonoBehaviour
         string finalString = "";
         foreach (var card in holeCards)
         {
-            finalString += card.rank + " of " + card.suit + ", " ;
+            finalString += card.rank + " of " + card.suit + ", ";
         }
         return finalString;
     }
@@ -140,7 +140,7 @@ public class playerController : MonoBehaviour
 
     public void setColor(Material color) { gameObject.GetComponent<Renderer>().material = color; }
 
-    public int requestFunds(int amount) 
+    public int requestFunds(int amount)
     {
         if (amount >= money)
         {
