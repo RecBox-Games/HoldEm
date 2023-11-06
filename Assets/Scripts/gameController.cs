@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using System.Threading;
 using System.Threading.Tasks;
+using System;
 
 public class gameController : MonoBehaviour
 {
@@ -42,10 +43,7 @@ public class gameController : MonoBehaviour
     private int playerTurn = 0;     // Increments each player turn
     private bool isPregame = false;
     private bool lastFold = false;
-
     private int playersWent;
-
-
 
     // ---------- Getters ----------
     public List<playerController> getPlayerList() { return playerList; }
@@ -173,7 +171,7 @@ public class gameController : MonoBehaviour
 
 
         // Create a new Player object from the Player prefab and name it the new players name
-        Object playerObj = Instantiate(playerPrefab, playerPos, Quaternion.identity);
+        UnityEngine.Object playerObj = Instantiate(playerPrefab, playerPos, Quaternion.identity);
         playerObj.name = playerName;
 
         // Get the playerController and assign anything new to the player
@@ -269,6 +267,7 @@ public class gameController : MonoBehaviour
         if (!blindPlay)
             vault.lastRaise = currentPlayer;
         UpdatePlayerVisuals();
+        refreshPlayers();
     }
 
     public void endGame()
@@ -301,6 +300,7 @@ public class gameController : MonoBehaviour
         int playersPlaying;
 
         //Setting isPregame to true will force the controller into pregame status
+
         isPregame = true;
         //Loop to make sure at least two players end up being in the game
         do
@@ -308,7 +308,6 @@ public class gameController : MonoBehaviour
             playersPlaying = 0;
             foreach (var player in playerList)
             {
-
                 if (player.autoSitOut)
                 {
                     player.pregameResponded = true;
@@ -362,14 +361,11 @@ public class gameController : MonoBehaviour
 
     private async void newRound()
     {
+        playersWent = 0;
         // Parse the players for only the players who havent folded
-        List<playerController> remainingPlayers = new List<playerController>();
-        foreach (var player in playerList)
-            if (!player.folded)
-                remainingPlayers.Add(player);
+        List<playerController> remainingPlayers = playerList.Where(player => !player.folded).ToList();
 
         // Calculate Side Pots
-
         if (!remainingPlayers.Count.Equals(sidePots.Count))
         {
             foreach (var player in sidePots)
@@ -393,20 +389,10 @@ public class gameController : MonoBehaviour
 
         int payment = vault.potMoney / winners.Count;
         int remainder = vault.potMoney % winners.Count;
-        foreach (playerController winner in winners)
-        {
-            Debug.Log("winners payout: " + payment);
-            Debug.Log("winners name: " + winner.username);
-        }
-        Debug.Log("winners count " + winners.Count);
-        //winners money before payout
-        Debug.Log("winners money before payout:" + winners[0].money);
+
         foreach (var player in winners)
             player.payPlayer(payment);
 
-
-        Debug.Log("money won: " + payment);
-        Debug.Log("player name: " + currentPlayer.username);
         // Give the remainder to the player who is a winner but also 
         // the closest to the first players turn
         playerTurn = rounds % playerList.Count;
@@ -473,6 +459,7 @@ public class gameController : MonoBehaviour
         // Reset Player Objects to the right position and make sure they arnt folded
         foreach (var player in playerList)
         {
+            if (player.money > 0 && player.tappedOut == true) player.tappedOut = false;
             player.roundReset();
         }
 
@@ -504,10 +491,9 @@ public class gameController : MonoBehaviour
         vault.lastRaise = currentPlayer;
 
         refreshPlayers();
-
-        // Debug.Log("---------------------- A new round has started! ----------------------");
-        // Debug.Log("It is now " + currentPlayer.username + "\'s turn. \n " + currentPlayer.getHoleCardsDesc());
     }
+
+
 
     private async Task WaitForReadyForNextRound()
     {
@@ -519,93 +505,80 @@ public class gameController : MonoBehaviour
 
     }
 
+    private bool isNextTurnNeeded()
+    {
+        // if all folded but one
+        if (howManyActive() == 1) return false;
+        if (howManyAllIn() == sidePots.Count && (playerList.Count - howManyAllIn()) == 1) return false;
+        return true;
+    }
     private void nextTurn()
     {
+
         // Make sure if the player has gone all in to add them to a list of side pots
         if (currentPlayer.tappedOut && !sidePots.Contains(currentPlayer))
             sidePots.Add(currentPlayer);
 
-        // Update to the next player
-        playerTurn = (playerTurn + 1) % playerList.Count;
-        currentPlayer = playerList[playerTurn];
+        if (!isNextTurnNeeded())
+        {
+            revealAllCards();
+            return;
+        }
+
+        if (remaining == 1) newRound();
+
+        do
+        {
+            playerTurn = (playerTurn + 1) % playerList.Count;
+            currentPlayer = playerList[playerTurn];
+        } while (currentPlayer.folded || currentPlayer.tappedOut);
         UpdatePlayerVisuals();
 
-        Debug.Log("Sidepots count: " + sidePots.Count);
-        if (sidePots.Count.Equals(playerList.Count))
-            revealCards();
-
-        if (lastFold)
-        {
-            vault.lastRaise = currentPlayer;
-            lastFold = false;
-        }
-
-        // If the next player is folded or they cant bet anymore just skip their turn
-        if (currentPlayer.folded || currentPlayer.tappedOut)
-        {
-            do
-            {
-                playerTurn = (playerTurn + 1) % playerList.Count;
-                currentPlayer = playerList[playerTurn];
-            } while (currentPlayer.folded || currentPlayer.tappedOut);
-
-            UpdatePlayerVisuals();
-            refreshPlayers();
-        }
-
-
-        if (remaining.Equals(1))
-        {
-            playersWent = 0;
-            newRound();
-            refreshPlayers();
-            return;
-        }
-
-
-        // Check if a round of betting has commenced
-        Debug.Log("last raise: " + vault.lastRaise.username);
-        Debug.Log("current player username: " + currentPlayer.username);
-        Debug.Log("current player object: " + currentPlayer);
-
-        Debug.Log("players went " + playersWent);
-
-        // the below is wrong because newBetRound will prematurely reveal cards if the last user folded
-        // Check if we have completed a round of betting
-        if (currentPlayer == vault.lastRaise)
-        {
-            // If the player who started the round folds, do not immediately end the betting round.
-            // Check if all other players had a chance to act.
-            if (playersWent < howManyActive())
-            {
-                // Not all players have acted yet, just refresh their options
-                refreshPlayers();
-            }
-            else
-            {
-                // All players have acted, end the betting round
-                playersWent = 0;
-                newBetRound();
-                refreshPlayers();
-
-            }
-            return;
-        }
-
-        // If not all players have had their turn, refresh the current player's options
+        if (playersWent >= howManyActive()) endBettingRound();
 
         refreshPlayers();
 
     }
 
+    private void endBettingRound()
+    {
+        // If the currentPlayer is the last to act, reveal cards or end the round
+        if (currentPlayer == vault.lastRaise || vault.lastRaise.tappedOut)
+        {
+            // If there are still community cards to be revealed, do so
+            if (reveal < 3)
+            {
+                revealCards();
+                resetBetRound();
+                vault.revealBet = 0;
+            }
+            // If all community cards have been revealed, or if there is only one player left, proceed to showdown or start a new round
+            else
+            {
+                revealAllCards();
+            }
+        }
+        else
+        {
+            // If not all active players had their turn, just refresh the current player's options
+            refreshPlayers();
+        }
+    }
     private void newBetRound()
     {
-        // Reset the turn order till we get to the player who betted first
         revealCards();
         vault.lastRaise = currentPlayer;
         vault.revealBet = 0;
         resetBetRound();
         refreshPlayers();
+    }
+
+    private void revealAllCards()
+    {
+        while (reveal < 3) revealCards();
+        // call determine winners here?
+        newRound();
+
     }
 
     private void revealCards()
@@ -645,13 +618,38 @@ public class gameController : MonoBehaviour
         currentPlayer.folded = true;
         remaining--;
         lastFold = true;
-
+        if (currentPlayer == vault.lastRaise) updateLastRaiser();
         Debug.Log(currentPlayer.username + " has folded.");
         nextTurn();
     }
 
+    public void updateLastRaiser()
+    {
+        // Start looking for the next lastRaiser after the currentPlayer
+        int currentIndex = playerList.IndexOf(currentPlayer);
+        int nextIndex = (currentIndex + 1) % playerList.Count;
+        int attempts = playerList.Count; // To prevent infinite loops
+
+        while (attempts-- > 0)
+        {
+            // Check if the player at nextIndex can be the new lastRaiser
+            var potentialLastRaiser = playerList[nextIndex];
+            if (!potentialLastRaiser.folded && !potentialLastRaiser.tappedOut)
+            {
+                vault.lastRaise = potentialLastRaiser;
+                return;
+            }
+
+            // Move to the next player
+            nextIndex = (nextIndex + 1) % playerList.Count;
+        }
+
+    }
+
     public void resetBetRound()
     {
+        playersWent = 0;
+        vault.revealBet = 0;
         foreach (var player in playerList)
         {
             player.bettedRound = 0;
@@ -709,13 +707,13 @@ public class gameController : MonoBehaviour
     // determine how many active hands are still in the round
     private int howManyActive()
     {
-        int active = 0;
-        foreach (var player in playerList)
-        {
-            if (!player.folded && !player.tappedOut)
-                active++;
-        }
-        return active;
+        return playerList.Count(player => !player.folded && !player.tappedOut);
+    }
+
+    private int howManyAllIn()
+    {
+        // how many players have are all in
+        return playerList.Count(player => player.tappedOut);
     }
 
 }

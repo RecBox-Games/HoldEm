@@ -45,35 +45,38 @@ public class Vault : MonoBehaviour
         currentBet = minimumBet;
         lastRaise = bigBlind;
     }
-
-
     public void raise(playerController player, int amount)
     {
-        int money;
-        if (player.betted < currentBet)
-        {
-            // request funds to call the current total bet
-            int callBet = player.requestFunds(currentBet - player.betted);
-            // requst funds to raise the current total bet
-            int raiseMoney = player.requestFunds(amount);
+        // If the player is trying to raise more money than they have, go all in.
+        amount = Mathf.Max(0, Mathf.Min(amount, player.money - currentBet + player.betted));
 
-            money = callBet + raiseMoney;
-            currentBet += raiseMoney;
-            revealBet += raiseMoney;
-        }
-        else
+        // First, let's make the player call the current bet if they haven't already.
+        int toCall = currentBet - player.betted;
+        int calledAmount = player.requestFunds(toCall);
+
+        // Now, let's handle the raise amount.
+        // If the amount is negative or zero, it means the player can't actually raise and is just calling.
+        int raisedAmount = (amount > 0) ? player.requestFunds(amount) : 0;
+
+        // Update the current bet and reveal bet only if the raise is valid.
+        if (raisedAmount > 0)
         {
-            money = player.requestFunds(amount);
-            currentBet += money;
-            revealBet += money;
+            currentBet += raisedAmount;
+            revealBet += raisedAmount;
         }
 
-        // Increment the amount in the pot and then set the current
-        // player as the highest bidder
-        potMoney += money;
-        lastRaise = player;
+        // Add the called and raised amounts to the pot.
+        potMoney += calledAmount + raisedAmount;
+
+        // Set the current player as the last raiser if an actual raise was made.
+        if (raisedAmount > 0)
+        {
+            lastRaise = player;
+        }
+
+        // Log the result of the raise attempt.
+        Debug.Log(player.username + " called " + calledAmount + " and raised " + raisedAmount + ". Current pot is " + potMoney);
     }
-
     public void call(playerController player)
     {
         int money;

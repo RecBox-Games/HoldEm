@@ -186,8 +186,6 @@ public class playerController : MonoBehaviour
         bestHand.Clear();
         handDescription = null;
     }
-
-    //public void resetPosition() { transform.position = new Vector3(30, 6, -23); }
 }
 
 
